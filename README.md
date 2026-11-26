@@ -1,5 +1,7 @@
 # Mom's Tool Toys
 
+<p align="center"><img src="assets/moms-tool-toys.png" width="360" alt="Mom's Tool Toys"></p>
+
 Маленькие инструменты для домашнего Mac. Каждый живёт в своей папке и собирается отдельно.
 
 | Папка | Приложение | Что делает |

@@ -99,6 +99,5 @@ Sources/PerfMon/
     Monitor.swift           цикл опроса, история для графиков, связи родитель/потомки
   Views/                    SwiftUI-экраны и компоненты
 Scripts/
-  build_app.sh              сборка .app
-  make_icon.swift           генерация иконки
+  build_app.sh              сборка .app (иконка — Resources/AppIcon.png)
 ```

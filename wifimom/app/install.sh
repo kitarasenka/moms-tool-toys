@@ -21,11 +21,11 @@ B="$TMP/WifiMom.app/Contents"
 mkdir -p "$B/MacOS" "$B/Resources"
 swiftc -O "$HERE/main.swift" -o "$B/MacOS/WifiMom"
 
-swift "$HERE/icon.swift" "$TMP/icon.png"
+# Иконка: app/icon.png (1024×1024) → .icns
 mkdir "$TMP/icon.iconset"
 for s in 16 32 128 256 512; do
-  sips -z $s $s "$TMP/icon.png" --out "$TMP/icon.iconset/icon_${s}x${s}.png" >/dev/null
-  sips -z $((s*2)) $((s*2)) "$TMP/icon.png" --out "$TMP/icon.iconset/icon_${s}x${s}@2x.png" >/dev/null
+  sips -z $s $s "$HERE/icon.png" --out "$TMP/icon.iconset/icon_${s}x${s}.png" >/dev/null
+  sips -z $((s*2)) $((s*2)) "$HERE/icon.png" --out "$TMP/icon.iconset/icon_${s}x${s}@2x.png" >/dev/null
 done
 iconutil -c icns "$TMP/icon.iconset" -o "$B/Resources/WifiMom.icns"
 
