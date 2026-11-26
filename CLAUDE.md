@@ -20,6 +20,9 @@ One repo, independent macOS tools — no shared code, each builds on its own:
   System Events permission survive) — adding a tool = new entry there +
   its icon copied in `launcher/install.sh`. Root `./install.sh` installs all of them into /Applications.
 
+`docs/` — лендинг для GitHub Pages (`docs/index.html`, один файл без зависимостей; интерактивные демо-окна
+на выдуманных данных, иконки в `docs/img/` — копии 256 px). Новый инструмент или раздел — добавить его в `TOOLS` там же.
+
 App icons are 1024×1024 PNGs (`wifimom/app/icon.png`, `perfmom/Resources/AppIcon.png`,
 `<tool>/Resources/AppIcon.png` for the SwiftPM tools, `launcher/icon.png`); build scripts turn them into .icns each build.
 
