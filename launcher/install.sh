@@ -28,6 +28,7 @@ iconutil -c icns "$TMP/icon.iconset" -o "$B/Resources/AppIcon.icns"
 sips -z 256 256 "$ROOT/assets/moms-tool-toys.png" --out "$B/Resources/hero.png" >/dev/null
 sips -z 256 256 "$ROOT/wifimom/app/icon.png" --out "$B/Resources/wifimom.png" >/dev/null
 sips -z 256 256 "$ROOT/perfmom/Resources/AppIcon.png" --out "$B/Resources/perfmom.png" >/dev/null
+sips -z 256 256 "$ROOT/cleanermom/Resources/AppIcon.png" --out "$B/Resources/cleanermom.png" >/dev/null
 
 cat > "$B/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>

@@ -18,6 +18,9 @@ let tools = [
   Tool(id: "local.perfmon.app" /* bundle id с тех пор, как приложение звалось PerfMon */, name: "PerfMom",
        blurb: "Производительность Mac: процессы и их дерево, автозагрузка, проверка безопасности, история нагрузки.",
        icon: "perfmom"),
+  Tool(id: "local.cleanermom", name: "CleanerMom",
+       blurb: "Уборка Mac: кэши, журналы, временные файлы и Корзина одной кнопкой, крупные файлы, удаление приложений.",
+       icon: "cleanermom"),
 ]
 
 func resourceImage(_ name: String) -> NSImage? {
