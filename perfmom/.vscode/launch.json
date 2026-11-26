@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:perfmom}",
+            "name": "Debug PerfMon",
+            "target": "PerfMon",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug PerfMon"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:perfmom}",
+            "name": "Release PerfMon",
+            "target": "PerfMon",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release PerfMon"
+        }
+    ]
+}
