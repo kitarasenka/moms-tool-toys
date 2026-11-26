@@ -5,20 +5,20 @@
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:perfmom}",
-            "name": "Debug PerfMon",
-            "target": "PerfMon",
+            "name": "Debug PerfMom",
+            "target": "PerfMom",
             "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug PerfMon"
+            "preLaunchTask": "swift: Build Debug PerfMom"
         },
         {
             "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:perfmom}",
-            "name": "Release PerfMon",
-            "target": "PerfMon",
+            "name": "Release PerfMom",
+            "target": "PerfMom",
             "configuration": "release",
-            "preLaunchTask": "swift: Build Release PerfMon"
+            "preLaunchTask": "swift: Build Release PerfMom"
         }
     ]
 }

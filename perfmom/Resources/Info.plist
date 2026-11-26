@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>PerfMon</string>
+    <string>PerfMom</string>
     <key>CFBundleDisplayName</key>
-    <string>PerfMon</string>
+    <string>PerfMom</string>
     <key>CFBundleIdentifier</key>
     <string>local.perfmon.app</string>
     <key>CFBundleExecutable</key>
-    <string>PerfMon</string>
+    <string>PerfMom</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundlePackageType</key>
@@ -33,6 +33,6 @@
     <key>NSSupportsAutomaticTermination</key>
     <false/>
     <key>NSAppleEventsUsageDescription</key>
-    <string>PerfMon обращается к System Events, чтобы показывать и изменять список приложений, открывающихся при входе в систему.</string>
+    <string>PerfMom обращается к System Events, чтобы показывать и изменять список приложений, открывающихся при входе в систему.</string>
 </dict>
 </plist>

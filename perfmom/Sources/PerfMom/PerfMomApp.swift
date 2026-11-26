@@ -4,7 +4,7 @@ import SwiftUI
 @main
 enum Main {
     static func main() {
-        // `PerfMon --selftest` — снять два замера и вывести сводку в консоль (проверка без UI).
+        // `PerfMom --selftest` — снять два замера и вывести сводку в консоль (проверка без UI).
         if CommandLine.arguments.contains("--selftest-launchd") {
             SelfTest.launchd()
             return
@@ -13,16 +13,16 @@ enum Main {
             SelfTest.run()
             return
         }
-        PerfMonApp.main()
+        PerfMomApp.main()
     }
 }
 
-struct PerfMonApp: App {
+struct PerfMomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
     @State private var state = AppState()
 
     var body: some Scene {
-        Window("PerfMon", id: "main") {
+        Window("PerfMom", id: "main") {
             ContentView()
                 .environment(state)
                 .frame(minWidth: 1000, minHeight: 620)
@@ -34,7 +34,7 @@ struct PerfMonApp: App {
         .defaultSize(width: 1380, height: 840)
         .commands { AppCommands(state: state) }
 
-        // Значок в строке меню: при закрытом окне PerfMon продолжает работать и записывать историю.
+        // Значок в строке меню: при закрытом окне PerfMom продолжает работать и записывать историю.
         MenuBarExtra {
             MenuBarContent(state: state)
         } label: {
@@ -51,7 +51,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    /// Окно можно закрыть — запись истории продолжится, PerfMon остаётся в строке меню.
+    /// Окно можно закрыть — запись истории продолжится, PerfMom остаётся в строке меню.
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -125,10 +125,10 @@ struct MenuBarContent: View {
         Text("Память: \(Fmt.bytes(s.memUsed)) из \(Fmt.bytes(s.memTotal))")
         Text("Сеть: ↓ \(Fmt.rate(s.netIn))  ↑ \(Fmt.rate(s.netOut))")
         Divider()
-        Button("Открыть PerfMon") { show(.processes) }
+        Button("Открыть PerfMom") { show(.processes) }
         Button("История за сегодня") { show(.history) }
         Divider()
-        Button("Завершить PerfMon") { NSApp.terminate(nil) }
+        Button("Завершить PerfMom") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
     }
 
@@ -139,7 +139,7 @@ struct MenuBarContent: View {
     }
 }
 
-/// Аргументы запуска: `open PerfMon.app --args --pid 123 --tab chain --section tree`
+/// Аргументы запуска: `open PerfMom.app --args --pid 123 --tab chain --section tree`
 enum LaunchOptions {
     @MainActor
     static func apply(to state: AppState) {
@@ -171,7 +171,7 @@ enum LaunchOptions {
 enum SelfTest {
     /// Проверяет включение/выключение автозапуска на временном агенте и удаляет его.
     static func launchd() {
-        let label = "local.perfmon.selftest"
+        let label = "local.perfmom.selftest"
         let path = NSHomeDirectory() + "/Library/LaunchAgents/\(label).plist"
         let plist: [String: Any] = ["Label": label, "ProgramArguments": ["/bin/sleep", "600"], "RunAtLoad": true]
         let data = try! PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)

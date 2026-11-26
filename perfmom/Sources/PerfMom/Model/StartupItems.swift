@@ -211,7 +211,7 @@ enum LaunchControl {
         var errorDescription: String? {
             switch self {
             case .command(let m): m
-            case .unsafe: "Метка или путь службы содержат недопустимые символы — управлять ей через PerfMon небезопасно."
+            case .unsafe: "Метка или путь службы содержат недопустимые символы — управлять ей через PerfMom небезопасно."
             }
         }
     }
@@ -289,7 +289,7 @@ enum LoginAccess: Equatable {
 }
 
 /// Список объектов входа доступен только через System Events (AppleScript).
-/// macOS один раз спрашивает разрешение «PerfMon хочет управлять System Events».
+/// macOS один раз спрашивает разрешение «PerfMom хочет управлять System Events».
 enum LoginItemsService {
     static let systemEventsID = "com.apple.systemevents"
 

@@ -58,7 +58,7 @@ struct PendingAction: Identifiable {
         }
         if childCount > 0 { parts.append("Вместе с ним будет завершено дочерних процессов: \(childCount).") }
         if includesForeign { parts.append("Среди них есть системные процессы — может понадобиться пароль администратора.") }
-        if pids.contains(getpid()) { parts.append("Это сам PerfMon — приложение закроется.") }
+        if pids.contains(getpid()) { parts.append("Это сам PerfMom — приложение закроется.") }
         return parts.joined(separator: "\n\n")
     }
 }

@@ -2,12 +2,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "PerfMon",
+    name: "PerfMom",
     platforms: [.macOS(.v14)],
     targets: [
         .executableTarget(
-            name: "PerfMon",
-            path: "Sources/PerfMon",
+            name: "PerfMom",
+            path: "Sources/PerfMom",
             linkerSettings: [.linkedFramework("IOKit"), .linkedFramework("Security")]
         )
     ]

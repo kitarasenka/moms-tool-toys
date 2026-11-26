@@ -1,9 +1,9 @@
 import Darwin
 import Foundation
 
-// История нагрузки: раз в минуту в ~/Library/Application Support/PerfMon/History/ дописывается строка
+// История нагрузки: раз в минуту в ~/Library/Application Support/PerfMom/History/ дописывается строка
 // JSON (YYYY-MM-DD.jsonl) со средними/пиковыми значениями и топом процессов, а в YYYY-MM-DD.processes.json
-// хранятся суточные итоги по приложениям. Пишется, пока PerfMon запущен (в том числе со скрытым окном).
+// хранятся суточные итоги по приложениям. Пишется, пока PerfMom запущен (в том числе со скрытым окном).
 
 struct HistoryTop: Codable, Hashable, Sendable {
     let name: String
@@ -52,7 +52,15 @@ struct ProcessDayStat: Codable, Identifiable, Sendable {
 enum HistoryFiles {
     static let directory: URL = {
         let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return base.appendingPathComponent("PerfMon/History", isDirectory: true)
+        let dir = base.appendingPathComponent("PerfMom/History", isDirectory: true)
+        // До переименования приложение называлось PerfMon — переносим накопленную историю.
+        let legacy = base.appendingPathComponent("PerfMon", isDirectory: true)
+        let fm = FileManager.default
+        if !fm.fileExists(atPath: dir.path), fm.fileExists(atPath: legacy.path),
+           !fm.fileExists(atPath: base.appendingPathComponent("PerfMom").path) {
+            try? fm.moveItem(at: legacy, to: base.appendingPathComponent("PerfMom", isDirectory: true))
+        }
+        return dir
     }()
 
     static let retentionDays = 30
@@ -92,7 +100,7 @@ enum HistoryFiles {
 final class HistoryRecorder: @unchecked Sendable {
     static let shared = HistoryRecorder()
 
-    private let queue = DispatchQueue(label: "perfmon.history", qos: .utility)
+    private let queue = DispatchQueue(label: "perfmom.history", qos: .utility)
     private let encoder: JSONEncoder = {
         let e = JSONEncoder()
         e.dateEncodingStrategy = .secondsSince1970
@@ -334,7 +342,7 @@ struct HistoryBucket: Identifiable, Sendable {
         var segment = 0
         var prev: Double?
         for start in groups.keys.sorted() {
-            // Разрыв больше двух интервалов — PerfMon не работал; начинаем новый отрезок линии.
+            // Разрыв больше двух интервалов — PerfMom не работал; начинаем новый отрезок линии.
             if let prev, start - prev > size * 2 { segment += 1 }
             prev = start
             let ps = groups[start] ?? []

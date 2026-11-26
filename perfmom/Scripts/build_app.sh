@@ -1,15 +1,15 @@
 #!/bin/zsh
-# Собирает PerfMon.app в ./build и подписывает ad-hoc подписью.
+# Собирает PerfMom.app в ./build и подписывает ad-hoc подписью.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 echo "▸ Сборка (release)…"
 swift build -c release
 
-APP="build/PerfMon.app"
+APP="build/PerfMom.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp ".build/release/PerfMon" "$APP/Contents/MacOS/PerfMon"
+cp ".build/release/PerfMom" "$APP/Contents/MacOS/PerfMom"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
 
 echo "▸ Иконка…"

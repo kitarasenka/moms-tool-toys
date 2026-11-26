@@ -297,7 +297,7 @@ struct LoginItemsView: View {
             ContentUnavailableView {
                 Label("Нужен доступ к System Events", systemImage: "person.badge.key")
             } description: {
-                Text("Список «Открывать при входе» macOS отдаёт только через System Events. Система один раз спросит разрешение для PerfMon.")
+                Text("Список «Открывать при входе» macOS отдаёт только через System Events. Система один раз спросит разрешение для PerfMom.")
             } actions: {
                 Button("Разрешить и показать") { Task { await store.requestLoginAccess() } }
                     .buttonStyle(.borderedProminent)
@@ -306,7 +306,7 @@ struct LoginItemsView: View {
             ContentUnavailableView {
                 Label("Доступ запрещён", systemImage: "hand.raised")
             } description: {
-                Text("Разрешите PerfMon управлять System Events: Системные настройки → Конфиденциальность и безопасность → Автоматизация.")
+                Text("Разрешите PerfMom управлять System Events: Системные настройки → Конфиденциальность и безопасность → Автоматизация.")
             } actions: {
                 Button("Открыть настройки автоматизации") { NSWorkspace.shared.open(SystemSettingsLinks.automation) }
                 Button("Проверить снова") { Task { await store.refreshLoginItems() } }

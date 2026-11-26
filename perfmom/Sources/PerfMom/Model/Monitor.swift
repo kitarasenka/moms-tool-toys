@@ -36,7 +36,7 @@ final class Monitor {
     @ObservationIgnored private let processSampler = ProcessSampler()
     @ObservationIgnored private let systemSampler = SystemSampler()
     @ObservationIgnored private let securityAnalyzer = SecurityAnalyzer()
-    @ObservationIgnored private let queue = DispatchQueue(label: "perfmon.sampler", qos: .utility)
+    @ObservationIgnored private let queue = DispatchQueue(label: "perfmom.sampler", qos: .utility)
     @ObservationIgnored private var loop: Task<Void, Never>?
     @ObservationIgnored private var refreshing = false
 
