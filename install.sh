@@ -1,5 +1,5 @@
 #!/bin/bash
-# Ставит всё разом: WifiMom, PerfMom, CleanerMom и общий запуск «Mom's Tool Toys» — в /Applications
+# Ставит всё разом: все инструменты и общий запуск «Mom's Tool Toys» — в /Applications
 # (или ~/Applications, если нет прав). Каждый инструмент можно ставить и отдельно своим скриптом.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
@@ -28,9 +28,15 @@ echo "━━ PerfMom"
 pgrep -xq PerfMon && { osascript -e 'quit app id "local.perfmon.app"' || true; sleep 1; }
 install_built "$ROOT/perfmom/build/PerfMom.app" local.perfmon.app PerfMon.app
 
-echo "━━ CleanerMom"
-"$ROOT/cleanermom/Scripts/build_app.sh"
-install_built "$ROOT/cleanermom/build/CleanerMom.app" local.cleanermom
+# SwiftPM-инструменты: папка, имя приложения, bundle id
+for spec in "cleanermom CleanerMom local.cleanermom" "diskmom DiskMom local.diskmom" \
+            "privacymom PrivacyMom local.privacymom" "batterymom BatteryMom local.batterymom" \
+            "clipmom ClipMom local.clipmom"; do
+  set -- $spec
+  echo "━━ $2"
+  "$ROOT/$1/Scripts/build_app.sh"
+  install_built "$ROOT/$1/build/$2.app" "$3"
+done
 
 echo "━━ Mom's Tool Toys"
 "$ROOT/launcher/install.sh"

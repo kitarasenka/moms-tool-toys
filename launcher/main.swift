@@ -21,6 +21,18 @@ let tools = [
   Tool(id: "local.cleanermom", name: "CleanerMom",
        blurb: "Уборка Mac: кэши, журналы, временные файлы и Корзина одной кнопкой, крупные файлы, удаление приложений.",
        icon: "cleanermom"),
+  Tool(id: "local.diskmom", name: "DiskMom",
+       blurb: "Диски: карта того, что занимает место, поиск дубликатов, состояние и извлечение дисков.",
+       icon: "diskmom"),
+  Tool(id: "local.privacymom", name: "PrivacyMom",
+       blurb: "Приватность: кто имеет доступ к камере, микрофону и файлам, история браузеров, сохранённые сети Wi-Fi.",
+       icon: "privacymom"),
+  Tool(id: "local.batterymom", name: "BatteryMom",
+       blurb: "Батарея: здоровье и циклы, история заряда, кто тратит энергию, заряд мыши и наушников.",
+       icon: "batterymom"),
+  Tool(id: "local.clipmom", name: "ClipMom",
+       blurb: "История буфера обмена: всё скопированное под рукой, поиск, закрепление, быстрая панель ⇧⌘V.",
+       icon: "clipmom"),
 ]
 
 func resourceImage(_ name: String) -> NSImage? {
@@ -81,12 +93,14 @@ struct ContentView: View {
   var body: some View {
     VStack(spacing: 0) {
       header
-      VStack(spacing: 12) {
+      // Две колонки: инструментов стало много, в одну колонку окно не помещается на экран ноутбука.
+      LazyVGrid(columns: [GridItem(.flexible(), spacing: 12, alignment: .top),
+                          GridItem(.flexible(), spacing: 12, alignment: .top)], spacing: 12) {
         ForEach(Array(tools.enumerated()), id: \.element.id) { i, t in ToolRow(tool: t, index: i) }
       }
       .padding(20)
     }
-    .frame(width: 600)
+    .frame(width: 920)
     .fixedSize(horizontal: false, vertical: true)
   }
 
@@ -133,10 +147,8 @@ struct ToolRow: View {
       .opacity(installed ? 1 : 0.45)
 
       VStack(alignment: .leading, spacing: 4) {
-        HStack(spacing: 8) {
-          Text(tool.name).font(.title2.weight(.semibold))
-          status
-        }
+        Text(tool.name).font(.title2.weight(.semibold)).lineLimit(1)
+        status
         Text(tool.blurb).font(.callout).foregroundStyle(.secondary)
           .fixedSize(horizontal: false, vertical: true)
       }
@@ -151,6 +163,7 @@ struct ToolRow: View {
         .help("⌘\(index + 1)")
     }
     .padding(14)
+    .frame(maxHeight: .infinity, alignment: .center)
     .background(.background.secondary, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
     .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(.separator))
     .contextMenu {
@@ -163,8 +176,9 @@ struct ToolRow: View {
 
   @ViewBuilder var status: some View {
     if !installed {
-      Label("не установлено — ./install.sh в папке проекта", systemImage: "exclamationmark.triangle.fill")
+      Label("не установлено", systemImage: "exclamationmark.triangle.fill")
         .font(.caption).foregroundStyle(.orange)
+        .help("Запустите ./install.sh в папке проекта")
     } else if running {
       HStack(spacing: 4) {
         Circle().fill(.green).frame(width: 7, height: 7)

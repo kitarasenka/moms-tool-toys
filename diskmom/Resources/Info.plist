@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>DiskMom</string>
+    <key>CFBundleDisplayName</key>
+    <string>DiskMom</string>
+    <key>CFBundleIdentifier</key>
+    <string>local.diskmom</string>
+    <key>CFBundleExecutable</key>
+    <string>DiskMom</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleVersion</key>
+    <string>1</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>ru</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>ru</string>
+    </array>
+    <key>LSMinimumSystemVersion</key>
+    <string>14.0</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.utilities</string>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSSupportsAutomaticTermination</key>
+    <false/>
+    <key>NSDesktopFolderUsageDescription</key>
+    <string>DiskMom считает, сколько места занимают файлы на Рабочем столе, и ищет среди них дубликаты.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>DiskMom считает, сколько места занимают Документы, и ищет среди них дубликаты.</string>
+    <key>NSDownloadsFolderUsageDescription</key>
+    <string>DiskMom считает, сколько места занимают Загрузки, и ищет среди них дубликаты.</string>
+    <key>NSRemovableVolumesUsageDescription</key>
+    <string>DiskMom показывает, чем занят внешний диск, если вы выбрали его для карты или поиска дубликатов.</string>
+    <key>NSNetworkVolumesUsageDescription</key>
+    <string>DiskMom показывает, чем занят сетевой диск, если вы выбрали его для карты или поиска дубликатов.</string>
+</dict>
+</plist>
