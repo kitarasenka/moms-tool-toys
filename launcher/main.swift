@@ -33,7 +33,22 @@ let tools = [
   Tool(id: "local.clipmom", name: "Clip",
        blurb: "История буфера обмена: всё скопированное под рукой, поиск, закрепление, быстрая панель ⇧⌘V.",
        icon: "clipmom"),
+  Tool(id: "local.helpmom", name: "Help",
+       blurb: "Позвать на помощь: отчёт о Mac одной кнопкой, звонок или сообщение близким, шпаргалки по частым бедам.",
+       icon: "helpmom"),
+  Tool(id: "local.safetymom", name: "Safety",
+       blurb: "Проверка Mac: защита включена ли, резервные копии, расширения и спам-уведомления браузеров, прокси и DNS.",
+       icon: "safetymom"),
+  Tool(id: "local.keymom", name: "Key",
+       blurb: "Раскладка: исправить «ghbdtn» на «привет» одним сочетанием, язык и Caps Lock видно у курсора.",
+       icon: "keymom"),
+  Tool(id: "local.desktopmom", name: "Desktop",
+       blurb: "Порядок на Рабочем столе: снимки экрана — по папкам месяцев, старые установщики из Загрузок — в Корзину.",
+       icon: "desktopmom"),
 ]
+
+/// ⌘1…⌘9, ⌘0 — для первых десяти инструментов.
+func shortcutKey(_ index: Int) -> String? { index < 9 ? String(index + 1) : index == 9 ? "0" : nil }
 
 func resourceImage(_ name: String) -> NSImage? {
   Bundle.main.url(forResource: name, withExtension: "png").flatMap(NSImage.init(contentsOf:))
@@ -93,14 +108,14 @@ struct ContentView: View {
   var body: some View {
     VStack(spacing: 0) {
       header
-      // Две колонки: инструментов стало много, в одну колонку окно не помещается на экран ноутбука.
-      LazyVGrid(columns: [GridItem(.flexible(), spacing: 12, alignment: .top),
-                          GridItem(.flexible(), spacing: 12, alignment: .top)], spacing: 12) {
+      // Три колонки: инструментов много, в одну-две колонки окно не помещается на экран ноутбука.
+      LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 12, alignment: .top), count: 3),
+                spacing: 12) {
         ForEach(Array(tools.enumerated()), id: \.element.id) { i, t in ToolRow(tool: t, index: i) }
       }
       .padding(20)
     }
-    .frame(width: 920)
+    .frame(width: 1180)
     .fixedSize(horizontal: false, vertical: true)
   }
 
@@ -177,8 +192,7 @@ struct ToolRow: View {
         .buttonStyle(.borderedProminent)
         .controlSize(.large)
         .disabled(!installed)
-        .keyboardShortcut(KeyEquivalent(Character(String(index + 1))), modifiers: .command)
-        .help("⌘\(index + 1)")
+        .modifier(ToolShortcut(key: shortcutKey(index)))
     }
     .padding(14)
     .frame(maxHeight: .infinity, alignment: .center)
@@ -202,6 +216,17 @@ struct ToolRow: View {
         Circle().fill(.green).frame(width: 7, height: 7)
         Text("запущено").font(.caption).foregroundStyle(.secondary)
       }
+    }
+  }
+}
+
+struct ToolShortcut: ViewModifier {
+  let key: String?
+  func body(content: Content) -> some View {
+    if let key, let ch = key.first {
+      content.keyboardShortcut(KeyEquivalent(ch), modifiers: .command).help("⌘\(key)")
+    } else {
+      content
     }
   }
 }

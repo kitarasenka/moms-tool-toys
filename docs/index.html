@@ -167,6 +167,33 @@ details.tree .kids{padding-left:18px}
 .step span{color:var(--ink2);font-size:15px}
 footer{padding:40px 0 60px;color:var(--muted);font-size:14px;text-align:center}
 
+/* KeyMom */
+.kbar{display:flex;justify-content:flex-end;align-items:center;gap:12px;background:var(--bar);border-radius:8px;padding:5px 12px;font-size:12.5px;margin-bottom:12px;color:var(--ink2)}
+.kind{font-weight:800;color:var(--ink);padding:1px 7px;border-radius:5px;background:color-mix(in srgb,var(--blue) 22%,transparent);transition:background .2s}
+.kind.caps{background:color-mix(in srgb,var(--warn) 32%,transparent)}
+.kp{position:absolute;display:flex;gap:10px;align-items:center;padding:8px 14px;border-radius:14px;color:#fff;background:linear-gradient(135deg,#33c7ff,#126bed);box-shadow:0 10px 24px -8px rgba(0,0,0,.45);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity .18s,transform .18s;z-index:4;max-width:280px}
+.kp.show{opacity:1;transform:none}
+.kp b{font-size:17px;display:block;line-height:1.2}.kp small{display:block;font-size:11.5px;opacity:.92;line-height:1.3}
+.kp.ok{background:linear-gradient(135deg,#4dd173,#1f9959)}.kp.caps{background:linear-gradient(135deg,#ffa940,#f08a00)}.kp.warn{background:linear-gradient(135deg,#ff7a45,#e5484d)}
+.kfield{width:100%;font:inherit;font-size:16px;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--win);color:var(--ink)}
+.kfield:focus{outline:2px solid color-mix(in srgb,var(--sel) 55%,transparent);outline-offset:0}
+.kkey{display:inline-grid;place-items:center;min-width:34px;height:30px;padding:0 9px;border-radius:7px;background:var(--win);box-shadow:0 2px 0 var(--line),0 0 0 1px var(--line);font-weight:600;font-size:13px}
+.kout{border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line));background:color-mix(in srgb,var(--blue) 7%,var(--win));border-radius:10px;padding:12px;min-height:70px;font-size:15px;white-space:pre-wrap;word-break:break-word}
+/* DesktopMom */
+.dm-desk{position:relative;min-height:190px;border-radius:12px;overflow:hidden;padding:10px 128px 10px 10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px 2px;background:linear-gradient(135deg,#7aa7ff 0%,#a68cf5 45%,#f29ab8 100%)}
+.dm-f{width:60px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:6px;color:#fff;font-size:10px;line-height:1.2;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .7s cubic-bezier(.5,0,.3,1),opacity .7s;will-change:transform}
+.dm-f .th{width:38px;height:30px;display:grid;place-items:center;font-size:27px;text-shadow:none}
+.dm-f .shot{width:38px;height:26px;border-radius:3px;background:linear-gradient(#e9eef7 0 5px,#fff 5px);box-shadow:0 1px 3px rgba(0,0,0,.35);position:relative}
+.dm-f .shot::after{content:"";position:absolute;left:5px;right:12px;top:9px;height:3px;border-radius:2px;background:#9fb4d8;box-shadow:0 6px 0 #cfd9ea,0 12px 0 #cfd9ea}
+.dm-f .nm{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.dm-f.pop{animation:dmpop .45s ease-out}
+@keyframes dmpop{from{transform:scale(.3);opacity:0}}
+.dm-target{position:absolute;right:10px;top:10px;width:108px;padding:8px 4px;border:2px dashed rgba(255,255,255,.75);border-radius:12px;color:#fff;text-align:center;font-size:11.5px;line-height:1.25;text-shadow:0 1px 2px rgba(0,0,0,.4);transition:transform .2s}
+.dm-target .fd{font-size:34px;text-shadow:none}
+.dm-target b{display:block;font-size:20px}
+.dm-target.bump{transform:scale(1.08)}
+.dm-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width:700px){.dm-cols{grid-template-columns:1fr}.dm-desk{padding-right:12px;padding-bottom:110px}.dm-target{top:auto;bottom:10px}}
 @media (max-width:980px){.stage{grid-template-columns:1fr}}
 @media (max-width:760px){
   .wrap{padding:0 16px}
@@ -925,6 +952,557 @@ function clipSettings(p) {
     <div class="item"><span class="grow">История хранится только на этом Mac, в сеть ничего не уходит.</span><button class="ui-btn red" onclick="toast('История очищена (в демо — понарошку)')">Очистить историю…</button></div></div>`;
 }
 
+/* ================= HelpMom ================= */
+const helpRep = {serial: false, findings: [
+  {id: 'disk', lvl: 'warn', t: 'Мало места на диске (18,4 ГБ)', a: 'Стоит освободить место: Корзина, Загрузки, старые видео.', fix: 'Освободили 12 ГБ'},
+  {id: 'up', lvl: 'warn', t: 'Mac не перезагружали 12 дней', a: 'Перезагрузка раз в неделю помогает, если Mac стал медленнее.', fix: 'Mac перезагружен'},
+  {id: 'crash', lvl: 'warn', t: '«Safari» часто вылетает (3 раза за неделю)', a: 'Обновите это приложение или переустановите его.', fix: 'Safari обновлён'},
+  {id: 'upd', lvl: 'warn', t: 'Есть обновления: macOS Sequoia 15.7', a: 'Установите их в «Системные настройки → Основные → Обновление ПО».', fix: 'Обновления установлены'}]};
+function helpVerdict() {
+  const f = helpRep.findings, bad = f.some(x => x.lvl === 'bad');
+  return f.length === 0 ? ['ok', 'Всё в порядке', 'Mac в хорошей форме. Если что-то всё равно не так — позовите помощника.']
+    : bad ? ['bad', 'Нужна помощь', 'Лучше показать этот отчёт помощнику:'] : ['warn', 'Есть на что посмотреть', 'Ничего страшного, но кое-что стоит сделать:'];
+}
+function helpText() {
+  const [, h] = helpVerdict(), mark = {ok: '✅', warn: '⚠️', bad: '❗'};
+  const up = helpRep.findings.some(x => x.id === 'up') ? '12 дней 3 ч' : '4 мин';
+  const free = helpRep.findings.some(x => x.id === 'disk') ? '18,4 ГБ из 245 ГБ (8 %)' : '30,4 ГБ из 245 ГБ (12 %)';
+  return [`Отчёт HelpMom — ${new Date().toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'})}, ${hhmm()}`, 'Компьютер: MacBook Air — Мама', '',
+    `${helpRep.findings.length ? '⚠️' : '✅'} ${h}`, ...helpRep.findings.map(x => `${mark[x.lvl]} ${x.t}. ${x.a}`), '',
+    'Mac: MacBook Air (13-inch, M2, 2022) (Mac14,2)', 'Процессор: Apple M2 · Память: 8 ГБ', ...(helpRep.serial ? ['Серийный номер: C02XK1ABJG5J'] : []),
+    'Система: macOS 15.6 Sequoia (24G84)', `Работает без перезагрузки: ${up}`, `Диск: свободно ${free}`, 'Память: нагрузка нормальная',
+    'Батарея: 76 %, от батареи; здоровье 88 %, 312 циклов', 'Сеть: Wi-Fi, интернет есть; адрес 192.168.1.23', '',
+    'Больше всего грузят процессор:', '  1. Google Chrome — 46 % ЦП, 2,3 ГБ', '  2. Zoom — 8 % ЦП, 520 МБ', '',
+    helpRep.findings.some(x => x.id === 'crash') ? 'Сбои за 7 дней:\n  Safari — вылетало: 3 раза, последний сегодня' : 'Сбоев приложений за 7 дней: нет'].join('\n');
+}
+function helpReport(p) {
+  tools('<button class="ui-btn" id="hRef">Обновить</button>');
+  const draw = () => {
+    const [lvl, h, sub] = helpVerdict(), col = {ok: 'var(--ok)', warn: 'var(--warn)', bad: 'var(--bad)'}[lvl];
+    const light = ['bad', 'warn', 'ok'].map(l => `<i style="display:block;width:13px;height:13px;border-radius:50%;margin:3px 0;background:${l === lvl ? col : 'rgba(128,128,128,.3)'};${l === lvl ? `box-shadow:0 0 8px ${col}` : ''}"></i>`).join('');
+    p.innerHTML = `<div class="card" style="border:1px solid color-mix(in srgb,${col} 40%,transparent);background:color-mix(in srgb,${col} 9%,var(--side));margin-bottom:12px">
+      <div class="row" style="gap:14px;flex-wrap:nowrap"><span style="background:#222;border-radius:9px;padding:4px 6px">${light}</span><div><div style="font-size:22px;font-weight:700;letter-spacing:-.02em">${h}</div><div class="muted">${sub}</div></div></div>
+      ${helpRep.findings.length ? `<div class="list" style="margin-top:10px">${helpRep.findings.map((f, i) => `<div class="item" style="background:var(--win)"><span style="color:var(--warn)">⚠️</span><div class="grow"><div class="ttl">${f.t}</div><div class="meta">${f.a}</div></div><button class="ui-btn" data-f="${i}">Сделано</button></div>`).join('')}</div>` : ''}</div>
+      <div class="row" style="margin-bottom:8px"><button class="ui-btn pri" id="hCopy">Скопировать отчёт</button><button class="ui-btn" id="hSave">Сохранить на Рабочий стол</button><button class="ui-btn" id="hSend">Отправить…</button>
+      <label class="row" style="gap:6px;font-size:12.5px"><input type="checkbox" class="chk" id="hSer" ${helpRep.serial ? 'checked' : ''}>добавить серийный номер</label></div>
+      <div class="cards" style="margin-bottom:12px"><div class="card"><div class="k">Mac</div><div class="v" style="font-size:17px">MacBook Air M2</div><div class="s">память 8 ГБ</div></div>
+      <div class="card"><div class="k">Система</div><div class="v" style="font-size:17px">macOS 15.6</div><div class="s">Sequoia</div></div>
+      <div class="card"><div class="k">Диск</div><div class="v" style="font-size:17px">${helpRep.findings.some(x => x.id === 'disk') ? '18,4' : '30,4'} ГБ</div><div class="s">свободно из 245 ГБ</div></div>
+      <div class="card"><div class="k">Батарея</div><div class="v" style="font-size:17px">76 %</div><div class="s">здоровье 88 %</div></div></div>
+      <div class="k muted" style="font-size:12px;margin-bottom:4px">Так отчёт увидит помощник:</div>
+      <pre style="background:var(--side);border-radius:10px;padding:10px 12px;font-size:12px;white-space:pre-wrap;margin:0">${esc(helpText())}</pre>`;
+    $$('[data-f]', p).forEach(b => b.onclick = () => { const f = helpRep.findings.splice(+b.dataset.f, 1)[0]; toast(f.fix + ' (в демо — понарошку)'); draw(); });
+    $('#hCopy').onclick = () => toast('Отчёт скопирован — вставьте его в сообщение (⌘V)');
+    $('#hSave').onclick = () => toast('Сохранено на Рабочий стол: «Отчёт о Mac.txt»');
+    $('#hSend').onclick = () => toast('Откроется меню «Поделиться»: Сообщения, Почта, Telegram…');
+    $('#hSer').onchange = e => { helpRep.serial = e.target.checked; draw(); };
+  };
+  $('#hRef').onclick = () => { toast('Mac проверен заново'); draw(); };
+  draw();
+}
+const helpPeople = [{n: 'Маша', c: '+7 999 123-45-67 · @masha_k', tg: true}, {n: 'Дима', c: 'dima@example.com', tg: false}];
+function helpCall(p) {
+  tools('<button class="ui-btn" id="hAdd">+ Помощник</button>');
+  let adding = false;
+  const draw = () => {
+    p.innerHTML = (adding ? `<div class="item" style="margin-bottom:10px;flex-wrap:wrap"><input class="search" id="hN" placeholder="Имя, например Лена" style="width:160px"><input class="search" id="hP" placeholder="Телефон или e-mail" style="width:170px"><button class="ui-btn pri" id="hOk">Добавить</button><button class="ui-btn" id="hNo">Отмена</button></div>` : '')
+      + `<div class="list">${helpPeople.map((h, i) => `<div class="item" style="flex-direction:column;align-items:stretch;gap:10px"><div class="row" style="flex-wrap:nowrap">
+        <span style="width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:18px;background:linear-gradient(135deg,#33c7ff,#126bed)">${esc(h.n[0])}</span>
+        <div class="grow"><div class="ttl" style="font-size:16px">${esc(h.n)}</div><div class="meta">${esc(h.c)}</div></div></div>
+        <div class="row"><button class="ui-btn pri" data-a="video" data-i="${i}">📹 Видеозвонок FaceTime</button><button class="ui-btn" data-a="audio" data-i="${i}">📞 Аудиозвонок</button><button class="ui-btn" data-a="msg" data-i="${i}">💬 Написать</button>${h.tg ? `<button class="ui-btn" data-a="tg" data-i="${i}">✈️ Telegram</button>` : ''}<button class="ui-btn" data-a="rep" data-i="${i}">📄 Отправить отчёт</button></div></div>`).join('')}</div>
+      <div class="card" style="margin-top:12px"><div class="ttl" style="font-weight:700;margin-bottom:6px">Показать экран помощнику</div>
+      <ol style="margin:0;padding-left:20px;line-height:1.6"><li>Позвоните помощнику по <b>FaceTime</b>.</li><li>Когда он ответит — зелёный значок FaceTime в строке меню.</li><li><b>«Поделиться экраном»</b> → щёлкните по экрану или окну.</li><li>Хватит — снова значок → <b>«Остановить общий доступ»</b>.</li></ol>
+      <div class="row" style="margin-top:8px"><button class="ui-btn" data-o="FaceTime">Открыть FaceTime</button><button class="ui-btn" data-o="«Общий экран»">Приложение «Общий экран»</button></div></div>`;
+    const say = {video: h => `Звоним ${h.n} по FaceTime…`, audio: h => `Аудиозвонок: ${h.n}`, msg: h => `Сообщения: «Привет! Можешь помочь с компьютером?» — для ${h.n}`, tg: h => `Открываем чат с ${h.n} в Telegram`, rep: h => `Отчёт о Mac — в сообщение для ${h.n}`};
+    $$('[data-a]', p).forEach(b => b.onclick = () => toast(say[b.dataset.a](helpPeople[b.dataset.i]) + ' (в демо — понарошку)'));
+    $$('[data-o]', p).forEach(b => b.onclick = () => toast(`Открываем ${b.dataset.o}`));
+    if (adding) {
+      $('#hN').focus();
+      $('#hOk').onclick = () => { const n = $('#hN').value.trim(); if (!n) return toast('Введите имя'); helpPeople.push({n, c: $('#hP').value.trim() || 'контакты не указаны', tg: false}); adding = false; toast(`${n} добавлен(а) — список хранится только на этом Mac`); draw(); };
+      $('#hNo').onclick = () => { adding = false; draw(); };
+    }
+  };
+  $('#hAdd').onclick = () => { adding = true; draw(); };
+  draw();
+}
+const helpProbs = [
+  ['📶', 'Не работает интернет', ['Значок Wi-Fi вверху справа: пустой — выберите свою сеть.', 'Выключите и включите Wi-Fi.', 'Перезагрузите роутер: из розетки на 30 секунд.', 'WifiMom покажет, виноват Wi-Fi или провайдер.'], ['Открыть WifiMom', 'Настройки Wi-Fi']],
+  ['🐢', 'Mac тормозит', ['Закройте лишние приложения (⌘Q).', 'Закройте лишние вкладки браузера.', 'Перезагрузите Mac, если давно не перезагружали.'], ['Открыть PerfMom', 'Мониторинг системы']],
+  ['💾', 'Мало места на диске', ['Очистите Корзину.', 'Удалите старые установщики и видео из «Загрузок».', 'CleanerMom уберёт мусор одной кнопкой.'], ['Открыть CleanerMom', 'Открыть DiskMom']],
+  ['🛡️', 'Окна «ваш Mac заражён!»', ['<b>Не звоните</b> по номерам из таких окон — это мошенники.', 'Закройте вкладку ⌘W или завершите браузер.', 'Отключите уведомления этого сайта.', 'Если что-то установили или сказали пароль — сразу зовите помощника.'], ['Завершить зависшее…', 'Позвать на помощь']],
+  ['⌨️', 'Пишет не теми буквами', ['Язык: <b>Control + Пробел</b> или 🌐 внизу слева.', 'Пропал русский — «Источники ввода» → «+» → Русская.', 'БОЛЬШИЕ БУКВЫ — выключите Caps Lock.'], ['Открыть KeyMom', 'Настройки клавиатуры']],
+  ['⏳', 'Приложение зависло', ['Подождите минуту.', '<b>⌥ + ⌘ + Esc</b> → выберите приложение → «Завершить».', 'Или кнопка ниже — HelpMom покажет список.'], ['Завершить зависшее…']],
+  ['📸', 'Снимок экрана', ['<b>⇧⌘3</b> — весь экран.', '<b>⇧⌘4</b> — выделить кусок.', '<b>⇧⌘5</b> — все варианты и видео.'], ['Снимок экрана']],
+  ['🔄', 'Перезагрузить Mac', ['Сохраните документы.', 'Меню  → «Перезагрузить…».', 'Mac не отвечает — держите кнопку питания 10 секунд.'], ['Перезагрузить…']]];
+let helpFq = ['Safari', 'Почта', 'Zoom', 'Фото', 'Google Chrome'];
+function helpProblems(p) {
+  let cur = 0, fq = false;
+  tools('');
+  const draw = () => {
+    const [e, t, steps, acts] = helpProbs[cur];
+    p.innerHTML = `<div class="split"><div class="l">${helpProbs.map(([e2, t2], i) => `<button class="${i === cur ? 'on' : ''}" data-i="${i}"><span>${e2} ${t2}</span></button>`).join('')}</div>
+      <div><div style="font-size:20px;font-weight:700;margin-bottom:10px">${e} ${t}</div>
+      <ol style="margin:0 0 12px;padding-left:22px;line-height:1.7">${steps.map(s => `<li>${s}</li>`).join('')}</ol>
+      <div class="row">${acts.map(a => `<button class="ui-btn${a === 'Позвать на помощь' ? ' pri' : ''}" data-a="${esc(a)}">${a}</button>`).join('')}</div>
+      ${fq ? `<div class="list" style="margin-top:14px"><div class="muted" style="font-size:12px">Какое приложение зависло? Несохранённое в нём пропадёт.</div>${helpFq.map((n, i) => `<div class="item" style="padding:7px 12px">${icon(n, i)}<span class="grow">${n}</span><button class="ui-btn red" data-q="${i}">Завершить</button></div>`).join('')}</div>` : ''}</div></div>`;
+    $$('.l button', p).forEach(b => b.onclick = () => { cur = +b.dataset.i; fq = false; draw(); });
+    $$('[data-a]', p).forEach(b => b.onclick = () => {
+      const a = b.dataset.a;
+      if (a === 'Завершить зависшее…') { fq = true; draw(); }
+      else if (a === 'Позвать на помощь') selectSec(1);
+      else if (a === 'Перезагрузить…') toast('macOS спросит «Перезагрузить?» — в демо понарошку');
+      else toast(a.startsWith('Открыть') ? `${a.replace('Открыть ', '')} откроется, если установлен` : `Открываем «${a}»`);
+    });
+    $$('[data-q]', p).forEach(b => b.onclick = () => { const n = helpFq.splice(+b.dataset.q, 1)[0]; toast(`«${n}» завершено (понарошку)`); draw(); });
+  };
+  draw();
+}
+
+/* ================= SafetyMom =================
+   Вставить в docs/index.html рядом с демо остальных инструментов (например, перед «Launcher»).
+   Использует только существующие хелперы и классы: $, $$, esc, hhmm, later, toast, tools,
+   .list/.item/.pill/.ui-btn/.badge/.cards/.card/.seg/.row/.grow/.muted, переменные --ok/--warn/--bad/--muted/--side. */
+const SF_LV = {ok: ['ok', 'В порядке', 'var(--ok)', '✓'], warn: ['warn', 'Стоит поправить', 'var(--warn)', '!'], bad: ['bad', 'Важно исправить', 'var(--bad)', '✕']};
+const sfPill = (lv, text) => `<span class="pill ${SF_LV[lv][0]}" style="font-size:12px;padding:3px 9px;white-space:nowrap">${esc(text)}</span>`;
+const safety = [
+  {n: 'Резервная копия (Time Machine)', e: '🕘', lv: 'bad', st: 'Последняя — 41 день назад', why: 'Больше месяца без копии: всё, что появилось за это время, некуда будет восстановить.', fix: 'Подключите «Мой диск» — Time Machine сделает копию сама.', okSt: 'Последняя — только что', okWhy: 'Копии делаются на «Мой диск». Если что-то случится, файлы можно будет вернуть.'},
+  {n: 'Обновления macOS', e: '🔄', lv: 'warn', st: 'Есть обновление 26.7.3', why: 'В обновлениях Apple закрывает дыры, через которые могут заразить Mac.', fix: 'Откройте «Обновление ПО» и нажмите «Обновить сейчас» — всё ваше останется на месте.', okSt: 'Всё установлено', okWhy: 'Установлена macOS 26.7.3 — последние исправления на месте.'},
+  {n: 'Файрвол', e: '🔥', lv: 'warn', st: 'Выключен', why: 'Дома за роутером это не страшно, но в кафе, гостинице и аэропорту Mac виден другим устройствам.', fix: 'Включите файрвол — обычным программам он не мешает.', okSt: 'Включён', okWhy: 'Mac не принимает непрошеные подключения из сети.'},
+  {n: 'Удалённый доступ', e: '🖥️', lv: 'warn', st: 'Включён общий экран', why: 'С другого компьютера можно управлять этим Mac.', fix: 'Если вы это не включали сами — выключите. Мошенники «из техподдержки банка» часто просят включить именно это.', okSt: 'Выключен', okWhy: 'К этому Mac нельзя подключиться по сети.'},
+  {n: 'Шифрование диска (FileVault)', e: '🔐', lv: 'ok', st: 'Включено', why: 'Если Mac украдут, без вашего пароля файлы не прочитать.'},
+  {n: 'Проверка программ (Gatekeeper)', e: '✅', lv: 'ok', st: 'Включена', why: 'Перед первым запуском macOS проверяет, что программа подписана и проверена Apple.'},
+  {n: 'Защита системных файлов (SIP)', e: '🛡️', lv: 'ok', st: 'Включена', why: 'Ни одна программа не может испортить системные файлы macOS.'},
+  {n: 'Пароль после сна', e: '🔒', lv: 'ok', st: 'Пароль сразу', why: 'Отошли от Mac — без пароля им не воспользоваться.'},
+  {n: 'Вход без пароля', e: '👤', lv: 'ok', st: 'Выключен', why: 'После включения Mac спрашивает пароль.'},
+  {n: 'Автоматические обновления', e: '⬇️', lv: 'ok', st: 'Включены', why: 'Исправления безопасности и файлы защиты от вирусов приходят сами.'},
+  {n: 'Встроенный антивирус (XProtect)', e: '🧬', lv: 'ok', st: 'Обновлён 6 дней назад', why: 'macOS сама проверяет программы по базе известных вирусов.'},
+];
+function safeChecks(p) {
+  tools('');
+  let busy = false;
+  const order = {bad: 0, warn: 1, ok: 2};
+  const draw = () => {
+    const bad = safety.filter(c => c.lv === 'bad').length, warn = safety.filter(c => c.lv === 'warn').length, ok = safety.length - bad - warn;
+    const lv = bad ? 'bad' : warn ? 'warn' : 'ok';
+    const title = bad ? `Нужно исправить: ${bad} ${bad === 1 ? 'пункт' : 'пункта'}` : warn ? `В целом хорошо, но ${warn} ${warn === 1 ? 'пункт стоит' : 'пункта стоит'} поправить` : 'Mac защищён 🎉';
+    const list = [...safety].map((c, i) => ({c, i})).sort((a, b) => order[a.c.lv] - order[b.c.lv] || a.i - b.i);
+    p.innerHTML = `<div class="item" style="background:color-mix(in srgb,${SF_LV[lv][2]} 12%,var(--side));padding:16px;margin-bottom:10px">
+        <div style="font-size:44px;line-height:1">${lv === 'ok' ? '🛡️' : lv === 'warn' ? '⚠️' : '⛔️'}</div>
+        <div class="grow"><div style="font-size:19px;font-weight:700">${title}</div><div class="muted" style="font-size:12.5px">В порядке ${ok} из ${safety.length} · проверено в ${hhmm()}</div>
+        <div class="row" style="gap:4px;margin-top:6px">${list.map(({c}) => `<span class="dot" style="background:${SF_LV[c.lv][2]}" title="${esc(c.n)}"></span>`).join('')}</div></div>
+        <button class="ui-btn pri" id="sfAgain">${busy ? 'Проверяю…' : 'Проверить снова'}</button></div>
+      <div class="list">${list.map(({c, i}) => `<div class="item" style="align-items:flex-start"><span style="font-size:22px">${c.e}</span><div class="grow">
+        <div class="row" style="justify-content:space-between"><span class="ttl">${esc(c.n)}</span>${sfPill(c.lv, c.st)}</div>
+        <div class="meta" style="font-size:12.5px;margin-top:3px">${esc(c.why)}</div>
+        ${c.lv !== 'ok' && c.fix ? `<div style="margin-top:6px;font-size:12.5px;background:color-mix(in srgb,${SF_LV[c.lv][2]} 10%,transparent);border-radius:8px;padding:7px 9px"><b>Что сделать:</b> ${esc(c.fix)}</div>
+          <button class="ui-btn" style="margin-top:6px" data-fix="${i}">Открыть настройки</button>` : ''}</div></div>`).join('')}</div>
+      <p class="muted" style="font-size:12px">SafetyMom ничего не меняет сам: только показывает и открывает нужное место в Системных настройках.</p>`;
+    $('#sfAgain').onclick = () => { if (busy) return; busy = true; draw(); later(() => { busy = false; draw(); toast('Проверено: 11 пунктов'); }, 900); };
+    $$('[data-fix]', p).forEach(b => b.onclick = () => {
+      const c = safety[b.dataset.fix];
+      toast('Открываем Системные настройки… (в демо — исправляем сами)');
+      later(() => { c.lv = 'ok'; c.st = c.okSt; c.why = c.okWhy; draw(); }, 800);
+    });
+  };
+  draw();
+}
+
+const sfB = {tab: 'n', chromeOpen: true,
+  sites: [
+    {b: 'Google Chrome', h: 'best-prize-today.xyz', lv: 'bad', d: '24 ноября'}, {b: 'Google Chrome', h: 'allow-news-push.top', lv: 'bad', d: '18 ноября'},
+    {b: 'Google Chrome', h: 'recepty-babushki.ru', lv: 'warn', d: '28 сентября'}, {b: 'Google Chrome', h: 'mail.google.com', lv: 'ok', d: '2025'},
+    {b: 'Safari', h: 'lucky-gift.site', lv: 'bad', d: '13 ноября'}, {b: 'Safari', h: 'web.whatsapp.com', lv: 'ok', d: '2024'}],
+  exts: [
+    {b: 'Google Chrome', n: 'Search Manager Pro', lv: 'bad', f: ['видит все сайты', '!меняет прокси', '!поставлено программой', '!не из магазина'], why: 'Может пустить весь интернет через чужой сервер — так подменяют сайты и рекламу.'},
+    {b: 'Google Chrome', n: 'Video Downloader HD', lv: 'bad', f: ['видит все сайты', '!не из магазина'], why: 'Установлено не из магазина расширений — его никто не проверял.'},
+    {b: 'Google Chrome', n: 'AdBlock — блокировщик рекламы', lv: 'ok', f: ['видит все сайты']},
+    {b: 'Google Chrome', n: '1Password — менеджер паролей', lv: 'ok', f: ['видит все сайты', 'связь с программой на Mac']},
+    {b: 'Safari', n: '1Password for Safari', lv: 'ok', f: []}]};
+const SF_WHY = {ok: 'Известный сервис — уведомления от него обычно нужны.', warn: 'Незнакомый сайт. Не помните, что разрешали, — запретите.', bad: 'Похоже на спам: «Ваш Mac заражён!», «Вы выиграли!» и реклама.'};
+function safeBrowsers(p) {
+  tools(`<div class="seg"><button data-t="n">Уведомления от сайтов</button><button data-t="e">Расширения</button></div>`);
+  const draw = () => {
+    $$('#secTools [data-t]').forEach(b => { b.classList.toggle('on', b.dataset.t === sfB.tab); b.onclick = () => { sfB.tab = b.dataset.t; draw(); }; });
+    const head = (b, extra) => `<div class="row" style="margin-bottom:6px">${icon(b, b === 'Safari' ? 1 : 3)}<b class="grow">${b}${b === 'Google Chrome' && sfB.chromeOpen ? ' <span class="muted" style="font-weight:400;font-size:12px">· запущен</span>' : ''}</b>${extra}</div>`;
+    if (sfB.tab === 'n') {
+      p.innerHTML = `<div class="item" style="align-items:flex-start;background:color-mix(in srgb,var(--blue) 12%,var(--side));margin-bottom:10px"><span style="font-size:24px">💬</span><div class="grow"><div class="ttl">Выскакивает «Ваш Mac заражён!» или «Вы выиграли»?</div>
+        <div class="meta" style="font-size:12.5px">Это не macOS и не антивирус, а уведомления от сайта, которому когда-то нажали «Разрешить». Самого вируса нет. Запретите сайту уведомления — и сообщения прекратятся. Ничего не скачивайте и не звоните по номерам из таких окон.</div></div></div>
+        <div class="list">${['Google Chrome', 'Safari'].map(b => {
+          const s = sfB.sites.filter(x => x.b === b), bad = s.filter(x => x.lv !== 'ok'), chrome = b === 'Google Chrome', locked = chrome && sfB.chromeOpen;
+          return `<div class="item" style="display:block">${head(b, bad.length ? sfPill(s.some(x => x.lv === 'bad') ? 'bad' : 'warn', `Похоже на спам: ${s.filter(x => x.lv === 'bad').length}`) : sfPill('ok', s.length ? 'Всё знакомое' : 'Нет разрешений'))}
+            ${locked && bad.length ? `<div class="row" style="font-size:12px;margin:4px 0 8px"><span class="grow muted">Чтобы запретить уведомления, закройте Chrome — он перезапишет настройки при выходе. Вкладки откроются снова.</span><button class="ui-btn" id="sfQuit">Закрыть Google Chrome</button></div>` : ''}
+            ${s.map(x => `<div class="row" style="padding:6px 0;border-top:1px solid var(--line)"><span style="color:${SF_LV[x.lv][2]};font-weight:700;width:14px">${SF_LV[x.lv][3]}</span><div class="grow"><div class="ttl" style="font-weight:600">${esc(x.h)}</div><div class="meta">${SF_WHY[x.lv]} · разрешено ${x.d}</div></div>
+              ${chrome ? `<button class="ui-btn" data-h="${esc(x.h)}" ${locked ? 'disabled title="Сначала закройте Chrome"' : ''}>Запретить</button>` : ''}</div>`).join('') || '<p class="muted" style="margin:4px 0">Ни одному сайту не разрешено присылать уведомления.</p>'}
+            ${chrome && bad.length > 1 ? `<div class="row" style="justify-content:flex-end;margin-top:6px"><button class="ui-btn pri" id="sfAll" ${locked ? 'disabled' : ''}>Запретить все незнакомые (${bad.length})</button></div>` : ''}
+            ${!chrome ? '<p class="muted" style="font-size:12px;margin:6px 0 0">В Safari разрешение снимают в Safari → Настройки → Веб-сайты → Уведомления — SafetyMom подскажет и откроет.</p>' : ''}</div>`; }).join('')}</div>`;
+      const block = hs => { sfB.sites = sfB.sites.filter(x => !hs.includes(x.h)); toast(hs.length === 1 ? `${hs[0]} больше не пришлёт уведомлений` : `${hs.length} сайта больше не пришлют уведомлений. Копия настроек — в папке SafetyMom`); draw(); };
+      $$('[data-h]', p).forEach(b => b.onclick = () => {
+        if (b.dataset.sure) block([b.dataset.h]); else { b.dataset.sure = 1; b.textContent = 'Точно запретить?'; b.classList.add('red'); }
+      });
+      if ($('#sfAll')) $('#sfAll').onclick = () => block(sfB.sites.filter(x => x.b === 'Google Chrome' && x.lv !== 'ok').map(x => x.h));
+      if ($('#sfQuit')) $('#sfQuit').onclick = () => { toast('Chrome закрывается…'); later(() => { sfB.chromeOpen = false; draw(); }, 600); };
+    } else {
+      p.innerHTML = `<p class="muted" style="font-size:12.5px;margin:0 0 10px">SafetyMom ничего не удаляет сам: лишнее расширение удалите на странице расширений браузера. Не помните, что это и зачем, — удаляйте смело.</p>
+        <div class="list">${['Google Chrome', 'Safari'].map(b => { const e = sfB.exts.filter(x => x.b === b), bad = e.filter(x => x.lv === 'bad').length;
+          return `<div class="item" style="display:block">${head(b, `<button class="ui-btn" data-pg="${b}">${b === 'Safari' ? 'Открыть Safari' : 'Страница расширений'}</button>${bad ? sfPill('bad', 'Подозрительных: ' + bad) : sfPill('ok', e.length + ' шт.')}`)}
+            ${e.map(x => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start"><span style="color:${SF_LV[x.lv][2]};font-weight:700;width:14px">${SF_LV[x.lv][3]}</span><div class="grow"><div class="ttl" style="font-weight:600">${esc(x.n)}</div>
+              <div class="row" style="gap:4px;margin-top:3px">${x.f.map(f => `<span class="badge" style="background:${f[0] === '!' ? 'var(--warn)' : 'var(--muted)'};font-weight:600">${esc(f.replace('!', ''))}</span>`).join('')}</div>
+              ${x.why ? `<div class="meta" style="margin-top:3px">${esc(x.why)}</div>` : ''}</div></div>`).join('')}</div>`; }).join('')}</div>`;
+      $$('[data-pg]', p).forEach(b => b.onclick = () => toast(`Открываем ${b.dataset.pg === 'Safari' ? 'Safari → Настройки → Расширения' : 'chrome://extensions'} — там нажмите «Удалить»`));
+    }
+  };
+  draw();
+}
+
+const sfNet = {infected: false};
+function safeNet(p) {
+  tools(`<button class="ui-btn" id="sfInf"></button>`);
+  const draw = () => {
+    const i = sfNet.infected;
+    $('#sfInf').textContent = i ? 'Вернуть как было' : 'Сымитировать рекламный вирус';
+    $('#sfInf').onclick = () => { sfNet.infected = !sfNet.infected; toast(sfNet.infected ? 'Так выглядит Mac после «бесплатного видеоплеера» из интернета' : 'Настройки сети снова в порядке'); draw(); };
+    const card = (e, t, lv, st, body) => `<div class="item" style="display:block"><div class="row" style="margin-bottom:6px"><span style="font-size:20px">${e}</span><b class="grow">${t}</b>${sfPill(lv, st)}</div>${body}</div>`;
+    const line = (lv, a, b) => `<div class="row" style="padding:4px 0;font-size:12.5px;align-items:flex-start"><span style="color:${SF_LV[lv][2]};font-weight:700;width:14px">${SF_LV[lv][3]}</span><code style="min-width:150px">${esc(a)}</code><span class="grow muted">${esc(b)}</span></div>`;
+    p.innerHTML = `<div class="list">
+      ${card('🔀', 'Прокси', i ? 'warn' : 'ok', i ? 'Включён' : 'Не используется', i
+        ? `${line('warn', '127.0.0.1:8899', 'Автонастройка прокси (PAC) — весь интернет идёт через программу на Mac')}<p class="meta" style="margin:4px 0 0">Если вы не ставили VPN — это частый признак рекламной программы: она подсовывает рекламу и может подменять сайты.</p>`
+        : '<div class="meta">Сайты открываются напрямую, без посредника.</div>')}
+      ${card('🪧', 'DNS', i ? 'warn' : 'ok', i ? 'Проверьте' : 'В порядке', `<div class="meta" style="margin-bottom:4px">DNS — «справочная» интернета. Если её подменить, вместо банка может открыться подделка.</div>
+        ${line('ok', '192.168.1.1', 'Ваш роутер — так и должно быть')}${i ? line('warn', '45.13.88.201', 'Незнакомый сервер. Если это не VPN и не провайдер — его могла подставить вредоносная программа.') : line('ok', '1.1.1.1', 'Cloudflare — известный надёжный сервис')}`)}
+      ${card('📄', 'Файл hosts', i ? 'bad' : 'ok', i ? '2 строки' : 'Стандартный', i
+        ? line('bad', 'online.sberbank.ru → 93.184.216.34', 'Сайт банка направлен на чужой адрес — может открываться подделка.') + line('warn', 'swscan.apple.com → 0.0.0.0', 'Закрыт доступ к обновлениям Apple.')
+        : '<div class="meta">Только стандартные строки — никакой сайт не перенаправлен.</div>')}
+      ${card('🪪', 'Профили конфигурации', i ? 'warn' : 'ok', i ? '1 профиль' : 'Нет', i
+        ? `${line('warn', 'Browser Settings', 'Установлен 3 дня назад · без организации')}<p class="meta" style="margin:4px 0 0">Если это домашний Mac и вы не знаете, откуда профиль, — удалите его в Системных настройках.</p>`
+        : '<div class="meta">Профилей нет — никто не менял настройки Mac в обход вас.</div>')}
+      ${card('⏻', 'Что запускается само', 'ok', 'в PerfMom', '<div class="row"><span class="grow meta">Рекламные программы часто прячутся в автозагрузке — её подробно показывает PerfMom.</span><a class="ui-btn" href="#perfmom" style="text-decoration:none;color:inherit">Открыть PerfMom</a></div>')}
+    </div>`;
+  };
+  draw();
+}
+
+/* ================= KeyMom ================= */
+// Одна и та же клавиша в US/ABC и в «Русская – ПК» (вариант Apple в демо не показываем).
+const KM_EN = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./" + '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
+const KM_RU = 'ё1234567890-=йцукенгшщзхъ\\фывапролджэячсмитьбю.' + 'Ё!"№;%:?*()_+ЙЦУКЕНГШЩЗХЪ/ФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,';
+const kmToRu = {}, kmToEn = {};
+[...KM_EN].forEach((c, i) => { if (!(c in kmToRu)) kmToRu[c] = KM_RU[i]; });
+[...KM_RU].forEach((c, i) => { if (!(c in kmToEn)) kmToEn[KM_RU[i]] = KM_EN[i]; });
+const kmLat = /[a-z]/i, kmCyr = /[а-яё]/i;
+function kmDetect(s) {
+  const l = (s.match(/[a-z]/gi) || []).length, c = (s.match(/[а-яё]/gi) || []).length;
+  return !l && !c ? null : (c > l ? 'en' : 'ru');
+}
+// Знаки меняем только в «словах», где есть буквы исходной раскладки: «Привет, ujdjhb» → «Привет, говори».
+function kmConvert(s, to) {
+  const map = to === 'ru' ? kmToRu : kmToEn, src = to === 'ru' ? kmLat : kmCyr;
+  return s.split(/(\s+)/).map(w => src.test(w) ? [...w].map(c => map[c] ?? c).join('') : w).join('');
+}
+const KM_KEYS = [
+  {id: 'sc', label: '⇧⌘ Пробел', keys: ['⇧', '⌘', 'Пробел'], ok: e => (e.metaKey || e.ctrlKey) && e.shiftKey && !e.altKey},
+  {id: 'cs', label: '⌃⇧ Пробел', keys: ['⌃', '⇧', 'Пробел'], ok: e => e.ctrlKey && e.shiftKey && !e.metaKey && !e.altKey},
+  {id: 'os', label: '⌥⇧ Пробел', keys: ['⌥', '⇧', 'Пробел'], ok: e => e.altKey && e.shiftKey && !e.metaKey && !e.ctrlKey},
+  {id: 'coc', label: '⌃⌥⌘ Пробел', keys: ['⌃', '⌥', '⌘', 'Пробел'], ok: e => e.ctrlKey && e.altKey && e.metaKey},
+];
+const km = {lang: 'EN', caps: false, style: 'code', hk: KM_KEYS[0], hud: true, capsHud: true, pwWarn: true, switchLang: true, last: ''};
+const kmFlag = l => l === 'RU' ? '🇷🇺' : '🇺🇸';
+const kmInd = () => (km.style === 'flag' ? kmFlag(km.lang) : km.style === 'icon' ? '⌨︎' : km.lang) + (km.caps ? ' ⇪' : '');
+const kmBar = () => `<div class="kbar"><span>📶</span><span>🔋 87%</span><span class="kind ${km.caps ? 'caps' : ''}" id="kmInd">${kmInd()}</span><span>Чт ${hhmm()}</span></div>`;
+const kmKeys = () => km.hk.keys.map(k => `<span class="kkey">${k}</span>`).join(' + ');
+function kmSync() { const el = $('#kmInd'); if (el) { el.textContent = kmInd(); el.classList.toggle('caps', km.caps); } }
+// Плашка у «курсора»: под элементом anchor внутри wrap (position:relative). ms = 0 — висит, пока не уберут.
+function kmPlaque(wrap, anchor, cls, flag, title, sub, ms = 900) {
+  let el = $('.kp', wrap);
+  if (!el) { el = document.createElement('div'); wrap.appendChild(el); }
+  el.className = 'kp ' + cls;
+  el.innerHTML = `<span style="font-size:22px">${flag}</span><span><b>${esc(title)}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</span>`;
+  const r = anchor.getBoundingClientRect(), w = wrap.getBoundingClientRect();
+  el.style.left = Math.max(0, Math.min(r.left - w.left + 24, w.width - 290)) + 'px';
+  el.style.top = (r.bottom - w.top + 8) + 'px';
+  requestAnimationFrame(() => el.classList.add('show'));
+  clearTimeout(el._t);
+  if (ms) el._t = later(() => el.classList.remove('show'), ms);
+}
+function kmHide(wrap) { const el = $('.kp', wrap); if (el) { clearTimeout(el._t); el.classList.remove('show'); } }
+function kmSwitch(wrap, anchor) {
+  km.lang = km.lang === 'EN' ? 'RU' : 'EN'; kmSync();
+  if (km.hud) kmPlaque(wrap, anchor, '', kmFlag(km.lang), km.lang, km.lang === 'RU' ? 'Русская – ПК' : 'ABC', 800);
+}
+function kmCapsKey(e, wrap, anchor) {
+  if (e.key !== 'CapsLock') return false;
+  const on = e.getModifierState ? e.getModifierState('CapsLock') : !km.caps;
+  if (on !== km.caps) { km.caps = on; kmSync(); if (km.capsHud && wrap) kmPlaque(wrap, anchor, on ? 'caps' : '', '⇪', 'Caps Lock', on ? 'Включён — буквы будут ЗАГЛАВНЫЕ' : 'Выключен', on ? 1400 : 700); }
+  return true;
+}
+// Поле, которое «печатает» в выбранной в демо раскладке — независимо от раскладки посетителя.
+function kmTypeHandler(input) {
+  input.onkeydown = e => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.key.length !== 1) return;
+    let ch = km.lang === 'RU' ? (kmToRu[e.key] ?? e.key) : (kmToEn[e.key] ?? e.key);
+    e.preventDefault();
+    input.setRangeText(ch, input.selectionStart, input.selectionEnd, 'end');
+  };
+}
+
+function keyGuide(p) {
+  tools(`<button class="ui-btn" id="kmLang">⌃ Пробел — сменить раскладку</button>`);
+  km.lang = 'EN';
+  p.innerHTML = `<div id="kmW" style="position:relative">${kmBar()}
+    <div class="muted" style="font-size:12px;margin-bottom:6px">Сообщения — «Лена»</div>
+    <input class="kfield" id="kmIn" value="Привет! Ctujlyz" autocomplete="off" spellcheck="false">
+    <div class="row" style="margin:12px 0"><button class="ui-btn pri" id="kmFix">Исправить</button><span class="muted">или нажмите</span>${kmKeys()}</div>
+    <div class="item" style="display:block"><div class="meta">Попробуйте сами</div><div style="font-size:13.5px;margin-top:4px">
+      1. Сотрите и напечатайте что-нибудь по-русски — поле пока «в английской раскладке», выйдет абракадабра.<br>
+      2. Нажмите ${km.hk.label} — последнее слово исправится, раскладка станет RU.<br>
+      3. Ещё раз — слово вернётся как было. Нужна целая фраза — сначала выделите её.</div></div>
+    <p id="kmLast" class="muted" style="font-size:12.5px;margin-top:10px">${km.last ? '✓ ' + esc(km.last) : ''}</p></div>`;
+  const w = $('#kmW'), inp = $('#kmIn');
+  kmTypeHandler(inp);
+  const fix = () => {
+    let s = inp.selectionStart, e = inp.selectionEnd; const v = inp.value;
+    if (document.activeElement !== inp) { s = e = v.length; }
+    if (s === e) { const m = v.slice(0, s).match(/(\S+)(\s*)$/); if (!m) return kmPlaque(w, inp, '', '🤷', 'Нечего исправлять', 'Поставьте курсор после слова', 1400); s = s - m[0].length; e = s + m[1].length; }
+    const from = v.slice(s, e), to = kmDetect(from);
+    if (!to) return kmPlaque(w, inp, '', '🤷', 'Нечего исправлять', 'Здесь нет букв', 1400);
+    const res = kmConvert(from, to);
+    inp.setRangeText(res, s, e, 'end'); inp.focus();
+    km.last = `${from} → ${res}`; $('#kmLast').textContent = '✓ ' + km.last;
+    if (km.switchLang) { km.lang = to.toUpperCase(); kmSync(); }
+    kmPlaque(w, inp, 'ok', kmFlag(to.toUpperCase()), to.toUpperCase(), 'Исправлено: ' + (res.length > 26 ? res.slice(0, 25) + '…' : res), 1000);
+  };
+  $('#kmFix').onclick = fix;
+  $('#kmLang').onclick = () => kmSwitch(w, inp);
+  clipKeyHandler = e => {
+    if (e.code === 'Space' && km.hk.ok(e)) { e.preventDefault(); fix(); return; }
+    if (e.code === 'Space' && e.ctrlKey && !e.shiftKey && !e.metaKey) { e.preventDefault(); kmSwitch(w, inp); return; }
+    kmCapsKey(e, w, inp);
+  };
+  inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+}
+
+function keyConvert(p) {
+  tools(`<div class="seg" id="kmDir">${[['auto', 'Автоматически'], ['ru', 'EN → RU'], ['en', 'RU → EN']].map(([k, t], i) => `<button data-d="${k}" class="${i ? '' : 'on'}">${t}</button>`).join('')}</div>`);
+  let dir = 'auto';
+  p.innerHTML = `<p class="muted" style="margin:0 0 10px;font-size:13px">Вставьте длинный текст, набранный не в той раскладке, — исправленный появится ниже. Разрешения не нужны.</p>
+    <div class="meta" style="font-weight:600;margin-bottom:4px">Было</div>
+    <textarea class="kfield" id="kmTa" rows="4" style="resize:vertical">Pfdnhf d 10:30 r dhfxe/ Yt pf,elm gjkbc b gfcgjhn!</textarea>
+    <div class="row" style="margin:12px 0 4px"><span class="meta" style="font-weight:600">Стало</span><span class="badge" id="kmB" style="background:var(--blue)"></span></div>
+    <div class="kout" id="kmOut"></div>
+    <div class="row" style="margin-top:12px"><button class="ui-btn pri" id="kmCp">Скопировать</button><button class="ui-btn" id="kmSw">Поставить вместо исходного</button><span class="grow"></span><button class="ui-btn" id="kmCl">Очистить</button></div>`;
+  const ta = $('#kmTa');
+  const draw = () => {
+    const v = ta.value, to = dir === 'auto' ? kmDetect(v) : dir;
+    const res = to ? kmConvert(v, to) : '';
+    $('#kmOut').textContent = to && res !== v ? res : (v ? 'Исправлять нечего — здесь нет букв.' : '');
+    $('#kmB').textContent = to ? (to === 'ru' ? 'EN → RU' : 'RU → EN') : '';
+    $('#kmB').style.display = to ? '' : 'none';
+    return to ? res : null;
+  };
+  ta.oninput = draw;
+  $$('#kmDir button').forEach(b => b.onclick = () => { dir = b.dataset.d; $$('#kmDir button').forEach(x => x.classList.toggle('on', x === b)); draw(); });
+  $('#kmCp').onclick = () => { const r = draw(); if (!r) return toast('Нечего копировать'); navigator.clipboard?.writeText(r).catch(() => {}); toast('Исправленный текст скопирован'); };
+  $('#kmSw').onclick = () => { const r = draw(); if (r) { ta.value = r; dir = 'auto'; $$('#kmDir button').forEach((x, i) => x.classList.toggle('on', !i)); draw(); } };
+  $('#kmCl').onclick = () => { ta.value = ''; draw(); ta.focus(); };
+  draw();
+}
+
+function keyIndicator(p) {
+  tools(`<button class="ui-btn" id="kmCapsB">⇪ Caps Lock</button>`);
+  p.innerHTML = `<div id="kmW" style="position:relative">${kmBar()}
+    <div class="row" style="margin-bottom:12px"><span class="muted" style="font-size:12.5px">В строке меню:</span><div class="seg" id="kmSt">${[['code', 'RU / EN'], ['flag', 'Флажок'], ['icon', 'Значок']].map(([k, t]) => `<button data-s="${k}" class="${k === km.style ? 'on' : ''}">${t}</button>`).join('')}</div>
+      <button class="ui-btn" id="kmLang">⌃ Пробел — сменить раскладку</button></div>
+    <div class="item" style="display:block;max-width:360px;margin:6px auto 0">
+      <div class="ttl" style="margin-bottom:8px">Вход в Госуслуги</div>
+      <input class="kfield" value="mama@example.ru" style="margin-bottom:8px;font-size:14px" readonly>
+      <input class="kfield" id="kmPw" type="password" placeholder="Пароль" style="font-size:14px" autocomplete="off">
+      <div class="row" style="margin-top:10px"><button class="ui-btn pri" id="kmGo">Войти</button><span class="muted" style="font-size:12px">щёлкните в поле пароля и включите Caps Lock</span></div>
+    </div></div>`;
+  const w = $('#kmW'), pw = $('#kmPw');
+  const warn = () => {
+    if (km.pwWarn && km.caps && document.activeElement === pw) kmPlaque(w, pw, 'warn', '⚠️', 'Включён Caps Lock', 'Пароль может не подойти — нажмите ⇪, чтобы выключить', 0);
+    else if ($('.kp.warn', w)) kmHide(w);
+  };
+  const setCaps = on => { km.caps = on; kmSync(); if (document.activeElement === pw) warn(); else if (km.capsHud) kmPlaque(w, $('#kmInd'), on ? 'caps' : '', '⇪', 'Caps Lock', on ? 'Включён — буквы будут ЗАГЛАВНЫЕ' : 'Выключен', on ? 1400 : 700); };
+  $('#kmCapsB').onclick = () => { setCaps(!km.caps); };
+  $('#kmLang').onclick = () => kmSwitch(w, $('#kmInd'));
+  $$('#kmSt button').forEach(b => b.onclick = () => { km.style = b.dataset.s; $$('#kmSt button').forEach(x => x.classList.toggle('on', x === b)); kmSync(); });
+  pw.onfocus = warn; pw.onblur = () => kmHide(w);
+  $('#kmGo').onclick = () => toast(km.caps && pw.value ? 'Пароль не подошёл — был включён Caps Lock' : (pw.value ? 'Добро пожаловать! (понарошку)' : 'Введите пароль'));
+  clipKeyHandler = e => {
+    if (e.key === 'CapsLock') { const on = e.getModifierState ? e.getModifierState('CapsLock') : !km.caps; if (on !== km.caps) setCaps(on); return; }
+    if (e.code === 'Space' && e.ctrlKey && !e.shiftKey && !e.metaKey) { e.preventDefault(); kmSwitch(w, $('#kmInd')); }
+  };
+}
+
+function keySettings(p) {
+  tools('');
+  const t = [['switchLang', 'После исправления переключать раскладку'], ['hud', 'Показывать «RU» / «EN» у курсора при смене раскладки'], ['capsHud', 'Подсказка у курсора, когда включаете Caps Lock'], ['pwWarn', 'Предупреждать в поле пароля, если включён Caps Lock']];
+  p.innerHTML = `<div class="list">
+    <div class="item" style="display:block"><div class="ttl" style="margin-bottom:8px">Сочетание для исправления</div><div class="seg" id="kmHk">${KM_KEYS.map(k => `<button data-k="${k.id}" class="${k === km.hk ? 'on' : ''}">${k.label}</button>`).join('')}</div>
+      <div class="meta" style="margin-top:6px">Все свободны: ⌃ Пробел и ⌃⌥ Пробел — переключение раскладки, ⌘ Пробел — Spotlight, ⇧⌘V — ClipMom.</div></div>
+    <div class="item"><span class="grow">Русская раскладка<div class="meta">от неё зависит, где точка и запятая</div></span><b>Определять самому</b></div>
+    ${t.map(([k, a]) => `<label class="item" style="cursor:pointer"><span class="grow">${a}</span><input type="checkbox" class="switch" data-k="${k}" ${km[k] ? 'checked' : ''}></label>`).join('')}
+    <label class="item" style="cursor:pointer"><span class="grow">Показывать значок в Dock<div class="meta">выключите — KeyMom останется только в строке меню</div></span><input type="checkbox" class="switch" checked></label>
+    <label class="item" style="cursor:pointer"><span class="grow">Запускать при входе</span><input type="checkbox" class="switch" checked></label>
+    <div class="item"><span class="grow">Универсальный доступ<div class="meta">нужен, чтобы заменять текст в других приложениях</div></span><span class="pill ok">Разрешён</span></div></div>`;
+  $$('#kmHk button').forEach(b => b.onclick = () => { km.hk = KM_KEYS.find(k => k.id === b.dataset.k); $$('#kmHk button').forEach(x => x.classList.toggle('on', x === b)); toast(`Теперь исправление — ${km.hk.label}`); });
+  $$('input[data-k]', p).forEach(c => c.onchange = () => { km[c.dataset.k] = c.checked; });
+}
+
+/* ================= DesktopMom ================= */
+const MONTHS = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
+const DESK_G = {doc: 'Документы', img: 'Картинки и фото', media: 'Видео и музыка', pkg: 'Установщики', zip: 'Архивы', dir: 'Папки'};
+const DESK_EMO = {doc: '📄', img: '🖼️', media: '🎬', pkg: '📦', zip: '🗜️', dir: '📁'};
+const p2 = n => String(n).padStart(2, '0');
+const monthOf = t => `${t.getFullYear()}-${p2(t.getMonth() + 1)} ${MONTHS[t.getMonth()]}`;
+const shotFile = t => ({n: `Снимок экрана ${t.getFullYear()}-${p2(t.getMonth() + 1)}-${p2(t.getDate())} в ${p2(t.getHours())}.${p2(t.getMinutes())}.${p2(t.getSeconds())}.png`, g: 'shot', s: rnd(.6, 2.4), t});
+const desk = {files: null, inFolder: 0, capture: false, tidy: new Set()};
+const deskLog = [];
+function deskInit() {
+  if (desk.files) return;
+  const now = Date.now();
+  desk.files = [0, .2, 1, 3, 8, 15, 26, 33, 47, 70, 95, 130].map((d, i) => shotFile(new Date(now - d * 864e5 - i * 3.7e6)));
+  desk.files.push({n: 'Квитанция за свет.pdf', g: 'doc', s: .18}, {n: 'Рецепт пирога от Гали.docx', g: 'doc', s: .05},
+    {n: 'Внуки на даче.jpg', g: 'img', s: 5.1}, {n: 'Поздравление.mp4', g: 'media', s: 86}, {n: 'Zoom.pkg', g: 'pkg', s: 98},
+    {n: 'Фото с юбилея.zip', g: 'zip', s: 410}, {n: 'Новая папка', g: 'dir', s: 12}, {n: 'Новая папка 2', g: 'dir', s: 0});
+  // Чтобы журнал не был пустым: вчерашняя уборка в Загрузках.
+  deskLog.push({f: {n: 'Skype-8.80.dmg', s: 165, age: 700}, from: 'Загрузки', to: 'Корзина', t: 'вчера 18:40', trash: true});
+}
+const deskSize = mbs => mb(mbs);
+function deskMain(p) {
+  deskInit();
+  tools('');
+  const draw = () => {
+    const shots = desk.files.filter(f => f.g === 'shot');
+    const months = {};
+    shots.forEach(f => { const m = monthOf(f.t); months[m] = (months[m] || 0) + 1; });
+    const ms = Object.entries(months).sort((a, b) => b[0].localeCompare(a[0]));
+    const groups = Object.keys(DESK_G).filter(g => desk.files.some(f => f.g === g));
+    const total = desk.files.reduce((a, f) => a + f.s, 0);
+    p.innerHTML = `<div class="cards" style="grid-template-columns:repeat(3,1fr);margin-bottom:10px">
+        <div class="card"><div class="k">На Рабочем столе</div><div class="v">${desk.files.length}</div></div>
+        <div class="card"><div class="k">Снимков экрана</div><div class="v" style="color:${shots.length ? 'var(--warn)' : 'var(--ok)'}">${shots.length}</div></div>
+        <div class="card"><div class="k">Занимает</div><div class="v">${deskSize(total)}</div></div></div>
+      <div class="dm-desk" id="dDesk">${desk.files.map((f, i) => `<div class="dm-f" data-i="${i}" title="${esc(f.n)}">${f.g === 'shot' ? '<span class="th"><i class="shot"></i></span>' : `<span class="th">${DESK_EMO[f.g]}</span>`}<span class="nm">${esc(f.n)}</span></div>`).join('')}
+        <div class="dm-target" id="dTarget"><div class="fd">🗂️</div>Изображения › Снимки экрана<b>${desk.inFolder}</b></div></div>
+      <div class="dm-cols">
+        <div class="item" style="flex-direction:column;align-items:stretch;gap:8px">
+          <div class="ttl">Снимки экрана</div>
+          <button class="ui-btn pri" id="dGo" ${shots.length ? '' : 'disabled'}>Разложить снимки экрана</button>
+          <div class="meta">${shots.length ? ms.slice(0, 3).map(([m, n]) => `📁 ${m} — ${n}`).join('<br>') + (ms.length > 3 ? `<br>и ещё ${ms.length - 3} мес.` : '') : 'На столе снимков нет 🎉'}</div>
+          <label class="row" style="gap:8px;font-size:12.5px"><input type="checkbox" class="switch" id="dCap" ${desk.capture ? 'checked' : ''}>Новые снимки — сразу в папку</label>
+          <button class="ui-btn" id="dShot">📸 Сделать снимок экрана</button>
+        </div>
+        <div class="item" style="flex-direction:column;align-items:stretch;gap:6px">
+          <div class="ttl">Остальное → Документы › Разобрать</div>
+          ${groups.length ? groups.map(g => `<label class="row" style="gap:8px;font-size:12.5px"><input type="checkbox" class="chk" data-g="${g}" ${desk.tidy.has(g) ? 'checked' : ''}><span class="grow">${DESK_G[g]}</span><span class="muted">${desk.files.filter(f => f.g === g).length}</span></label>`).join('')
+            : '<div class="meta">Кроме снимков, на столе ничего нет.</div>'}
+          <button class="ui-btn" id="dTidy" ${desk.tidy.size ? '' : 'disabled'}>Убрать отмеченное</button>
+          <div class="meta">Ничего не удаляется — всё можно вернуть в «Журнале».</div>
+        </div></div>`;
+    const fly = (pick, toTarget, done) => {
+      const tgt = $('#dTarget').getBoundingClientRect();
+      let k = 0;
+      desk.files.forEach((f, i) => {
+        if (!pick(f)) return;
+        const el = $(`[data-i="${i}"]`, p), r = el.getBoundingClientRect();
+        el.style.transitionDelay = (k++ * 35) + 'ms';
+        el.style.transform = toTarget ? `translate(${tgt.left + tgt.width / 2 - r.left - r.width / 2}px,${tgt.top + 20 - r.top}px) scale(.2)` : 'translateY(40px) scale(.4)';
+        el.style.opacity = '0';
+      });
+      later(done, 700 + k * 35);
+    };
+    $('#dGo').onclick = () => {
+      const moved = desk.files.filter(f => f.g === 'shot');
+      fly(f => f.g === 'shot', true, () => {
+        desk.files = desk.files.filter(f => f.g !== 'shot');
+        desk.inFolder += moved.length;
+        moved.forEach(f => deskLog.push({f, from: 'Рабочий стол', to: 'Изображения › Снимки экрана › ' + monthOf(f.t), t: 'сегодня ' + hhmm()}));
+        toast(`Переложено ${moved.length} снимков — по папкам месяцев. Вернуть можно в «Журнале».`);
+        draw();
+      });
+    };
+    $('#dCap').onchange = e => { desk.capture = e.target.checked; toast(desk.capture ? 'Новые снимки будут сохраняться в «Снимки экрана»' : 'Новые снимки снова сохраняются на Рабочий стол'); };
+    $('#dShot').onclick = () => {
+      const f = shotFile(new Date());
+      if (desk.capture) { desk.inFolder++; const t = $('#dTarget'); t.querySelector('b').textContent = desk.inFolder; t.classList.add('bump'); later(() => t.classList.remove('bump'), 220); toast('Снимок сохранён сразу в папку — стол остался чистым'); return; }
+      desk.files.unshift(f); draw(); $('[data-i="0"]', p).classList.add('pop');
+    };
+    $$('[data-g]', p).forEach(c => c.onchange = () => { c.checked ? desk.tidy.add(c.dataset.g) : desk.tidy.delete(c.dataset.g); draw(); });
+    $('#dTidy').onclick = () => {
+      const moved = desk.files.filter(f => desk.tidy.has(f.g));
+      fly(f => desk.tidy.has(f.g), false, () => {
+        desk.files = desk.files.filter(f => !desk.tidy.has(f.g));
+        moved.forEach(f => deskLog.push({f, from: 'Рабочий стол', to: 'Документы › Разобрать › ' + DESK_G[f.g], t: 'сегодня ' + hhmm()}));
+        desk.tidy.clear();
+        toast(`Убрано со стола: ${moved.length}. Всё лежит в «Документы › Разобрать».`);
+        draw();
+      });
+    };
+  };
+  draw();
+}
+
+const dl = [
+  {n: 'googlechrome.dmg', s: 236, age: 210, app: 'Google Chrome', inst: true}, {n: 'zoomusInstallerFull.pkg', s: 98, age: 400, app: 'zoom.us', inst: true},
+  {n: 'Telegram-macOS-11.2.dmg', s: 142, age: 25, app: 'Telegram', inst: true}, {n: 'Skype-8.99.dmg', s: 171, age: 520, inst: true},
+  {n: 'Фото с юбилея.zip', s: 410, age: 118}, {n: 'Сериал 1 серия.mp4', s: 1480, age: 190}, {n: 'Выписка_2025.pdf', s: .4, age: 300},
+  {n: 'Билеты Москва—Сочи.pdf', s: .2, age: 2}, {n: 'инструкция-мультиварка.pdf', s: 7.8, age: 610}, {n: 'Договор аренды.docx', s: .09, age: 1}];
+let dlDays = 90;
+const dlOld = f => f.age > dlDays;
+const dlAgo = d => d < 1 ? 'сегодня' : d < 2 ? 'вчера' : d < 31 ? d + ' дн. назад' : d < 365 ? Math.floor(d / 30) + ' мес. назад' : Math.floor(d / 365) + ' г. назад';
+function deskDownloads(p) {
+  deskInit();
+  let filt = 'all';
+  const sel = new Set();
+  const F = {all: ['Всё', () => true], inst: ['Установщики', f => f.inst], app: ['Установлено', f => f.app], old: ['Давно', dlOld], big: ['Крупные', f => f.s >= 100]};
+  const sugg = () => dl.filter(f => f.app || (f.inst && dlOld(f)));
+  tools(`<select class="ui-btn" id="dlD"><option value="30">давно = месяц</option><option value="90" selected>давно = 3 месяца</option><option value="180">давно = полгода</option><option value="365">давно = год</option></select>`);
+  $('#dlD').value = dlDays;
+  $('#dlD').onchange = e => { dlDays = +e.target.value; draw(); };
+  const draw = () => {
+    const rows = dl.filter(F[filt][1]).sort((a, b) => b.s - a.s);
+    const chosen = dl.filter(f => sel.has(f.n));
+    p.innerHTML = `<div class="row" style="margin-bottom:10px"><div class="seg">${Object.entries(F).map(([k, [t, fn]]) => `<button data-f="${k}" class="${k === filt ? 'on' : ''}">${t} ${dl.filter(fn).length}</button>`).join('')}</div>
+        <span class="grow"></span><button class="ui-btn" id="dlS">Отметить предложенное (${sugg().length})</button></div>
+      <table class="t"><thead><tr><th></th><th>Имя</th><th class="num">Размер</th><th class="num">Последний раз</th></tr></thead><tbody>${rows.map(f => `<tr><td><input type="checkbox" class="chk" data-n="${esc(f.n)}" ${sel.has(f.n) ? 'checked' : ''}></td>
+        <td>${esc(f.n)}${f.app ? ` <span class="badge" style="background:var(--ok)" title="Похоже на «${esc(f.app)}» в Программах — догадка по имени">уже установлено</span>` : ''}${dlOld(f) ? ' <span class="badge" style="background:var(--warn)">давно</span>' : ''}</td>
+        <td class="num">${mb(f.s)}</td><td class="num">${dlAgo(f.age)}</td></tr>`).join('') || '<tr><td colspan="4" class="muted">Здесь пусто</td></tr>'}</tbody></table>
+      <div class="row" style="margin-top:12px"><b>${chosen.length ? `Отмечено: ${chosen.length}, ${mb(chosen.reduce((a, f) => a + f.s, 0))}` : 'Ничего не отмечено'}</b><span class="grow"></span>
+        <button class="ui-btn red" id="dlT" ${chosen.length ? '' : 'disabled'}>В Корзину…</button></div>
+      <p class="muted" style="font-size:12.5px">Установщики после установки не нужны — само приложение уже в «Программах».</p>`;
+    $$('[data-f]', p).forEach(b => b.onclick = () => { filt = b.dataset.f; draw(); });
+    $$('[data-n]', p).forEach(c => c.onchange = () => { c.checked ? sel.add(c.dataset.n) : sel.delete(c.dataset.n); draw(); });
+    $('#dlS').onclick = () => { sugg().forEach(f => sel.add(f.n)); draw(); };
+    $('#dlT').onclick = () => {
+      chosen.forEach(f => { dl.splice(dl.indexOf(f), 1); deskLog.push({f, from: 'Загрузки', to: 'Корзина', t: 'сегодня ' + hhmm(), trash: true}); });
+      sel.clear();
+      toast(`В Корзине: ${chosen.length} файл(ов), ${mb(chosen.reduce((a, f) => a + f.s, 0))}`);
+      draw();
+    };
+  };
+  draw();
+}
+
+function deskJournal(p) {
+  deskInit();
+  tools('');
+  const draw = () => {
+    p.innerHTML = deskLog.length ? `<div class="list">${deskLog.map((e, i) => [e, i]).reverse().map(([e, i]) => `<div class="item"><span style="font-size:20px">${e.trash ? '🗑️' : '📥'}</span>
+        <div class="grow" style="min-width:0"><div class="ttl" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(e.f.n)}</div><div class="meta">${e.from} → ${e.to} · ${e.t}</div></div>
+        ${e.undone ? '<span class="muted">возвращено</span>' : `<button class="ui-btn" data-u="${i}">Вернуть</button>`}</div>`).join('')}</div>`
+      : '<div class="big-scan"><div style="font-size:48px">🕘</div><b>Журнал пуст</b><div class="muted">Разложите снимки на «Рабочем столе» — они появятся здесь.</div></div>';
+    $$('[data-u]', p).forEach(b => b.onclick = () => {
+      const e = deskLog[+b.dataset.u];
+      e.undone = true;
+      if (e.from === 'Загрузки') dl.push(e.f); else { desk.files.push(e.f); if (e.f.g === 'shot') desk.inFolder = Math.max(0, desk.inFolder - 1); }
+      toast(`«${e.f.n}» вернулся: ${e.from}`);
+      draw();
+    });
+  };
+  draw();
+}
+
 /* ================= Launcher ================= */
 const running = new Set(['local.wifimom', 'local.clipmom']);
 function launcherMain(p) {
@@ -932,7 +1510,7 @@ function launcherMain(p) {
   const list = TOOLS.filter(t => t.id !== 'launcher');
   const draw = () => {
     p.innerHTML = `<div class="cards" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr))">${list.map((t, i) => `<button class="card" data-i="${i}" style="border:0;text-align:left;cursor:pointer;display:flex;gap:10px;align-items:flex-start">
-      <img src="img/${t.id}.png" alt="" style="width:44px;height:44px;border-radius:11px"><div><div style="font-weight:700">${t.name.replace('Mom', '')} <span class="dot ${running.has(t.bid) ? 'on' : ''}" title="${running.has(t.bid) ? 'запущено' : ''}"></span></div><div class="s" style="font-size:12px;color:var(--ink2)">${t.tag}</div><div class="muted" style="font-size:11px">⌘${i + 1}</div></div></button>`).join('')}</div>
+      <img src="img/${t.id}.png" alt="" style="width:44px;height:44px;border-radius:11px"><div><div style="font-weight:700">${t.name.replace('Mom', '')} <span class="dot ${running.has(t.bid) ? 'on' : ''}" title="${running.has(t.bid) ? 'запущено' : ''}"></span></div><div class="s" style="font-size:12px;color:var(--ink2)">${t.tag}</div>${i < 10 ? `<div class="muted" style="font-size:11px">⌘${(i + 1) % 10}</div>` : ""}</div></button>`).join('')}</div>
       <p class="row" style="font-size:12.5px;margin:0 0 12px"><a href="https://github.com/kitarasenka/moms-tool-toys">GitHub</a><a href="https://t.me/marstut">Telegram разработчика @marstut</a></p><p class="muted" style="font-size:12.5px">Щёлкните по карточке — приложение «запустится», и демо переключится на него.</p>`;
     $$('[data-i]', p).forEach(b => b.onclick = () => { const t = list[b.dataset.i]; running.add(t.bid); draw(); toast(`Открываем ${t.name}…`); later(() => selectTool(t.id), 700); });
   };
@@ -985,8 +1563,29 @@ const TOOLS = [
     secs: [['История', clipHistory, '<b>Напишите что-нибудь и «скопируйте»</b> — запись появится наверху. А пароль из 1Password ClipMom не запишет.'],
       ['Панель ⇧⌘V', clipPanel, 'Нажмите <b>⇧⌘V</b> прямо на этой странице — откроется панель. Выберите запись стрелками и ↩.'],
       ['Настройки', clipSettings, 'Сколько хранить, какие приложения не записывать, автозапуск.']]},
-  {id: 'launcher', bid: '', name: "Mom's Tool Toys", tag: 'Общий запуск', blurb: 'Одно окно со всеми инструментами: видно, что уже запущено, ⌘1…⌘7 — открыть нужный.',
-    pts: ['Все инструменты в одном окне', 'Зелёная точка — приложение уже запущено', '⌘1…⌘7 — открыть с клавиатуры', 'Ссылки на GitHub и Telegram разработчика — в шапке'],
+  {id: 'helpmom', bid: 'local.helpmom', name: 'HelpMom', tag: 'Позвать на помощь', blurb: 'Одной кнопкой: понятный отчёт о Mac для помощника, звонок по FaceTime и шпаргалки на частые случаи.',
+    pts: ['Отчёт «что у меня за Mac и что с ним» со светофором простыми словами', 'Скопировать, сохранить или отправить отчёт — серийный номер только по галочке', 'Помощники: видеозвонок, сообщение, Telegram одной кнопкой', 'Как показать экран через FaceTime — по шагам', 'Шпаргалки: интернет, тормоза, мошеннические окна, раскладка, зависания', 'Ничего не уходит в сеть само'],
+    secs: [['Отчёт о Mac', helpReport, 'Светофор сверху говорит, всё ли в порядке. <b>Нажмите «Сделано»</b> у замечаний — и он станет зелёным. Галочка добавит серийный номер в отчёт.'],
+      ['Позвать на помощь', helpCall, '<b>Нажмите «Видеозвонок»</b> или «Отправить отчёт». Добавьте своего помощника кнопкой «+ Помощник».'],
+      ['Частые проблемы', helpProblems, 'Выберите проблему слева. В «Приложение зависло» <b>нажмите «Завершить зависшее…»</b>.']]},
+  {id: 'safetymom', bid: 'local.safetymom', name: 'SafetyMom', tag: 'Проверка Mac', blurb: 'Светофор безопасности: всё ли включено, есть ли резервная копия и откуда берутся окна «Ваш Mac заражён!».',
+    pts: ['11 проверок: обновления, FileVault, файрвол, Gatekeeper, Time Machine, пароль после сна…', 'Каждый пункт простыми словами: что это значит и что сделать', 'Сайты, которым разрешены уведомления, — спам видно сразу, запрет одной кнопкой', 'Подозрительные расширения браузеров', 'Прокси, DNS, файл hosts и профили — то, что меняют рекламные вирусы', 'Ничего не меняет сам — только показывает и открывает нужную настройку'],
+    secs: [['Проверка', safeChecks, '<b>Нажмите «Открыть настройки»</b> у жёлтого или красного пункта — в настоящем приложении откроется нужное место в Системных настройках, а здесь пункт станет зелёным.'],
+      ['Браузеры', safeBrowsers, 'Окна «Ваш Mac заражён!» — это уведомления от сайтов. <b>Закройте Chrome и нажмите «Запретить все незнакомые»</b>. Вкладка «Расширения» покажет подозрительные дополнения.'],
+      ['Сеть и профили', safeNet, '<b>Нажмите «Сымитировать рекламный вирус»</b> — так выглядят прокси, DNS и hosts после «бесплатного плеера» из интернета.']]},
+  {id: 'keymom', bid: 'local.keymom', name: 'KeyMom', tag: 'Раскладка', blurb: 'Напечатали «ghbdtn» вместо «привет»? Одно нажатие — и слово исправлено, а раскладка переключена. Плюс язык в строке меню и предупреждение о Caps Lock.',
+    pts: ['⇧⌘ Пробел исправляет последнее слово или выделенный текст в любом приложении', 'Нажали ещё раз — вернулось как было', 'Раскладка сама переключается на нужный язык', 'RU / EN в строке меню и у курсора при переключении', 'Caps Lock: подсказка, а в поле пароля — заметное предупреждение', 'Длинный текст можно исправить в окне и скопировать'],
+    secs: [['Как пользоваться', keyGuide, 'Поле «печатает» в английской раскладке. <b>Нажмите ⇧⌘ Пробел</b> (или «Исправить») — абракадабра станет русским текстом, а индикатор вверху — RU. Нажмите ещё раз — вернётся как было.'],
+      ['Исправить текст', keyConvert, 'Для длинных текстов: <b>вставьте абракадабру</b> — исправленный вариант появится сразу. Направление определяется само.'],
+      ['Индикатор и Caps Lock', keyIndicator, '<b>Щёлкните в поле пароля и нажмите Caps Lock</b> (или кнопку ⇪ вверху) — KeyMom предупредит, что пароль может не подойти. ⌃ Пробел меняет раскладку.'],
+      ['Настройки', keySettings, 'Выберите другое сочетание — раздел «Как пользоваться» будет слушать уже его.']]},
+  {id: 'desktopmom', bid: 'local.desktopmom', name: 'DesktopMom', tag: 'Порядок на столе', blurb: 'Раскладывает снимки экрана по папкам месяцев, убирает со стола остальное и находит в Загрузках то, что уже не нужно. Ничего не удаляет насовсем — и всё можно вернуть.',
+    pts: ['Снимки экрана — в «Изображения › Снимки экрана» по месяцам', 'Новые снимки можно сразу сохранять туда, а не на стол', 'Остальное — по папкам «Документы», «Картинки», «Архивы»…', 'Загрузки: установщики уже установленных приложений и давно забытые файлы', 'Журнал: каждое действие можно отменить кнопкой «Вернуть»'],
+    secs: [['Рабочий стол', deskMain, '<b>Нажмите «Разложить снимки экрана»</b> — они улетят в папку, каждый в свой месяц. Включите «Новые снимки — сразу в папку» и сделайте снимок: стол останется чистым.'],
+      ['Загрузки', deskDownloads, 'Зелёная метка — похожее приложение уже установлено, и установщик не нужен. <b>«Отметить предложенное»</b> выберет лишнее; дальше — «В Корзину».'],
+      ['Журнал', deskJournal, 'Всё, что DesktopMom переложил или отправил в Корзину. <b>«Вернуть»</b> кладёт файл на старое место.']]},
+  {id: 'launcher', bid: '', name: "Mom's Tool Toys", tag: 'Общий запуск', blurb: 'Одно окно со всеми инструментами: видно, что уже запущено, ⌘1…⌘9 и ⌘0 — открыть нужный.',
+    pts: ['Все инструменты в одном окне', 'Зелёная точка — приложение уже запущено', '⌘1…⌘9 и ⌘0 — открыть с клавиатуры', 'Ссылки на GitHub и Telegram разработчика — в шапке'],
     secs: [['Инструменты', launcherMain, '<b>Щёлкните по карточке</b> — демо переключится на это приложение.']]},
 ];
 

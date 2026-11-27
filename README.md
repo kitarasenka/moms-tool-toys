@@ -15,7 +15,11 @@
 | [privacymom/](privacymom/) | PrivacyMom | Приватность: кто имеет доступ к камере, микрофону, экрану и файлам (со сбросом разрешений), включены ли сейчас камера и микрофон, очистка истории и cookies браузеров, сохранённые сети Wi-Fi. Подробности — [privacymom/README.md](privacymom/README.md). |
 | [batterymom/](batterymom/) | BatteryMom | Батарея: здоровье, циклы, ёмкость, история заряда, расход энергии по приложениям, заряд мыши, клавиатуры и AirPods; значок в строке меню. Подробности — [batterymom/README.md](batterymom/README.md). |
 | [clipmom/](clipmom/) | ClipMom | История буфера обмена: текст, ссылки, картинки и файлы, поиск, закрепление, быстрая панель ⇧⌘V, пароли из менеджеров паролей не записываются. Подробности — [clipmom/README.md](clipmom/README.md). |
-| [launcher/](launcher/) | Mom's Tool Toys | Общий запуск: окно с карточками инструментов (Wifi, Perf, Cleaner…), видно, что запущено; ⌘1…⌘7 — открыть инструмент; в шапке — GitHub и Telegram разработчика [@marstut](https://t.me/marstut). |
+| [helpmom/](helpmom/) | HelpMom | Позвать на помощь: отчёт «что у меня за Mac и что с ним» со светофором (скопировать, сохранить, отправить), помощники с FaceTime, Сообщениями и Telegram одной кнопкой, как показать экран, шпаргалки на частые проблемы. Подробности — [helpmom/README.md](helpmom/README.md). |
+| [safetymom/](safetymom/) | SafetyMom | Проверка Mac светофором: обновления, FileVault, файрвол, Gatekeeper, Time Machine, пароль после сна, удалённый доступ; сайты с разрешёнными уведомлениями (откуда «Ваш Mac заражён!») с запретом в один клик, подозрительные расширения браузеров, прокси, DNS, hosts и профили. Подробности — [safetymom/README.md](safetymom/README.md). |
+| [keymom/](keymom/) | KeyMom | Раскладка: «ghbdtn» → «привет» по ⇧⌘ Пробел в любом приложении (выделение или последнее слово, раскладка переключается сама), окно для длинных текстов, RU/EN в строке меню и у курсора, предупреждение о Caps Lock в поле пароля. Подробности — [keymom/README.md](keymom/README.md). |
+| [desktopmom/](desktopmom/) | DesktopMom | Порядок на Рабочем столе и в Загрузках: раскладывает снимки экрана по папкам месяцев, убирает остальное по типам, находит установщики уже установленных приложений и давно забытые файлы; журнал с «Вернуть». Подробности — [desktopmom/README.md](desktopmom/README.md). |
+| [launcher/](launcher/) | Mom's Tool Toys | Общий запуск: окно с карточками инструментов (Wifi, Perf, Cleaner…), видно, что запущено; ⌘1…⌘9 и ⌘0 — открыть инструмент; в шапке — GitHub и Telegram разработчика [@marstut](https://t.me/marstut). |
 
 ## Установка
 
@@ -36,7 +40,8 @@
 ```sh
 wifimom/app/install.sh          # WifiMom.app → /Applications; CLI: wifimom (ссылка в ~/.local/bin)
 perfmom/Scripts/build_app.sh    # perfmom/build/PerfMom.app (в /Applications кладёт ./install.sh)
-<tool>/Scripts/build_app.sh     # cleanermom, diskmom, privacymom, batterymom, clipmom → <tool>/build/<App>.app
+<tool>/Scripts/build_app.sh     # cleanermom, diskmom, privacymom, batterymom, clipmom, helpmom,
+                                # safetymom, keymom, desktopmom → <tool>/build/<App>.app
                                 # (в /Applications их кладёт ./install.sh)
 launcher/install.sh             # Mom's Tool Toys.app → /Applications
 ```

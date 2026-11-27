@@ -11,12 +11,18 @@ One repo, independent macOS tools — no shared code, each builds on its own:
 - `diskmom/` (DiskMom: disk map sunburst, duplicates, volumes), `privacymom/` (PrivacyMom: TCC.db
   permissions + `tccutil reset`, camera/mic indicators, browser history/cookie cleanup, Wi-Fi networks),
   `batterymom/` (BatteryMom: IOKit battery, history, per-app energy, peripherals, menu bar),
-  `clipmom/` (ClipMom: clipboard history, ⇧⌘V panel, menu bar) — same SwiftPM layout as cleanermom,
+  `clipmom/` (ClipMom: clipboard history, ⇧⌘V panel, menu bar), `helpmom/` (HelpMom: Mac report for a
+  helper, FaceTime/Messages/Telegram helpers, cheat-sheets that open sibling tools), `safetymom/` (SafetyMom:
+  security traffic light, browser notification spam + extensions, proxy/DNS/hosts/profiles), `keymom/`
+  (KeyMom: fix wrong-layout text ЙЦУКЕН↔QWERTY by ⇧⌘Space via AX/⌘C⌘V, RU/EN + Caps Lock indicator),
+  `desktopmom/` (DesktopMom: screenshots into month folders, stale installers in Downloads, undo log)
+  — same SwiftPM layout as cleanermom,
   each with `--selftest` (sandboxed; never touches real user data or `NSPasteboard.general`). Details in
   each `README.md`.
 - `launcher/` — «Mom's Tool Toys.app», single-file SwiftUI launcher. Knows tools only by bundle id
   (`tools` in `main.swift`: `local.wifimom`, `local.perfmon.app`, `local.cleanermom`, `local.diskmom`,
-  `local.privacymom`, `local.batterymom`, `local.clipmom` — PerfMom kept its pre-rename id so settings and the
+  `local.privacymom`, `local.batterymom`, `local.clipmom`, `local.helpmom`, `local.safetymom`, `local.keymom`,
+  `local.desktopmom` — PerfMom kept its pre-rename id so settings and the
   System Events permission survive) — adding a tool = new entry there +
   its icon copied in `launcher/install.sh`. Root `./install.sh` installs all of them into /Applications.
 

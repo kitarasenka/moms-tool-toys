@@ -31,7 +31,9 @@ install_built "$ROOT/perfmom/build/PerfMom.app" local.perfmon.app PerfMon.app
 # SwiftPM-инструменты: папка, имя приложения, bundle id
 for spec in "cleanermom CleanerMom local.cleanermom" "diskmom DiskMom local.diskmom" \
             "privacymom PrivacyMom local.privacymom" "batterymom BatteryMom local.batterymom" \
-            "clipmom ClipMom local.clipmom"; do
+            "clipmom ClipMom local.clipmom" "helpmom HelpMom local.helpmom" \
+            "safetymom SafetyMom local.safetymom" "keymom KeyMom local.keymom" \
+            "desktopmom DesktopMom local.desktopmom"; do
   set -- $spec
   echo "━━ $2"
   "$ROOT/$1/Scripts/build_app.sh"

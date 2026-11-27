@@ -28,7 +28,7 @@ iconutil -c icns "$TMP/icon.iconset" -o "$B/Resources/AppIcon.icns"
 sips -z 256 256 "$ROOT/assets/moms-tool-toys.png" --out "$B/Resources/hero.png" >/dev/null
 sips -z 256 256 "$ROOT/wifimom/app/icon.png" --out "$B/Resources/wifimom.png" >/dev/null
 sips -z 256 256 "$ROOT/perfmom/Resources/AppIcon.png" --out "$B/Resources/perfmom.png" >/dev/null
-for t in cleanermom diskmom privacymom batterymom clipmom; do
+for t in cleanermom diskmom privacymom batterymom clipmom helpmom safetymom keymom desktopmom; do
   sips -z 256 256 "$ROOT/$t/Resources/AppIcon.png" --out "$B/Resources/$t.png" >/dev/null
 done
 
