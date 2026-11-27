@@ -18,17 +18,17 @@ enum JobScope: Int, CaseIterable, Sendable {
 
     var title: String {
         switch self {
-        case .userAgent: "Агент пользователя"
-        case .globalAgent: "Агент для всех пользователей"
-        case .daemon: "Системная служба (root)"
+        case .userAgent: String(localized: "Агент пользователя")
+        case .globalAgent: String(localized: "Агент для всех пользователей")
+        case .daemon: String(localized: "Системная служба (root)")
         }
     }
 
     var short: String {
         switch self {
-        case .userAgent: "Пользователь"
-        case .globalAgent: "Все пользователи"
-        case .daemon: "Система"
+        case .userAgent: String(localized: "Пользователь")
+        case .globalAgent: String(localized: "Все пользователи")
+        case .daemon: String(localized: "Система")
         }
     }
 
@@ -71,9 +71,9 @@ struct LaunchJob: Identifiable, Sendable {
 
     var vendor: String {
         guard target != nil else { return "—" }
-        if !programExists { return "Файл не найден" }
-        if isScript { return "Скрипт (\(wrapper ?? "интерпретатор"))" }
-        guard let s = signing else { return "Не удалось проверить" }
+        if !programExists { return String(localized: "Файл не найден") }
+        if isScript { return String(localized: "Скрипт (\(wrapper ?? String(localized: "интерпретатор")))") }
+        guard let s = signing else { return String(localized: "Не удалось проверить") }
         if let team = s.teamID, !s.isApple, let auth = s.authority {
             // «Developer ID Application: Google LLC (EQHXZ8M8AV)» → «Google LLC»
             let name = auth.replacingOccurrences(of: "Developer ID Application: ", with: "")
@@ -156,19 +156,19 @@ enum StartupScanner {
     }
 
     private static func describeTrigger(_ d: [String: Any], scope: JobScope) -> (String, Bool) {
-        if d.isEmpty { return ("Пустой файл — ничего не запускает", false) }
+        if d.isEmpty { return (String(localized: "Пустой файл — ничего не запускает"), false) }
         let keepAlive: Bool = {
             if let b = d["KeepAlive"] as? Bool { return b }
             return d["KeepAlive"] is [String: Any]
         }()
         let runAtLoad = (d["RunAtLoad"] as? Bool) ?? false
-        let atStart = scope == .daemon ? "При загрузке системы" : "При входе в систему"
-        if keepAlive { return (runAtLoad ? "\(atStart), постоянно" : "Постоянно (перезапускается)", true) }
+        let atStart = scope == .daemon ? String(localized: "При загрузке системы") : String(localized: "При входе в систему")
+        if keepAlive { return (runAtLoad ? String(localized: "\(atStart), постоянно") : String(localized: "Постоянно (перезапускается)"), true) }
         if runAtLoad { return (atStart, true) }
-        if d["StartInterval"] != nil || d["StartCalendarInterval"] != nil { return ("По расписанию", true) }
-        if d["WatchPaths"] != nil || d["QueueDirectories"] != nil { return ("При изменении файлов", false) }
-        if d["MachServices"] != nil || d["Sockets"] != nil { return ("По запросу других программ", false) }
-        return ("Вручную", false)
+        if d["StartInterval"] != nil || d["StartCalendarInterval"] != nil { return (String(localized: "По расписанию"), true) }
+        if d["WatchPaths"] != nil || d["QueueDirectories"] != nil { return (String(localized: "При изменении файлов"), false) }
+        if d["MachServices"] != nil || d["Sockets"] != nil { return (String(localized: "По запросу других программ"), false) }
+        return (String(localized: "Вручную"), false)
     }
 
     /// `"label" => disabled|enabled` (на старых системах — true|false, где true = выключено).
@@ -211,7 +211,7 @@ enum LaunchControl {
         var errorDescription: String? {
             switch self {
             case .command(let m): m
-            case .unsafe: "Метка или путь службы содержат недопустимые символы — управлять ей через PerfMom небезопасно."
+            case .unsafe: String(localized: "Метка или путь службы содержат недопустимые символы — управлять ей через PerfMom небезопасно.")
             }
         }
     }
@@ -230,7 +230,7 @@ enum LaunchControl {
         p.waitUntilExit()
         guard p.terminationStatus == 0 else {
             let msg = String(decoding: errData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
-            throw Failure.command(msg.isEmpty ? "launchctl \(args.joined(separator: " ")): код \(p.terminationStatus)" : msg)
+            throw Failure.command(msg.isEmpty ? String(localized: "launchctl \(args.joined(separator: " ")): код \(p.terminationStatus)") : msg)
         }
         return String(decoding: data, as: UTF8.self)
     }
@@ -303,7 +303,7 @@ enum LoginItemsService {
         case OSStatus(errAEEventNotPermitted): return .denied
         case OSStatus(errAEEventWouldRequireUserConsent): return .needsConsent
         case OSStatus(procNotFound): return .unknown
-        default: return .failed("Код \(status)")
+        default: return .failed(String(localized: "Код \(status)"))
         }
     }
 
@@ -369,13 +369,13 @@ enum LoginItemsService {
 
     @MainActor @discardableResult
     private static func run(_ source: String) throws -> NSAppleEventDescriptor {
-        guard let script = NSAppleScript(source: source) else { throw LaunchControl.Failure.command("Некорректный скрипт") }
+        guard let script = NSAppleScript(source: source) else { throw LaunchControl.Failure.command(String(localized: "Некорректный скрипт")) }
         var error: NSDictionary?
         let result = script.executeAndReturnError(&error)
         if let error {
             let code = (error[NSAppleScript.errorNumber] as? Int) ?? 0
-            let msg = (error[NSAppleScript.errorMessage] as? String) ?? "Ошибка AppleScript \(code)"
-            throw LaunchControl.Failure.command(code == -1743 ? "Нет разрешения управлять System Events." : msg)
+            let msg = (error[NSAppleScript.errorMessage] as? String) ?? String(localized: "Ошибка AppleScript \(code)")
+            throw LaunchControl.Failure.command(code == -1743 ? String(localized: "Нет разрешения управлять System Events.") : msg)
         }
         return result
     }

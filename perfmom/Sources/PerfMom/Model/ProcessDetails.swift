@@ -40,14 +40,14 @@ enum ModuleKind: Int, CaseIterable, Sendable {
 
     var title: String {
         switch self {
-        case .executable: "Исполняемый файл"
-        case .dyld: "Загрузчик dyld"
-        case .sharedCache: "Общий кэш dyld"
-        case .framework: "Фреймворки"
-        case .library: "Библиотеки"
-        case .plugin: "Плагины и пакеты"
-        case .font: "Шрифты"
-        case .data: "Прочие отображённые файлы"
+        case .executable: String(localized: "Исполняемый файл")
+        case .dyld: String(localized: "Загрузчик dyld")
+        case .sharedCache: String(localized: "Общий кэш dyld")
+        case .framework: String(localized: "Фреймворки")
+        case .library: String(localized: "Библиотеки")
+        case .plugin: String(localized: "Плагины и пакеты")
+        case .font: String(localized: "Шрифты")
+        case .data: String(localized: "Прочие отображённые файлы")
         }
     }
 
@@ -105,10 +105,10 @@ struct SigningInfo: Sendable {
     var unsigned = false
 
     var summary: String {
-        if unsigned { return "Не подписан" }
+        if unsigned { return String(localized: "Не подписан") }
         if isApple { return "Apple" }
-        if isAdhoc { return "Ad-hoc подпись (без сертификата)" }
-        return authority ?? "Подписан"
+        if isAdhoc { return String(localized: "Ad-hoc подпись (без сертификата)") }
+        return authority ?? String(localized: "Подписан")
     }
 }
 
@@ -248,7 +248,7 @@ enum DetailsLoader {
                 let mode = vi.pvip.vip_vi.vi_stat.vst_mode & S_IFMT
                 let kind: FileKind = mode == S_IFDIR ? .directory : (mode == S_IFCHR || mode == S_IFBLK ? .device : .file)
                 result.append(OpenFile(id: idx, fd: fdLabel, kind: kind,
-                                       title: path.isEmpty ? "(без имени)" : (path as NSString).lastPathComponent,
+                                       title: path.isEmpty ? String(localized: "(без имени)") : (path as NSString).lastPathComponent,
                                        detail: path, path: path.isEmpty ? nil : path))
             case PROX_FDTYPE_SOCKET:
                 var si = socket_fdinfo()
@@ -257,18 +257,18 @@ enum DetailsLoader {
                     let (title, detail) = describe(socket: si)
                     result.append(OpenFile(id: idx, fd: fdLabel, kind: .socket, title: title, detail: detail, path: nil))
                 } else {
-                    result.append(OpenFile(id: idx, fd: fdLabel, kind: .socket, title: "Сокет", detail: "", path: nil))
+                    result.append(OpenFile(id: idx, fd: fdLabel, kind: .socket, title: String(localized: "Сокет"), detail: "", path: nil))
                 }
             case PROX_FDTYPE_PIPE:
-                result.append(OpenFile(id: idx, fd: fdLabel, kind: .pipe, title: "Канал (pipe)", detail: "", path: nil))
+                result.append(OpenFile(id: idx, fd: fdLabel, kind: .pipe, title: String(localized: "Канал (pipe)"), detail: "", path: nil))
             case PROX_FDTYPE_KQUEUE:
-                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: "kqueue", detail: "Очередь событий ядра", path: nil))
+                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: "kqueue", detail: String(localized: "Очередь событий ядра"), path: nil))
             case PROX_FDTYPE_PSHM:
-                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: "Общая память POSIX", detail: "", path: nil))
+                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: String(localized: "Общая память POSIX"), detail: "", path: nil))
             case PROX_FDTYPE_PSEM:
-                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: "Семафор POSIX", detail: "", path: nil))
+                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: String(localized: "Семафор POSIX"), detail: "", path: nil))
             default:
-                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: "Дескриптор", detail: "тип \(fd.proc_fdtype)", path: nil))
+                result.append(OpenFile(id: idx, fd: fdLabel, kind: .other, title: String(localized: "Дескриптор"), detail: String(localized: "тип \(fd.proc_fdtype)"), path: nil))
             }
         }
         return result
@@ -293,20 +293,20 @@ enum DetailsLoader {
             let proto = psi.soi_protocol == IPPROTO_UDP ? "UDP" : "IP"
             var title = "\(proto) \(endpoint(ini, local: true))"
             if ini.insi_fport != 0 { title += " → \(endpoint(ini, local: false))" }
-            return (title, proto == "UDP" ? "Датаграммы" : "")
+            return (title, proto == "UDP" ? String(localized: "Датаграммы") : "")
         case 3: // SOCKINFO_UN
             let un = psi.soi_proto.pri_un
             var path = cString(tuple: un.unsi_addr.ua_sun.sun_path)
             if path.isEmpty { path = cString(tuple: un.unsi_caddr.ua_sun.sun_path) }
-            return (path.isEmpty ? "Unix-сокет" : path, "Локальный Unix-сокет")
+            return (path.isEmpty ? String(localized: "Unix-сокет") : path, String(localized: "Локальный Unix-сокет"))
         case 5: // SOCKINFO_KERN_CTL
-            return ("Управляющий сокет ядра", "kern_ctl")
+            return (String(localized: "Управляющий сокет ядра"), "kern_ctl")
         case 4: // SOCKINFO_KERN_EVENT
-            return ("События ядра", "kern_event")
+            return (String(localized: "События ядра"), "kern_event")
         case 6: // SOCKINFO_NDRV
-            return ("Сетевой драйвер", "ndrv")
+            return (String(localized: "Сетевой драйвер"), "ndrv")
         default:
-            return ("Сокет", "семейство \(psi.soi_family)")
+            return (String(localized: "Сокет"), String(localized: "семейство \(psi.soi_family)"))
         }
     }
 

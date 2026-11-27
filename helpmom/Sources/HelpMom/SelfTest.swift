@@ -104,17 +104,17 @@ enum SelfTest {
 
 enum DemoData {
     static let helpers = [
-        Helper(id: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!, name: "Маша", phone: "+7 999 123-45-67",
+        Helper(id: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!, name: String(localized: "Маша"), phone: "+7 999 123-45-67",
                email: "masha@example.com", telegram: "@masha_k"),
-        Helper(id: UUID(uuidString: "22222222-2222-2222-2222-222222222222")!, name: "Дима", phone: "",
+        Helper(id: UUID(uuidString: "22222222-2222-2222-2222-222222222222")!, name: String(localized: "Дима"), phone: "",
                email: "dima@example.com", telegram: ""),
     ]
 
     static func report(now: Date = Date()) -> SystemReport {
         var r = SystemReport()
         r.collectedAt = now
-        r.computerName = "MacBook Air — Мама"
-        r.userName = "Елена Петровна"
+        r.computerName = String(localized: "MacBook Air — Мама")
+        r.userName = String(localized: "Елена Петровна")
         r.modelName = "MacBook Air (13-inch, M2, 2022)"
         r.modelID = "Mac14,2"
         r.chip = "Apple M2"
@@ -133,8 +133,8 @@ enum DemoData {
             ProcessUsage(name: "Google Chrome", cpu: 46, memory: 2_300_000_000),
             ProcessUsage(name: "WindowServer", cpu: 12, memory: 410_000_000),
             ProcessUsage(name: "Zoom", cpu: 8, memory: 520_000_000),
-            ProcessUsage(name: "Почта", cpu: 3, memory: 260_000_000),
-            ProcessUsage(name: "Фото", cpu: 1, memory: 340_000_000),
+            ProcessUsage(name: String(localized: "Почта"), cpu: 3, memory: 260_000_000),
+            ProcessUsage(name: String(localized: "Фото"), cpu: 1, memory: 340_000_000),
         ]
         r.crashes = [
             CrashEvent(app: "Safari", date: now.addingTimeInterval(-3600 * 5), kind: .crash),

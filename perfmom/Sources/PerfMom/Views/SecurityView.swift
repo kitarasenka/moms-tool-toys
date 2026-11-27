@@ -48,12 +48,12 @@ struct SecurityView: View {
             Divider()
 
             Table(rows, selection: $state.selectedPID, sortOrder: $sortOrder) {
-                TableColumn("Риск", value: \.score) { row in
+                TableColumn(String(localized: "Риск"), value: \.score) { row in
                     RiskBadge(level: row.level, score: row.score)
                 }
                 .width(min: 120, ideal: 150)
 
-                TableColumn("Процесс", value: \.record.name) { row in
+                TableColumn(String(localized: "Процесс"), value: \.record.name) { row in
                     HStack(spacing: 6) {
                         ProcessIcon(path: row.record.path, size: 16)
                         Text(row.record.name).lineLimit(1)
@@ -62,19 +62,19 @@ struct SecurityView: View {
                 }
                 .width(min: 160, ideal: 220)
 
-                TableColumn("Причины", value: \.reasons) { row in
+                TableColumn(String(localized: "Причины"), value: \.reasons) { row in
                     Text(row.reasons)
                         .lineLimit(2)
                         .help(row.record.security.findings.map { "• \($0.title): \($0.detail)" }.joined(separator: "\n"))
                 }
                 .width(min: 220, ideal: 380)
 
-                TableColumn("Подпись", value: \.record.security.signer) { row in
+                TableColumn(String(localized: "Подпись"), value: \.record.security.signer) { row in
                     Text(row.record.security.signer).foregroundStyle(.secondary).lineLimit(1)
                 }
                 .width(min: 110, ideal: 170)
 
-                TableColumn("Путь", value: \.record.path) { row in
+                TableColumn(String(localized: "Путь"), value: \.record.path) { row in
                     Text(row.record.path.isEmpty ? "—" : row.record.path)
                         .foregroundStyle(.secondary)
                         .truncationMode(.middle)
@@ -84,7 +84,7 @@ struct SecurityView: View {
             }
             .contextMenu(forSelectionType: pid_t.self) { pids in
                 if let pid = pids.first, let r = m.byPID[pid] {
-                    Button(state.isTrusted(r) ? "Перестать доверять" : "Доверять этому файлу") { state.toggleTrust(r.path) }
+                    Button(state.isTrusted(r) ? String(localized: "Перестать доверять") : String(localized: "Доверять этому файлу")) { state.toggleTrust(r.path) }
                         .disabled(r.path.isEmpty)
                     Divider()
                     ProcessMenuItems(pid: pid, state: state)
@@ -95,12 +95,12 @@ struct SecurityView: View {
             .overlay {
                 if rows.isEmpty {
                     ContentUnavailableView {
-                        Label(filter == .trusted ? "Нет доверенных файлов" : "Ничего не найдено",
+                        Label(filter == .trusted ? String(localized: "Нет доверенных файлов") : String(localized: "Ничего не найдено"),
                               systemImage: filter == .trusted ? "hand.thumbsup" : "checkmark.shield")
                     } description: {
                         Text(filter == .trusted
-                             ? "Отметьте процесс как доверенный через контекстное меню, если уверены, что это ложное срабатывание."
-                             : "Среди запущенных процессов нет таких, что подходят под фильтр.")
+                             ? String(localized: "Отметьте процесс как доверенный через контекстное меню, если уверены, что это ложное срабатывание.")
+                             : String(localized: "Среди запущенных процессов нет таких, что подходят под фильтр."))
                     }
                 }
             }
@@ -108,7 +108,7 @@ struct SecurityView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Фильтр", selection: $filter) {
-                    ForEach(SecurityFilter.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(SecurityFilter.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
             }
@@ -166,18 +166,18 @@ struct SecuritySummary: View {
             }
             Spacer()
             HStack(spacing: 18) {
-                counter(danger, "Подозрительно", .red)
-                counter(warning, "Внимание", .orange)
-                counter(info, "Замечания", .secondary)
-                if trusted > 0 { counter(trusted, "Доверено", .green) }
+                counter(danger, String(localized: "Подозрительно"), .red)
+                counter(warning, String(localized: "Внимание"), .orange)
+                counter(info, String(localized: "Замечания"), .secondary)
+                if trusted > 0 { counter(trusted, String(localized: "Доверено"), .green) }
             }
         }
     }
 
     private var headline: String {
-        if danger > 0 { return "Найдены подозрительные процессы" }
-        if warning > 0 { return "Есть процессы, на которые стоит посмотреть" }
-        return "Подозрительных процессов не найдено"
+        if danger > 0 { return String(localized: "Найдены подозрительные процессы") }
+        if warning > 0 { return String(localized: "Есть процессы, на которые стоит посмотреть") }
+        return String(localized: "Подозрительных процессов не найдено")
     }
 
     private func counter(_ n: Int, _ title: String, _ color: Color) -> some View {
@@ -200,7 +200,7 @@ struct SecuritySection: View {
     var body: some View {
         let trusted = state.isTrusted(record)
         let a = record.security
-        InspectorSection("Безопасность") {
+        InspectorSection(String(localized: "Безопасность")) {
             HStack {
                 RiskBadge(level: trusted ? .none : a.level, score: trusted ? nil : a.score)
                     .font(.callout.weight(.medium))
@@ -209,9 +209,9 @@ struct SecuritySection: View {
                     Label("Доверенный", systemImage: "hand.thumbsup.fill").font(.caption).foregroundStyle(.green)
                 }
             }
-            KeyValueRow(key: "Подпись", value: a.signer)
+            KeyValueRow(key: String(localized: "Подпись"), value: a.signer)
             if !a.isPlatform {
-                KeyValueRow(key: "Hardened Runtime", value: a.hardenedRuntime ? "Включён" : "Выключен")
+                KeyValueRow(key: "Hardened Runtime", value: a.hardenedRuntime ? String(localized: "Включён") : String(localized: "Выключен"))
             }
             ForEach(a.findings) { f in
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
@@ -246,7 +246,7 @@ struct SecuritySection: View {
                     .help("Сверить хеши всех файлов с подписью и проверить нотаризацию Apple (может занять несколько секунд)")
                 }
                 if !a.findings.isEmpty || trusted {
-                    Button(trusted ? "Перестать доверять" : "Доверять") { state.toggleTrust(record.path) }
+                    Button(trusted ? String(localized: "Перестать доверять") : String(localized: "Доверять")) { state.toggleTrust(record.path) }
                         .disabled(record.path.isEmpty)
                         .help("Отметить файл как доверенный, если это ложное срабатывание")
                 }

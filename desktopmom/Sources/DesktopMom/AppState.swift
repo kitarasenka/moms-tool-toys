@@ -8,9 +8,9 @@ enum Pane: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .desktop: "Рабочий стол"
-        case .downloads: "Загрузки"
-        case .journal: "Журнал"
+        case .desktop: String(localized: "Рабочий стол")
+        case .downloads: String(localized: "Загрузки")
+        case .journal: String(localized: "Журнал")
         }
     }
     var icon: String {
@@ -29,20 +29,20 @@ enum DLFilter: String, CaseIterable, Identifiable {
     var id: String { rawValue }
     var title: String {
         switch self {
-        case .all: "Всё"
-        case .installers: "Установщики"
-        case .installed: "Уже установлено"
-        case .old: "Давно не открывали"
-        case .large: "Крупные"
+        case .all: String(localized: "Всё")
+        case .installers: String(localized: "Установщики")
+        case .installed: String(localized: "Уже установлено")
+        case .old: String(localized: "Давно не открывали")
+        case .large: String(localized: "Крупные")
         }
     }
     var short: String {
         switch self {
-        case .all: "Всё"
-        case .installers: "Установщики"
-        case .installed: "Установлено"
-        case .old: "Давно"
-        case .large: "Крупные"
+        case .all: String(localized: "Всё")
+        case .installers: String(localized: "Установщики")
+        case .installed: String(localized: "Установлено")
+        case .old: String(localized: "Давно")
+        case .large: String(localized: "Крупные")
         }
     }
 }
@@ -178,7 +178,7 @@ final class AppState {
         case .failure(let e):
             self[keyPath: list] = []
             if (e as? ScanError) == .denied { self[keyPath: denied] = true } else {
-                banner = Banner(text: "Не получилось прочитать папку: \(e.localizedDescription)", isError: true)
+                banner = Banner(text: String(localized: "Не получилось прочитать папку: \(e.localizedDescription)"), isError: true)
             }
         }
     }
@@ -200,8 +200,13 @@ final class AppState {
     }
 
     func organizeScreenshots() {
-        let items = screenshots.map { ($0.url, screenshotsBase.appendingPathComponent(Organizer.monthFolder(for: $0.shotDate), isDirectory: true)) }
-        runMoves(items, what: "снимков экрана", where_: pretty(screenshotsBase))
+        let base = screenshotsBase
+        let items = screenshots.map {
+            ($0.url, demo ? base.appendingPathComponent(Organizer.monthFolder(for: $0.shotDate), isDirectory: true)
+                          : Organizer.monthDir(in: base, for: $0.shotDate))
+        }
+        let place = pretty(base)
+        runMoves(items) { n in String(localized: "Переложено \(n) снимков экрана в «\(place)». Вернуть можно в журнале.") }
     }
 
     var tidyCandidates: [Entry] {
@@ -209,12 +214,17 @@ final class AppState {
     }
 
     func tidyOthers() {
-        let items = tidyCandidates.map { ($0.url, roots.inbox.appendingPathComponent($0.group.folderName, isDirectory: true)) }
-        runMoves(items, what: "объектов", where_: pretty(roots.inbox))
+        let inbox = roots.inbox
+        let items = tidyCandidates.map {
+            ($0.url, Paths.folder(in: inbox, localized: $0.group.folderName, russian: $0.group.russianFolderName))
+        }
+        let place = pretty(inbox)
+        runMoves(items) { n in String(localized: "Переложено \(n) объектов в «\(place)». Вернуть можно в журнале.") }
         tidyGroups = []
     }
 
-    private func runMoves(_ items: [(URL, URL)], what: String, where_: String) {
+    /// `done(n)` — итог «Переложено n … в «…»» с правильной формой числа на языке приложения.
+    private func runMoves(_ items: [(URL, URL)], done: @escaping (Int) -> String) {
         guard !items.isEmpty else { return }
         if demo {
             let moved = Set(items.map(\.0))
@@ -224,7 +234,7 @@ final class AppState {
             desktop.removeAll { moved.contains($0.url) }
             journal.add(log)
             journalVersion += 1
-            banner = Banner(text: "Переложено \(items.count) \(what) в «\(where_)». Вернуть можно в журнале.", showJournal: true)
+            banner = Banner(text: done(items.count), showJournal: true)
             return
         }
         let root = roots.desktop, home = roots.home
@@ -232,8 +242,8 @@ final class AppState {
         Task {
             let r = await Task.detached { Organizer.move(items.map { (source: $0.0, destDir: $0.1) }, root: root, home: home) }.value
             record(r, action: .moved)
-            var text = "Переложено \(r.done.count) \(what) в «\(where_)». Вернуть можно в журнале."
-            if !r.failures.isEmpty { text += " Не получилось: \(r.failures.count) — \(r.failures[0].reason)." }
+            var text = done(r.done.count)
+            if !r.failures.isEmpty { text += " " + String(localized: "Не получилось: \(r.failures.count) — \(r.failures[0].reason).") }
             banner = Banner(text: text, isError: r.done.isEmpty, showJournal: !r.done.isEmpty)
             scanDesktop()
         }
@@ -253,17 +263,17 @@ final class AppState {
     }
 
     var captureTitle: String {
-        guard let c = captureLocation else { return "на Рабочий стол" }
-        return "в «\(pretty(c))»"
+        guard let c = captureLocation else { return String(localized: "на Рабочий стол") }
+        return String(localized: "в «\(pretty(c))»")
     }
 
     func saveNewScreenshotsToBase() {
         if demo { captureLocation = screenshotsBase.path; return }
         if ScreenshotLocation.set(screenshotsBase) {
             captureLocation = ScreenshotLocation.current()
-            banner = Banner(text: "Новые снимки экрана будут сохраняться в «\(pretty(screenshotsBase))».")
+            banner = Banner(text: String(localized: "Новые снимки экрана будут сохраняться в «\(pretty(screenshotsBase))»."))
         } else {
-            banner = Banner(text: "Не получилось поменять настройку снимков экрана.", isError: true)
+            banner = Banner(text: String(localized: "Не получилось поменять настройку снимков экрана."), isError: true)
         }
     }
 
@@ -271,7 +281,7 @@ final class AppState {
         if demo { captureLocation = nil; return }
         _ = ScreenshotLocation.reset()
         captureLocation = ScreenshotLocation.current()
-        banner = Banner(text: "Новые снимки экрана снова сохраняются на Рабочий стол.")
+        banner = Banner(text: String(localized: "Новые снимки экрана снова сохраняются на Рабочий стол."))
     }
 
     func chooseScreenshotsBase() {
@@ -280,15 +290,15 @@ final class AppState {
         p.canChooseFiles = false
         p.canCreateDirectories = true
         p.directoryURL = screenshotsBase.deletingLastPathComponent()
-        p.prompt = "Выбрать"
-        p.message = "Куда складывать снимки экрана (внутри будут папки по месяцам)"
+        p.prompt = String(localized: "Выбрать")
+        p.message = String(localized: "Куда складывать снимки экрана (внутри будут папки по месяцам)")
         guard p.runModal() == .OK, let url = p.url else { return }
         guard demo || Paths.isStrictlyInside(url, roots.home) else {
-            banner = Banner(text: "Выберите папку внутри своей домашней папки.", isError: true)
+            banner = Banner(text: String(localized: "Выберите папку внутри своей домашней папки."), isError: true)
             return
         }
         guard demo || !Paths.isStrictlyInside(url, roots.desktop) && Paths.canonical(url) != Paths.canonical(roots.desktop) else {
-            banner = Banner(text: "Папка для снимков не должна быть на самом Рабочем столе.", isError: true)
+            banner = Banner(text: String(localized: "Папка для снимков не должна быть на самом Рабочем столе."), isError: true)
             return
         }
         screenshotsBase = url
@@ -329,7 +339,8 @@ final class AppState {
             journalVersion += 1
             downloads.removeAll { gone.contains($0.id) }
             dlSelected = []
-            banner = Banner(text: "В Корзину перенесено \(Fmt.files(list.count)), \(freed). Освободится после очистки Корзины.", showJournal: true)
+            banner = Banner(text: String(localized: "В Корзину перенесено \(Fmt.files(list.count)), \(freed). Освободится после очистки Корзины."),
+                            showJournal: true)
             return
         }
         let root = roots.downloads
@@ -337,8 +348,8 @@ final class AppState {
         Task {
             let r = await Task.detached { Organizer.trash(list.map(\.url), root: root) }.value
             record(r, action: .trashed)
-            var text = "В Корзину перенесено \(Fmt.files(r.done.count)). Место освободится после очистки Корзины."
-            if !r.failures.isEmpty { text += " Не получилось: \(r.failures.count) — \(r.failures[0].reason)." }
+            var text = String(localized: "В Корзину перенесено \(Fmt.files(r.done.count)). Место освободится после очистки Корзины.")
+            if !r.failures.isEmpty { text += " " + String(localized: "Не получилось: \(r.failures.count) — \(r.failures[0].reason).") }
             banner = Banner(text: text, isError: r.done.isEmpty, showJournal: !r.done.isEmpty)
             dlSelected = []
             scanDownloads()
@@ -361,18 +372,19 @@ final class AppState {
         if demo {
             journal.markUndone(e.id)
             journalVersion += 1
-            banner = Banner(text: "«\(e.name)» вернулся на место.")
+            banner = Banner(text: String(localized: "«\(e.name)» вернулся на место."))
             return
         }
         do {
             try Journal.undo(e, home: roots.home)
             journal.markUndone(e.id)
             journalVersion += 1
-            banner = Banner(text: "«\(e.name)» вернулся в «\(pretty(URL(fileURLWithPath: e.from).deletingLastPathComponent()))».")
+            let place = pretty(URL(fileURLWithPath: e.from).deletingLastPathComponent())
+            banner = Banner(text: String(localized: "«\(e.name)» вернулся в «\(place)»."))
             desktopScanned = false
             downloadsScanned = false
         } catch {
-            banner = Banner(text: "Не получилось вернуть «\(e.name)»: \(Organizer.reason(error)).", isError: true)
+            banner = Banner(text: String(localized: "Не получилось вернуть «\(e.name)»: \(Organizer.reason(error))."), isError: true)
         }
     }
 
@@ -382,7 +394,7 @@ final class AppState {
     }
 
     func reveal(_ url: URL) {
-        guard !demo else { banner = Banner(text: "В демо файлы выдуманные — Finder не откроется."); return }
+        guard !demo else { banner = Banner(text: String(localized: "В демо файлы выдуманные — Finder не откроется.")); return }
         if Paths.exists(url) { NSWorkspace.shared.activateFileViewerSelecting([url]) } else {
             let dir = url.deletingLastPathComponent()
             if Paths.exists(dir) { NSWorkspace.shared.open(dir) }

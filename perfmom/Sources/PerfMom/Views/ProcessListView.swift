@@ -47,6 +47,7 @@ struct ProcessListView: View {
             trafficColumns
             infoColumns
         }
+        .leadingTableScrollPosition()
         .contextMenu(forSelectionType: Int.self) { slots in
             if let pid = rows.pid(slots.first) {
                 ProcessMenuItems(pid: pid, state: state)
@@ -60,7 +61,7 @@ struct ProcessListView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Фильтр", selection: $state.filter) {
-                    ForEach(ProcessFilter.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(ProcessFilter.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .help("Какие процессы показывать")
@@ -70,14 +71,14 @@ struct ProcessListView: View {
     }
     @TableColumnBuilder<Slot, KeyPathComparator<Slot>>
     private var primaryColumns: some TableColumnContent<Slot, KeyPathComparator<Slot>> {
-        TableColumn("Процесс", value: \.record.name) { s in
+        TableColumn(String(localized: "Процесс"), value: \.record.name) { s in
             ProcessNameCell(record: s.record, risk: state.risk(s.record))
         }
         .width(min: 180, ideal: 240)
         .customizationID("name")
         .disabledCustomizationBehavior(.visibility)
 
-        TableColumn("% ЦП", value: \.record.cpu) { s in
+        TableColumn(String(localized: "% ЦП"), value: \.record.cpu) { s in
             Text(Fmt.percent(s.record.cpu))
                 .monospacedDigit()
                 .foregroundStyle(s.record.cpu >= 80 ? Color.red : Color.primary)
@@ -86,7 +87,7 @@ struct ProcessListView: View {
         .width(min: 54, ideal: 64)
         .customizationID("cpu")
 
-        TableColumn("Время ЦП", value: \.record.cpuTime) { s in
+        TableColumn(String(localized: "Время ЦП"), value: \.record.cpuTime) { s in
             Text(Fmt.cpuTime(s.record.cpuTime)).monospacedDigit()
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
@@ -94,14 +95,14 @@ struct ProcessListView: View {
         .customizationID("cpuTime")
         .defaultVisibility(.hidden)
 
-        TableColumn("Память", value: \.record.memory) { s in
+        TableColumn(String(localized: "Память"), value: \.record.memory) { s in
             Text(Fmt.bytes(s.record.memory)).monospacedDigit()
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .width(min: 70, ideal: 84)
         .customizationID("memory")
 
-        TableColumn("Потоки", value: \.record.threadsSort) { s in
+        TableColumn(String(localized: "Потоки"), value: \.record.threadsSort) { s in
             Text(s.record.threads.map(String.init) ?? "—").monospacedDigit()
                 .foregroundStyle(s.record.threads == nil ? .tertiary : .primary)
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -113,25 +114,25 @@ struct ProcessListView: View {
 
     @TableColumnBuilder<Slot, KeyPathComparator<Slot>>
     private var trafficColumns: some TableColumnContent<Slot, KeyPathComparator<Slot>> {
-        TableColumn("Сеть ↓", value: \.record.netInSort) { s in
+        TableColumn(String(localized: "Сеть ↓"), value: \.record.netInSort) { s in
             RateText(value: s.record.netIn)
         }
         .width(min: 70, ideal: 84)
         .customizationID("netIn")
 
-        TableColumn("Сеть ↑", value: \.record.netOutSort) { s in
+        TableColumn(String(localized: "Сеть ↑"), value: \.record.netOutSort) { s in
             RateText(value: s.record.netOut)
         }
         .width(min: 70, ideal: 84)
         .customizationID("netOut")
 
-        TableColumn("Диск: чтение", value: \.record.diskReadSort) { s in
+        TableColumn(String(localized: "Диск: чтение"), value: \.record.diskReadSort) { s in
             RateText(value: s.record.diskRead)
         }
         .width(min: 70, ideal: 84)
         .customizationID("diskRead")
 
-        TableColumn("Диск: запись", value: \.record.diskWriteSort) { s in
+        TableColumn(String(localized: "Диск: запись"), value: \.record.diskWriteSort) { s in
             RateText(value: s.record.diskWrite)
         }
         .width(min: 70, ideal: 84)
@@ -148,13 +149,13 @@ struct ProcessListView: View {
         .width(min: 50, ideal: 60)
         .customizationID("pid")
 
-        TableColumn("Пользователь", value: \.record.user) { s in
+        TableColumn(String(localized: "Пользователь"), value: \.record.user) { s in
             Text(s.record.user).foregroundStyle(s.record.isSystem ? .secondary : .primary)
         }
         .width(min: 70, ideal: 100)
         .customizationID("user")
 
-        TableColumn("Путь", value: \.record.path) { s in
+        TableColumn(String(localized: "Путь"), value: \.record.path) { s in
             Text(s.record.path.isEmpty ? "—" : s.record.path)
                 .foregroundStyle(.secondary)
                 .truncationMode(.middle)

@@ -3,6 +3,58 @@ import Charts
 import SwiftUI
 import UniformTypeIdentifiers
 
+extension View {
+    /// NSTableView зеркалит столбцы, но начинает прокрутку у левого края.
+    @ViewBuilder
+    func leadingTableScrollPosition() -> some View {
+        if L10n.layoutDirection == .rightToLeft {
+            background(TableScrollPosition())
+        } else {
+            self
+        }
+    }
+}
+
+private struct TableScrollPosition: NSViewRepresentable {
+    func makeNSView(context: Context) -> Anchor { Anchor() }
+    func updateNSView(_ nsView: Anchor, context: Context) {}
+
+    final class Anchor: NSView {
+        override func viewDidMoveToWindow() {
+            super.viewDidMoveToWindow()
+            guard window != nil else { return }
+            DispatchQueue.main.async { [weak self] in self?.scrollToLeadingEdge() }
+        }
+
+        private func scrollToLeadingEdge() {
+            var container = superview
+            while let view = container {
+                if let scrollView = tableScrollView(in: view), let table = scrollView.documentView as? NSTableView {
+                    let clip = scrollView.contentView
+                    let start = max(table.bounds.minX, table.bounds.maxX - clip.bounds.width)
+                    clip.scroll(to: NSPoint(x: start, y: clip.bounds.minY))
+                    scrollView.reflectScrolledClipView(clip)
+                    if let header = table.headerView?.superview as? NSClipView {
+                        header.scroll(to: NSPoint(x: clip.bounds.minX, y: header.bounds.minY))
+                    }
+                    return
+                }
+                container = view.superview
+            }
+        }
+
+        private func tableScrollView(in view: NSView) -> NSScrollView? {
+            if let scrollView = view as? NSScrollView, scrollView.documentView is NSTableView {
+                return scrollView
+            }
+            for child in view.subviews {
+                if let found = tableScrollView(in: child) { return found }
+            }
+            return nil
+        }
+    }
+}
+
 // MARK: - Иконки процессов
 
 @MainActor
@@ -103,11 +155,11 @@ struct HistoryChart: View {
                 let offset = capacity - s.values.count
                 ForEach(Array(s.values.enumerated()), id: \.offset) { item in
                     AreaMark(
-                        x: .value("Время", offset + item.offset),
-                        y: .value("Значение", item.element),
+                        x: .value(String(localized: "Время"), offset + item.offset),
+                        y: .value(String(localized: "Значение"), item.element),
                         stacking: stacked ? .standard : .unstacked
                     )
-                    .foregroundStyle(by: .value("Серия", s.name))
+                    .foregroundStyle(by: .value(String(localized: "Серия"), s.name))
                     .opacity(stacked ? 0.75 : 0.18)
                     .interpolationMethod(.monotone)
                 }
@@ -117,11 +169,11 @@ struct HistoryChart: View {
                     let offset = capacity - s.values.count
                     ForEach(Array(s.values.enumerated()), id: \.offset) { item in
                         LineMark(
-                            x: .value("Время", offset + item.offset),
-                            y: .value("Значение", item.element),
-                            series: .value("Серия", s.name)
+                            x: .value(String(localized: "Время"), offset + item.offset),
+                            y: .value(String(localized: "Значение"), item.element),
+                            series: .value(String(localized: "Серия"), s.name)
                         )
-                        .foregroundStyle(by: .value("Серия", s.name))
+                        .foregroundStyle(by: .value(String(localized: "Серия"), s.name))
                         .lineStyle(StrokeStyle(lineWidth: 1.5))
                         .interpolationMethod(.monotone)
                     }

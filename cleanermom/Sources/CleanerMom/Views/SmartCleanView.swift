@@ -9,14 +9,15 @@ struct SmartCleanView: View {
         Group {
             switch junk.phase {
             case .idle: idle
-            case .scanning: progress(title: "Ищу мусор…", detail: "Кэши, журналы, временные файлы, Корзина, загрузки", value: nil)
+            case .scanning: progress(title: String(localized: "Ищу мусор…"), detail: String(localized: "Кэши, журналы, временные файлы, Корзина, загрузки"), value: nil)
             case .ready: ready
             case .cleaning:
-                progress(title: "Очищаю…", detail: "\(junk.cleanedCount) из \(junk.cleaningTotal)",
+                progress(title: String(localized: "Очищаю…"), detail: String(localized: "\(junk.cleanedCount) из \(junk.cleaningTotal)"),
                          value: Double(junk.cleanedCount) / Double(max(junk.cleaningTotal, 1)))
             case .done: done
             }
         }
+        .fillAvailable()
         .navigationTitle("Умная очистка")
         .confirmationDialog("Очистить \(Fmt.bytes(junk.totalSelected))?", isPresented: $confirm) {
             Button("Очистить", role: .destructive) { Task { await junk.clean(); state.refreshSystem() } }
@@ -114,7 +115,7 @@ struct SmartCleanView: View {
                 ForEach(JunkGroup.allCases) { group in
                     let cats = junk.found.filter { $0.group == group }
                     if !cats.isEmpty {
-                        Text(group.rawValue).font(.headline).foregroundStyle(.secondary)
+                        Text(group.title).font(.headline).foregroundStyle(.secondary)
                         LazyVGrid(columns: [GridItem(.adaptive(minimum: 320), spacing: 12)], spacing: 12) {
                             ForEach(cats) { CategoryCard(category: $0) }
                         }
@@ -137,7 +138,7 @@ struct SmartCleanView: View {
             Text("Освобождено \(Fmt.bytes(r.freed))")
                 .font(.system(size: 32, weight: .bold, design: .rounded)).monospacedDigit()
             if r.trashed > 0 {
-                Text("\(Fmt.count(r.trashed, "объект перенесён", "объекта перенесены", "объектов перенесены")) в Корзину — место освободится после её очистки.")
+                Text("\(Fmt.itemsMoved(r.trashed)) в Корзину — место освободится после её очистки.")
                     .foregroundStyle(.secondary)
             }
             if !r.failures.isEmpty {
@@ -214,10 +215,10 @@ enum CleanText {
         let s = junk.selectionSummary
         var parts: [String] = []
         if s.delete > 0 {
-            parts.append("\(Fmt.count(s.delete, "объект", "объекта", "объектов")) (кэши, журналы, временные файлы, Корзина) удалятся сразу — приложения создадут нужное заново.")
+            parts.append(String(localized: "\(Fmt.items(s.delete)) (кэши, журналы, временные файлы, Корзина) удалятся сразу — приложения создадут нужное заново."))
         }
         if s.trash > 0 {
-            parts.append("\(Fmt.count(s.trash, "объект", "объекта", "объектов")) из Загрузок и резервных копий перенесутся в Корзину.")
+            parts.append(String(localized: "\(Fmt.items(s.trash)) из Загрузок и резервных копий перенесутся в Корзину."))
         }
         return parts.joined(separator: "\n")
     }

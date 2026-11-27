@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%lld дней назад</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld дня назад</string>
+			<key>many</key>
+			<string>%lld дней назад</string>
+			<key>one</key>
+			<string>%lld день назад</string>
+			<key>other</key>
+			<string>%lld дня назад</string>
+		</dict>
+	</dict>
+	<key>%lld записей</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld записи</string>
+			<key>many</key>
+			<string>%lld записей</string>
+			<key>one</key>
+			<string>%lld запись</string>
+			<key>other</key>
+			<string>%lld записи</string>
+		</dict>
+	</dict>
+	<key>%lld лет назад</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld года назад</string>
+			<key>many</key>
+			<string>%lld лет назад</string>
+			<key>one</key>
+			<string>%lld год назад</string>
+			<key>other</key>
+			<string>%lld года назад</string>
+		</dict>
+	</dict>
+	<key>%lld месяцев назад</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld месяца назад</string>
+			<key>many</key>
+			<string>%lld месяцев назад</string>
+			<key>one</key>
+			<string>%lld месяц назад</string>
+			<key>other</key>
+			<string>%lld месяца назад</string>
+		</dict>
+	</dict>
+	<key>%lld снимков и записей экрана, %@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@, %@.</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld снимка и записи экрана</string>
+			<key>many</key>
+			<string>%lld снимков и записей экрана</string>
+			<key>one</key>
+			<string>%lld снимок и запись экрана</string>
+			<key>other</key>
+			<string>%lld снимка и записи экрана</string>
+		</dict>
+	</dict>
+	<key>%lld снимков экрана (подпись)</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>снимка экрана</string>
+			<key>many</key>
+			<string>снимков экрана</string>
+			<key>one</key>
+			<string>снимок экрана</string>
+			<key>other</key>
+			<string>снимка экрана</string>
+		</dict>
+	</dict>
+	<key>%lld файлов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld файла</string>
+			<key>many</key>
+			<string>%lld файлов</string>
+			<key>one</key>
+			<string>%lld файл</string>
+			<key>other</key>
+			<string>%lld файла</string>
+		</dict>
+	</dict>
+	<key>Переложено %lld объектов в «%@». Вернуть можно в журнале.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>Переложено %lld объекта в «%@». Вернуть можно в журнале.</string>
+			<key>many</key>
+			<string>Переложено %lld объектов в «%@». Вернуть можно в журнале.</string>
+			<key>one</key>
+			<string>Переложен %lld объект в «%@». Вернуть можно в журнале.</string>
+			<key>other</key>
+			<string>Переложено %lld объекта в «%@». Вернуть можно в журнале.</string>
+		</dict>
+	</dict>
+	<key>Переложено %lld снимков экрана в «%@». Вернуть можно в журнале.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>Переложено %lld снимка экрана в «%@». Вернуть можно в журнале.</string>
+			<key>many</key>
+			<string>Переложено %lld снимков экрана в «%@». Вернуть можно в журнале.</string>
+			<key>one</key>
+			<string>Переложен %lld снимок экрана в «%@». Вернуть можно в журнале.</string>
+			<key>other</key>
+			<string>Переложено %lld снимка экрана в «%@». Вернуть можно в журнале.</string>
+		</dict>
+	</dict>
+	<key>Разложить %lld снимков экрана?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>Разложить %lld снимка экрана?</string>
+			<key>many</key>
+			<string>Разложить %lld снимков экрана?</string>
+			<key>one</key>
+			<string>Разложить %lld снимок экрана?</string>
+			<key>other</key>
+			<string>Разложить %lld снимка экрана?</string>
+		</dict>
+	</dict>
+	<key>Убрать со стола %lld объектов?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>Убрать со стола %lld объекта?</string>
+			<key>many</key>
+			<string>Убрать со стола %lld объектов?</string>
+			<key>one</key>
+			<string>Убрать со стола %lld объект?</string>
+			<key>other</key>
+			<string>Убрать со стола %lld объекта?</string>
+		</dict>
+	</dict>
+	<key>и ещё %lld месяцев</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>и ещё %lld месяца</string>
+			<key>many</key>
+			<string>и ещё %lld месяцев</string>
+			<key>one</key>
+			<string>и ещё %lld месяц</string>
+			<key>other</key>
+			<string>и ещё %lld месяца</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

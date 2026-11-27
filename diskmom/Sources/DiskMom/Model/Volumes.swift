@@ -5,10 +5,20 @@ import Foundation
 
 struct VolumeInfo: Identifiable, Sendable {
     enum Kind: String, Sendable {
-        case internalDisk = "Встроенный"
-        case external = "Внешний"
-        case network = "Сетевой"
-        case diskImage = "Образ диска"
+        case internalDisk = "Встроенный" // l10n:skip
+        case external = "Внешний" // l10n:skip
+        case network = "Сетевой" // l10n:skip
+        case diskImage = "Образ диска" // l10n:skip
+
+        /// Название для интерфейса (rawValue — русское, для `--volumes` в консоли).
+        var title: String {
+            switch self {
+            case .internalDisk: return String(localized: "Встроенный")
+            case .external: return String(localized: "Внешний")
+            case .network: return String(localized: "Сетевой")
+            case .diskImage: return String(localized: "Образ диска")
+            }
+        }
 
         var symbol: String {
             switch self {

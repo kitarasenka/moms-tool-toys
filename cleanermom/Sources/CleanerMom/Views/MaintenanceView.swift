@@ -45,7 +45,7 @@ private struct TaskRow: View {
                         .fixedSize(horizontal: false, vertical: true)
                     switch status {
                     case .done(let d):
-                        Label("Готово в \(d.formatted(date: .omitted, time: .shortened))", systemImage: "checkmark.circle.fill")
+                        Label("Готово в \(d.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)))", systemImage: "checkmark.circle.fill")
                             .font(.caption).foregroundStyle(.green)
                     case .failed(let msg):
                         Label(msg, systemImage: "exclamationmark.triangle.fill")

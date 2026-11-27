@@ -32,12 +32,14 @@ enum CLI {
 
 struct DiskMomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @State private var state = AppState()
+    @State private var state = AppState(demo: CommandLine.arguments.contains("--demo"))
 
     var body: some Scene {
         Window("DiskMom", id: "main") {
             ContentView()
                 .environment(state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 960, minHeight: 620)
                 .task { await LaunchOptions.apply(to: state) }
         }
@@ -72,6 +74,7 @@ enum LaunchOptions {
         let folders = CLI.values("--folder")
         if !folders.isEmpty { state.dupes.folders = folders.map { URL(fileURLWithPath: ($0 as NSString).expandingTildeInPath) } }
         if let m = CLI.value("--min").flatMap(Int64.init) { state.dupes.minSize = m }
+        if let out = CLI.value("--snapshot") { Snapshot.schedule(to: out) }
         guard CommandLine.arguments.contains("--autoscan") else { return }
         switch state.section {
         case .map:
@@ -82,5 +85,25 @@ enum LaunchOptions {
         case .dupes: await state.dupes.scan()
         case .disks: break
         }
+    }
+}
+
+/// `--snapshot <файл.png> [--snapshot-delay 3]` — сохранить картинку своего окна и выйти. Для проверки вёрстки
+/// и переводов без доступа к экрану (рисует сам себя, `screencapture` не нужен).
+enum Snapshot {
+    @MainActor static func schedule(to path: String) {
+        let delay = CLI.value("--snapshot-delay").flatMap(Double.init) ?? 3
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            save(to: path)
+            NSApp.terminate(nil)
+        }
+    }
+
+    @MainActor static func save(to path: String) {
+        guard let w = NSApp.windows.first(where: { $0.isVisible && $0.contentView != nil }),
+              let v = w.contentView?.superview ?? w.contentView,
+              let rep = v.bitmapImageRepForCachingDisplay(in: v.bounds) else { return }
+        v.cacheDisplay(in: v.bounds, to: rep)
+        try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: path))
     }
 }

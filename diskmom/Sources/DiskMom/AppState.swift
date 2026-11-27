@@ -9,13 +9,24 @@ enum SidebarSection: String, Hashable, CaseIterable {
 @Observable @MainActor
 final class AppState {
     var section: SidebarSection = .map
-    var disk = DiskInfo.current()
-    var fullDiskAccess = FullDiskAccess.granted
-    let map = MapStore()
-    let dupes = DupesStore()
-    let volumes = VolumesStore()
+    var disk: DiskInfo
+    var fullDiskAccess: Bool
+    let map: MapStore
+    let dupes: DupesStore
+    let volumes: VolumesStore
+    private let demo: Bool
+
+    init(demo: Bool = false) {
+        self.demo = demo
+        disk = demo ? DiskInfo(total: 256_000_000_000, available: 38_000_000_000) : .current()
+        fullDiskAccess = !demo && FullDiskAccess.granted
+        map = MapStore(demo: demo)
+        dupes = DupesStore(demo: demo)
+        volumes = VolumesStore(demo: demo)
+    }
 
     func refreshSystem() {
+        guard !demo else { return }
         disk = DiskInfo.current()
         fullDiskAccess = FullDiskAccess.granted
     }
@@ -34,7 +45,8 @@ final class AppState {
 final class MapStore {
     enum Phase: Equatable { case idle, scanning, ready }
 
-    var target: URL = Paths.home
+    private let demo: Bool
+    var target: URL
     var phase: Phase = .idle
     var progress = ScanProgress.Snapshot()
     var started = Date()
@@ -43,6 +55,8 @@ final class MapStore {
     var focus: FSNode?
     var selected: FSNode?
     var message: String?
+    /// Сообщение — об ошибке (оранжевым).
+    var messageFailed = false
     /// Растёт при каждом изменении дерева (FSNode — не @Observable).
     var revision = 0
 
@@ -50,13 +64,19 @@ final class MapStore {
     @ObservationIgnored private var cacheKey: (ObjectIdentifier, Int)?
     @ObservationIgnored private var cachedSegments: [SunSegment] = []
 
+    init(demo: Bool = false) {
+        self.demo = demo
+        target = demo ? Paths.tmp : Paths.home
+    }
+
     var targetTitle: String {
         if target.path == "/" { return DiskScanner.volumeName("/") ?? "Macintosh HD" }
-        if target.path == Paths.home.path { return "Домашняя папка" }
+        if target.path == Paths.home.path { return String(localized: "Домашняя папка") }
         return target.lastPathComponent
     }
 
     func scan(fullDiskAccess: Bool) async {
+        if demo, !target.resolvingSymlinksInPath().path.hasPrefix(Paths.tmp.resolvingSymlinksInPath().path + "/") { return }
         if phase == .scanning { return }
         phase = .scanning
         message = nil
@@ -115,16 +135,19 @@ final class MapStore {
     }
 
     func trash(_ node: FSNode) {
+        guard !demo else { return }
         do {
             let size = node.size, parent = node.parent
             let focusInside = focus?.chain.contains { $0 === node } ?? false
             try SizeTree.trash(node)
             if let s = selected, s === node || s.chain.contains(where: { $0 === node }) { selected = nil }
             if focusInside { focus = parent ?? root }
-            message = "«\(node.name)» в Корзине, освобождено \(Fmt.bytes(size))"
+            message = String(localized: "«\(node.name)» в Корзине, освобождено \(Fmt.bytes(size))")
+            messageFailed = false
             revision += 1
         } catch {
-            message = "Не удалось перенести «\(node.name)»: \(error.localizedDescription)"
+            message = String(localized: "Не удалось перенести «\(node.name)»: \(error.localizedDescription)")
+            messageFailed = true
         }
     }
 
@@ -147,7 +170,8 @@ final class DupesStore {
 
     static let defaultFolders = ["Downloads", "Documents", "Desktop", "Pictures"].map { Paths.inHome($0) }
 
-    var folders: [URL] = DupesStore.defaultFolders
+    private let demo: Bool
+    var folders: [URL]
     var minSize: Int64 = 1_000_000
     var phase: Phase = .idle
     var progress = DupProgress.Snapshot()
@@ -159,11 +183,20 @@ final class DupesStore {
 
     @ObservationIgnored private var job: DupProgress?
 
+    init(demo: Bool = false) {
+        self.demo = demo
+        folders = demo ? [] : Self.defaultFolders
+    }
+
     var totalReclaimable: Int64 { groups.reduce(0) { $0 + $1.reclaimable } }
     var toTrash: [DupFile] { DupSelection.safeToTrash(groups, selected: selected) }
     var selectedSize: Int64 { toTrash.reduce(0) { $0 + $1.size } }
 
     func scan() async {
+        if demo {
+            let tempPath = Paths.tmp.resolvingSymlinksInPath().path + "/"
+            guard folders.allSatisfy({ $0.resolvingSymlinksInPath().path.hasPrefix(tempPath) }) else { return }
+        }
         if phase == .scanning { return }
         phase = .scanning
         warning = nil
@@ -206,11 +239,12 @@ final class DupesStore {
             warning = nil
         } else {
             NSSound.beep()
-            warning = "Все копии «\(g.name)» отметить нельзя — хотя бы одна должна остаться."
+            warning = String(localized: "Все копии «\(g.name)» отметить нельзя — хотя бы одна должна остаться.")
         }
     }
 
     func trashSelected() async {
+        guard !demo else { return }
         let groups = self.groups, selected = self.selected
         let r = await Task.detached { DupSelection.trash(groups, selected: selected) }.value
         self.groups = DupSelection.removing(r.trashed, from: self.groups)
@@ -223,7 +257,7 @@ final class DupesStore {
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
         panel.allowsMultipleSelection = true
-        panel.prompt = "Добавить"
+        panel.prompt = String(localized: "Добавить")
         guard panel.runModal() == .OK else { return }
         for u in panel.urls where !folders.contains(u) { folders.append(u) }
     }
@@ -233,25 +267,40 @@ final class DupesStore {
 
 @Observable @MainActor
 final class VolumesStore {
+    private let demo: Bool
     var volumes: [VolumeInfo] = []
     var loading = false
     var message: String?
+    var messageFailed = false
     var ejecting: Set<String> = []
 
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo {
+            volumes = [VolumeInfo(url: Paths.tmp, name: "Macintosh HD", total: 256_000_000_000,
+                                  available: 38_000_000_000, format: "APFS", kind: .internalDisk,
+                                  isRoot: true, isReadOnly: false, canEject: false, isRemovable: false,
+                                  bus: "Apple Fabric", health: .ok, solidState: true)]
+        }
+    }
+
     func refresh() async {
+        guard !demo else { return }
         loading = true
         volumes = await Task.detached { Volumes.list() }.value
         loading = false
     }
 
     func eject(_ v: VolumeInfo) async {
+        guard !demo else { return }
         ejecting.insert(v.id)
         let url = v.url
         let err: String? = await Task.detached {
             do { try Volumes.eject(url); return nil } catch { return error.localizedDescription }
         }.value
         ejecting.remove(v.id)
-        message = err.map { "Не удалось извлечь «\(v.name)»: \($0)" } ?? "«\(v.name)» можно отключать."
+        message = err.map { String(localized: "Не удалось извлечь «\(v.name)»: \($0)") } ?? String(localized: "«\(v.name)» можно отключать.")
+        messageFailed = err != nil
         await refresh()
     }
 }

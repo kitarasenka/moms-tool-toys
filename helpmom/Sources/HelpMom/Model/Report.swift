@@ -32,10 +32,10 @@ enum MemoryPressure: Sendable {
 
     var title: String {
         switch self {
-        case .normal: "нагрузка нормальная"
-        case .warning: "памяти не хватает"
-        case .critical: "памяти сильно не хватает"
-        case .unknown: "нет данных"
+        case .normal: String(localized: "нагрузка нормальная")
+        case .warning: String(localized: "памяти не хватает")
+        case .critical: String(localized: "памяти сильно не хватает")
+        case .unknown: String(localized: "нет данных")
         }
     }
 }
@@ -48,6 +48,10 @@ struct BatterySummary: Sendable, Equatable {
     /// Полная ёмкость относительно заводской, %.
     var health: Double?
     var serviceRecommended = false
+
+    var powerState: String {
+        charging ? String(localized: "заряжается") : (pluggedIn ? String(localized: "от сети") : String(localized: "от батареи"))
+    }
 }
 
 struct NetworkSummary: Sendable, Equatable {
@@ -126,62 +130,62 @@ extension SystemReport {
 
         if let free = diskFree, let frac = diskFreeFraction {
             if free < 10 * gb || frac < 0.05 {
-                out.append(Finding(id: "disk", level: .bad, title: "Почти не осталось места на диске (\(Fmt.bytes(free)))",
-                                   advice: "Mac может тормозить и не ставить обновления. Удалите ненужное или откройте CleanerMom."))
+                out.append(Finding(id: "disk", level: .bad, title: String(localized: "Почти не осталось места на диске (\(Fmt.bytes(free)))"),
+                                   advice: String(localized: "Mac может тормозить и не ставить обновления. Удалите ненужное или откройте CleanerMom.")))
             } else if free < 25 * gb || frac < 0.10 {
-                out.append(Finding(id: "disk", level: .warn, title: "Мало места на диске (\(Fmt.bytes(free)))",
-                                   advice: "Стоит освободить место: Корзина, Загрузки, старые видео."))
+                out.append(Finding(id: "disk", level: .warn, title: String(localized: "Мало места на диске (\(Fmt.bytes(free)))"),
+                                   advice: String(localized: "Стоит освободить место: Корзина, Загрузки, старые видео.")))
             }
         }
         if let up = uptime {
             let days = Int(up / 86_400)
             if days >= 30 {
-                out.append(Finding(id: "uptime", level: .bad, title: "Mac не перезагружали \(Fmt.count(days, "день", "дня", "дней"))",
-                                   advice: "Перезагрузите Mac: меню  → «Перезагрузить…». Это лечит многие странности."))
+                out.append(Finding(id: "uptime", level: .bad, title: String(localized: "Mac не перезагружали \(Fmt.days(days))"),
+                                   advice: String(localized: "Перезагрузите Mac: меню  → «Перезагрузить…». Это лечит многие странности.")))
             } else if days >= 7 {
-                out.append(Finding(id: "uptime", level: .warn, title: "Mac не перезагружали \(Fmt.count(days, "день", "дня", "дней"))",
-                                   advice: "Перезагрузка раз в неделю помогает, если Mac стал медленнее."))
+                out.append(Finding(id: "uptime", level: .warn, title: String(localized: "Mac не перезагружали \(Fmt.days(days))"),
+                                   advice: String(localized: "Перезагрузка раз в неделю помогает, если Mac стал медленнее.")))
             }
         }
         switch memoryPressure {
         case .critical:
-            out.append(Finding(id: "memory", level: .bad, title: "Сильно не хватает памяти",
-                               advice: "Закройте лишние вкладки и приложения, особенно браузеры."))
+            out.append(Finding(id: "memory", level: .bad, title: String(localized: "Сильно не хватает памяти"),
+                               advice: String(localized: "Закройте лишние вкладки и приложения, особенно браузеры.")))
         case .warning:
-            out.append(Finding(id: "memory", level: .warn, title: "Памяти не хватает",
-                               advice: "Закройте то, чем сейчас не пользуетесь."))
+            out.append(Finding(id: "memory", level: .warn, title: String(localized: "Памяти не хватает"),
+                               advice: String(localized: "Закройте то, чем сейчас не пользуетесь.")))
         default: break
         }
         if let b = battery {
             if b.serviceRecommended {
-                out.append(Finding(id: "battery", level: .bad, title: "Батарее нужно обслуживание",
-                                   advice: "macOS рекомендует заменить батарею — покажите это помощнику."))
+                out.append(Finding(id: "battery", level: .bad, title: String(localized: "Батарее нужно обслуживание"),
+                                   advice: String(localized: "macOS рекомендует заменить батарею — покажите это помощнику.")))
             } else if let h = b.health, h < 80 {
-                out.append(Finding(id: "battery", level: .warn, title: "Батарея изношена (\(Fmt.percent(h)) от новой)",
-                                   advice: "Держит заряд меньше, чем раньше. Это нормально для старого Mac."))
+                out.append(Finding(id: "battery", level: .warn, title: String(localized: "Батарея изношена (\(Fmt.percent(h)) от новой)"),
+                                   advice: String(localized: "Держит заряд меньше, чем раньше. Это нормально для старого Mac.")))
             }
         }
         if let n = network {
             if !n.connected {
-                out.append(Finding(id: "network", level: .bad, title: "Нет подключения к сети",
-                                   advice: "Проверьте Wi-Fi в правом верхнем углу экрана."))
+                out.append(Finding(id: "network", level: .bad, title: String(localized: "Нет подключения к сети"),
+                                   advice: String(localized: "Проверьте Wi-Fi в правом верхнем углу экрана.")))
             } else if n.internet == false {
-                out.append(Finding(id: "network", level: .bad, title: "Wi-Fi есть, а интернета нет",
-                                   advice: "Перезагрузите роутер: выключите его из розетки на 30 секунд."))
+                out.append(Finding(id: "network", level: .bad, title: String(localized: "Wi-Fi есть, а интернета нет"),
+                                   advice: String(localized: "Перезагрузите роутер: выключите его из розетки на 30 секунд.")))
             }
         }
         if crashes.contains(where: { $0.kind == .panic }) {
-            out.append(Finding(id: "panic", level: .bad, title: "Mac сам перезагружался из-за сбоя",
-                               advice: "Это бывает редко. Если повторяется — покажите отчёт помощнику."))
+            out.append(Finding(id: "panic", level: .bad, title: String(localized: "Mac сам перезагружался из-за сбоя"),
+                               advice: String(localized: "Это бывает редко. Если повторяется — покажите отчёт помощнику.")))
         }
         let apps = crashGroups.filter { $0.kind == .crash || $0.kind == .hang }
         if let worst = apps.first, worst.count >= 3 {
-            out.append(Finding(id: "crash", level: .warn, title: "«\(worst.app)» часто вылетает (\(Fmt.count(worst.count, "раз", "раза", "раз")) за неделю)",
-                               advice: "Обновите это приложение или переустановите его."))
+            out.append(Finding(id: "crash", level: .warn, title: String(localized: "«\(worst.app)» часто вылетает (\(Fmt.times(worst.count)) за неделю)"),
+                               advice: String(localized: "Обновите это приложение или переустановите его.")))
         }
         if let u = updates, !u.isEmpty {
-            out.append(Finding(id: "updates", level: .warn, title: "Есть обновления: \(u.prefix(3).joined(separator: ", "))",
-                               advice: "Установите их в «Системные настройки → Основные → Обновление ПО»."))
+            out.append(Finding(id: "updates", level: .warn, title: String(localized: "Есть обновления: \(u.prefix(3).joined(separator: ", "))"),
+                               advice: String(localized: "Установите их в «Системные настройки → Основные → Обновление ПО».")))
         }
         return out.sorted { $0.level > $1.level }
     }
@@ -190,9 +194,9 @@ extension SystemReport {
 
     var headline: String {
         switch overall {
-        case .ok: "Всё в порядке"
-        case .warn: "Есть на что посмотреть"
-        case .bad: "Нужна помощь"
+        case .ok: String(localized: "Всё в порядке")
+        case .warn: String(localized: "Есть на что посмотреть")
+        case .bad: String(localized: "Нужна помощь")
         }
     }
 
@@ -201,6 +205,15 @@ extension SystemReport {
         var kind: CrashEvent.Kind
         var count: Int
         var last: Date
+
+        var title: String {
+            switch kind {
+            case .crash: String(localized: "\(app) — вылетало")
+            case .hang: String(localized: "\(app) — зависало")
+            case .panic: String(localized: "Mac перезагружался из-за сбоя")
+            case .memory: String(localized: "Не хватало памяти")
+            }
+        }
     }
 
     /// Сбои, сгруппированные по приложению: чаще всего — первыми.
@@ -222,70 +235,67 @@ extension SystemReport {
 extension SystemReport {
     func text(includeSerial: Bool) -> String {
         var l: [String] = []
-        l.append("Отчёт HelpMom — \(Fmt.dateTime(collectedAt))")
-        if let c = computerName { l.append("Компьютер: \(c)" + (userName.map { ", пользователь \($0)" } ?? "")) }
+        l.append(String(localized: "Отчёт HelpMom — \(Fmt.dateTime(collectedAt))"))
+        if let c = computerName {
+            l.append(String(localized: "Компьютер: \(c)") + (userName.map { String(localized: ", пользователь \($0)") } ?? ""))
+        }
         l.append("")
         l.append("\(overall.mark) \(headline)")
         for f in findings { l.append("\(f.level.mark) \(f.title). \(f.advice)") }
         l.append("")
         l.append("Mac: \(modelName)" + (modelID.map { " (\($0))" } ?? ""))
         var hw: [String] = []
-        if let chip { hw.append("Процессор: \(chip)") }
-        if let memory { hw.append("Память: \(Fmt.bytes(memory, binary: true))") }
+        if let chip { hw.append(String(localized: "Процессор: \(chip)")) }
+        if let memory { hw.append(String(localized: "Память: \(Fmt.bytes(memory, binary: true))")) }
         if !hw.isEmpty { l.append(hw.joined(separator: " · ")) }
-        if includeSerial, let serial { l.append("Серийный номер: \(serial)") }
-        l.append("Система: \(osName)" + (osBuild.map { " (\($0))" } ?? ""))
-        if let up = uptime { l.append("Работает без перезагрузки: \(Fmt.uptime(up))") }
+        if includeSerial, let serial { l.append(String(localized: "Серийный номер: \(serial)")) }
+        l.append(String(localized: "Система: \(osName)") + (osBuild.map { " (\($0))" } ?? ""))
+        if let up = uptime { l.append(String(localized: "Работает без перезагрузки: \(Fmt.uptime(up))")) }
         if let free = diskFree, let total = diskTotal, let frac = diskFreeFraction {
-            l.append("Диск: свободно \(Fmt.bytes(free)) из \(Fmt.bytes(total)) (\(Fmt.percent(frac * 100)))")
+            l.append(String(localized: "Диск: свободно \(Fmt.bytes(free)) из \(Fmt.bytes(total)) (\(Fmt.percent(frac * 100)))"))
         }
-        l.append("Память: \(memoryPressure.title)" + (swapUsed.flatMap { $0 > 0 ? ", своп \(Fmt.bytes($0))" : nil } ?? ""))
+        l.append(String(localized: "Память: \(memoryPressure.title)")
+                 + (swapUsed.flatMap { $0 > 0 ? String(localized: ", своп \(Fmt.bytes($0))") : nil } ?? ""))
         if let b = battery {
-            var s = "Батарея: \(b.percent) %, " + (b.charging ? "заряжается" : (b.pluggedIn ? "от сети" : "от батареи"))
-            if let h = b.health { s += "; здоровье \(Fmt.percent(h))" }
-            if let c = b.cycles { s += ", \(Fmt.count(c, "цикл", "цикла", "циклов"))" }
-            if b.serviceRecommended { s += "; рекомендуется обслуживание" }
+            var s = String(localized: "Батарея: \(Fmt.percent(Double(b.percent))), \(b.powerState)")
+            if let h = b.health { s += String(localized: "; здоровье \(Fmt.percent(h))") }
+            if let c = b.cycles { s += ", \(Fmt.cycles(c))" }
+            if b.serviceRecommended { s += String(localized: "; рекомендуется обслуживание") }
             l.append(s)
         }
         if let n = network {
-            var s = "Сеть: "
-            if !n.connected { s += "не подключено" } else {
-                s += n.interface ?? "подключено"
+            var s: String
+            if !n.connected { s = String(localized: "Сеть: не подключено") } else {
+                s = String(localized: "Сеть: \(n.interface ?? String(localized: "подключено"))")
                 switch n.internet {
-                case true?: s += ", интернет есть"
-                case false?: s += ", интернет не отвечает"
+                case true?: s += String(localized: ", интернет есть")
+                case false?: s += String(localized: ", интернет не отвечает")
                 case nil: break
                 }
-                if let ip = n.localIP { s += "; адрес \(ip)" }
+                if let ip = n.localIP { s += String(localized: "; адрес \(ip)") }
             }
             l.append(s)
         }
         if !topProcesses.isEmpty {
             l.append("")
-            l.append("Больше всего грузят процессор:")
+            l.append(String(localized: "Больше всего грузят процессор:"))
             for (i, p) in topProcesses.enumerated() {
-                l.append("  \(i + 1). \(p.name) — \(Fmt.percent(p.cpu)) ЦП, \(Fmt.bytes(p.memory))")
+                l.append(String(localized: "  \(i + 1). \(p.name) — \(Fmt.percent(p.cpu)) ЦП, \(Fmt.bytes(p.memory))"))
             }
         }
         l.append("")
         let groups = crashGroups
         if groups.isEmpty {
-            l.append("Сбоев приложений за 7 дней: нет")
+            l.append(String(localized: "Сбоев приложений за 7 дней: нет"))
         } else {
-            l.append("Сбои за 7 дней:")
+            l.append(String(localized: "Сбои за 7 дней:"))
             for g in groups.prefix(8) {
-                let what: String
-                switch g.kind {
-                case .crash: what = "\(g.app) — вылетало"
-                case .hang: what = "\(g.app) — зависало"
-                case .panic: what = "Mac перезагружался из-за сбоя"
-                case .memory: what = "Не хватало памяти"
-                }
-                l.append("  \(what): \(Fmt.count(g.count, "раз", "раза", "раз")), последний \(Fmt.dayMonth(g.last))")
+                l.append(String(localized: "  \(g.title): \(Fmt.times(g.count)), последний \(Fmt.dayMonth(g.last))"))
             }
         }
         if let u = updates {
-            l.append(u.isEmpty ? "Обновления: всё установлено" : "Ждут установки: \(u.joined(separator: ", "))")
+            l.append(u.isEmpty ? String(localized: "Обновления: всё установлено")
+                               : String(localized: "Ждут установки: \(u.joined(separator: ", "))"))
         }
         return l.joined(separator: "\n")
     }

@@ -6,8 +6,8 @@ struct DuplicatesView: View {
     @State private var confirm = false
 
     static let sizes: [(Int64, String)] = [
-        (100_000, "от 100 КБ"), (1_000_000, "от 1 МБ"), (10_000_000, "от 10 МБ"),
-        (100_000_000, "от 100 МБ"), (1_000_000_000, "от 1 ГБ"),
+        (100_000, String(localized: "от 100 КБ")), (1_000_000, String(localized: "от 1 МБ")), (10_000_000, String(localized: "от 10 МБ")),
+        (100_000_000, String(localized: "от 100 МБ")), (1_000_000_000, String(localized: "от 1 ГБ")),
     ]
 
     var body: some View {
@@ -17,9 +17,9 @@ struct DuplicatesView: View {
             case .idle: setup
             case .scanning:
                 let p = d.progress
-                ProgressScreen(title: "Ищу дубликаты…",
-                               detail: p.total > 0 ? "\(p.phase): \(p.done.formatted()) из \(p.total.formatted())"
-                                   : "\(p.phase): \(Fmt.files(p.done))",
+                ProgressScreen(title: String(localized: "Ищу дубликаты…"),
+                               detail: p.total > 0 ? String(localized: "\(p.phase): \(p.done.formatted(.number.locale(L10n.locale))) из \(p.total.formatted(.number.locale(L10n.locale)))")
+                                   : String(localized: "\(p.phase): \(Fmt.files(p.done))"),
                                value: p.total > 0 ? Double(p.done) / Double(p.total) : nil) { d.cancel() }
             case .ready: results.fillAvailable()
             }
@@ -111,14 +111,14 @@ struct DuplicatesView: View {
         return VStack(spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 14) {
                 Text(Fmt.bytes(d.totalReclaimable)).font(.system(size: 26, weight: .bold, design: .rounded)).monospacedDigit()
-                Text("можно освободить · групп: \(d.groups.count.formatted()) · \(Fmt.seconds(d.elapsed))").foregroundStyle(.secondary)
+                Text("можно освободить · групп: \(d.groups.count.formatted(.number.locale(L10n.locale))) · \(Fmt.seconds(d.elapsed))").foregroundStyle(.secondary)
                 Spacer()
             }
             .padding(.horizontal, 16).padding(.vertical, 12)
             Divider()
             if d.groups.isEmpty {
-                EmptyStateView(icon: "checkmark.seal", title: "Дубликатов нет",
-                               text: "В выбранных папках нет одинаковых файлов \(Self.sizes.first { $0.0 == d.minSize }?.1 ?? "").") {
+                EmptyStateView(icon: "checkmark.seal", title: String(localized: "Дубликатов нет"),
+                               text: String(localized: "В выбранных папках нет одинаковых файлов \(Self.sizes.first { $0.0 == d.minSize }?.1 ?? "").")) {
                     Button("Изменить папки") { d.phase = .idle }
                 }
             } else {
@@ -159,7 +159,7 @@ struct DuplicatesView: View {
             ThumbnailView(url: g.files[0].url, size: 40)
             VStack(alignment: .leading, spacing: 2) {
                 Text(g.name).font(.headline).foregroundStyle(.primary).lineLimit(1).truncationMode(.middle)
-                Text("\(Fmt.count(g.files.count, "копия", "копии", "копий")) по \(Fmt.bytes(g.size))")
+                Text("\(Fmt.copies(g.files.count)) по \(Fmt.bytes(g.size))")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Spacer()

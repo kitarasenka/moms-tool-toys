@@ -33,7 +33,7 @@ enum HotkeyPreset: String, CaseIterable, Identifiable, Codable {
     }
 
     /// «⇧⌘ Пробел»
-    var title: String { symbols.joined() + " Пробел" }
+    var title: String { symbols.joined() + " " + String(localized: "Пробел") }
 
     /// Названия клавиш для картинки-подсказки.
     var keyNames: [String] {
@@ -47,11 +47,11 @@ enum HotkeyPreset: String, CaseIterable, Identifiable, Codable {
 
     /// Сочетания, которые уже заняты системой или другими инструментами (для проверки в selftest).
     static let reserved: [(key: Int, mods: Int, what: String)] = [
-        (kVK_Space, controlKey, "переключение раскладки"),
-        (kVK_Space, controlKey | optionKey, "переключение раскладки"),
-        (kVK_Space, cmdKey, "Spotlight"),
-        (kVK_Space, cmdKey | controlKey, "эмодзи"),
-        (kVK_Space, cmdKey | optionKey, "поиск Finder"),
+        (kVK_Space, controlKey, "переключение раскладки"),  // l10n:skip
+        (kVK_Space, controlKey | optionKey, "переключение раскладки"),  // l10n:skip
+        (kVK_Space, cmdKey, "Spotlight"),  // l10n:skip
+        (kVK_Space, cmdKey | controlKey, "эмодзи"),  // l10n:skip
+        (kVK_Space, cmdKey | optionKey, "поиск Finder"),  // l10n:skip
         (kVK_ANSI_V, cmdKey | shiftKey, "ClipMom"),
     ]
 }
@@ -145,11 +145,11 @@ enum LoginItem {
 
     static var statusText: String {
         switch status {
-        case .enabled: "Включён"
-        case .requiresApproval: "Ждёт разрешения в «Объектах входа»"
-        case .notFound: "Недоступен (запустите KeyMom из .app)"
-        case .notRegistered: "Выключен"
-        @unknown default: "Неизвестно"
+        case .enabled: String(localized: "Включён")
+        case .requiresApproval: String(localized: "Ждёт разрешения в «Объектах входа»")
+        case .notFound: String(localized: "Недоступен (запустите KeyMom из .app)")
+        case .notRegistered: String(localized: "Выключен")
+        @unknown default: String(localized: "Неизвестно")
         }
     }
 
@@ -159,11 +159,11 @@ enum LoginItem {
             if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
             if on && status == .requiresApproval {
                 SMAppService.openSystemSettingsLoginItems()
-                return "Разрешите KeyMom в «Системные настройки → Основные → Объекты входа»."
+                return String(localized: "Разрешите KeyMom в «Системные настройки → Основные → Объекты входа».")
             }
             return nil
         } catch {
-            return "Не получилось: \(error.localizedDescription)"
+            return String(localized: "Не получилось: \(error.localizedDescription)")
         }
     }
 }

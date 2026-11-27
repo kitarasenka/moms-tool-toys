@@ -321,7 +321,7 @@ enum Demo {
             S.gatekeeper("assessments enabled"),
             S.sip("System Integrity Protection status: enabled."),
             S.timeMachine(prefs: ["AutoBackup": true, "Destinations": [["SnapshotDates": [now.addingTimeInterval(-41 * 86400)]]]],
-                          readable: true, destinationInfo: "Name : Мой диск", now: now),
+                          readable: true, destinationInfo: "Name : Backup SSD", now: now),
             S.screenLock("screenLock delay is immediate", screensaverIdle: 300, displaySleep: 10),
             S.autoLogin([:], readable: true),
             S.remote(open: [5900]),
@@ -332,29 +332,30 @@ enum Demo {
     static var browsers: [BrowserReport] {
         let now = Date()
         func def(_ id: String) -> BrowserDef { BrowserDef.all.first { $0.id == id }! }
-        func site(_ h: String, _ p: String = "Основной", days: Double) -> SiteNotification {
-            SiteNotification(key: "https://\(h):443,*", host: h, profile: p, prefs: nil,
+        let defaultProfile = String(localized: "Основной")
+        func site(_ h: String, _ p: String? = nil, days: Double) -> SiteNotification {
+            SiteNotification(key: "https://\(h):443,*", host: h, profile: p ?? defaultProfile, prefs: nil,
                              since: now.addingTimeInterval(-days * 86400), level: BrowserScanner.siteLevel(h))
         }
         func ext(_ id: String, _ name: String, _ v: String, _ flags: [ExtFlag], enabled: Bool = true, days: Double = 300) -> BrowserExtension {
-            BrowserExtension(extID: id, name: name, version: v, profile: "Основной", enabled: enabled,
+            BrowserExtension(extID: id, name: name, version: v, profile: defaultProfile, enabled: enabled,
                              installed: now.addingTimeInterval(-days * 86400), flags: flags, level: BrowserScanner.extensionLevel(flags))
         }
-        let one = [BrowserProfile(dir: URL(fileURLWithPath: "/"), name: "Основной")]
+        let one = [BrowserProfile(dir: URL(fileURLWithPath: "/"), name: defaultProfile)]
         var chrome = BrowserReport(def: def("chrome"), installed: true, running: true, profiles: one)
         chrome.notifications = [site("best-prize-today.xyz", days: 3), site("allow-news-push.top", days: 9),
                                 site("recepty-babushki.ru", days: 60), site("mail.google.com", days: 400), site("web.whatsapp.com", days: 200)]
             .sorted { ($0.level, $1.host) > ($1.level, $0.host) }
         chrome.extensions = [ext("a", "Search Manager Pro", "3.1.0", [.allSites, .proxy, .installedByApp, .notStore, .recent], days: 5),
                              ext("b", "Video Downloader HD", "1.4", [.allSites, .notStore], days: 30),
-                             ext("c", "AdBlock — блокировщик рекламы", "6.55.0", [.allSites]),
-                             ext("d", "1Password — менеджер паролей", "8.12.4", [.allSites, .nativeMessaging]),
-                             ext("e", "Google Переводчик", "2.0.18", [], enabled: false)]
+                             ext("c", "AdBlock", "6.55.0", [.allSites]),
+                             ext("d", "1Password", "8.12.4", [.allSites, .nativeMessaging]),
+                             ext("e", "Google Translate", "2.0.18", [], enabled: false)]
         var safari = BrowserReport(def: def("safari"), installed: true, running: false, profiles: [])
         safari.extensions = [ext("s1", "1Password for Safari", "8.10.1", [])]
-        safari.extensionsNote = "Включены ли они в самом Safari, видно в Safari → Настройки → Расширения."
+        safari.extensionsNote = String(localized: "Включены ли они в самом Safari, видно в Safari → Настройки → Расширения.")
         safari.notifications = [site("lucky-gift.site", "Safari", days: 14)]
-        safari.notificationsNote = "Снять разрешение: Safari → Настройки → Веб-сайты → Уведомления, или Системные настройки → Уведомления."
+        safari.notificationsNote = String(localized: "Снять разрешение: Safari → Настройки → Веб-сайты → Уведомления, или Системные настройки → Уведомления.")
         return [safari, chrome]
     }
 

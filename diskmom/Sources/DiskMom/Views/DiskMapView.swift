@@ -14,8 +14,8 @@ struct DiskMapView: View {
             switch map.phase {
             case .idle: idle
             case .scanning:
-                ProgressScreen(title: "Сканирую «\(map.targetTitle)»…",
-                               detail: "\(Fmt.files(map.progress.files)), папок: \(map.progress.folders.formatted()) · \(Fmt.seconds(map.elapsed))",
+                ProgressScreen(title: String(localized: "Сканирую «\(map.targetTitle)»…"),
+                               detail: String(localized: "\(Fmt.files(map.progress.files)), папок: \(map.progress.folders.formatted(.number.locale(L10n.locale))) · \(Fmt.seconds(map.elapsed))"),
                                current: Paths.pretty(map.progress.current)) { map.cancel() }
             case .ready:
                 if map.root != nil { ready.fillAvailable() } else { idle }
@@ -34,7 +34,7 @@ struct DiskMapView: View {
                     .disabled(map.phase == .scanning)
             }
         }
-        .confirmationDialog(confirmTrash.map { "Перенести «\($0.name)» в Корзину?" } ?? "",
+        .confirmationDialog(confirmTrash.map { String(localized: "Перенести «\($0.name)» в Корзину?") } ?? "",
                             isPresented: Binding(get: { confirmTrash != nil }, set: { if !$0 { confirmTrash = nil } }),
                             presenting: confirmTrash) { node in
             Button("В Корзину", role: .destructive) { map.trash(node); state.refreshSystem() }
@@ -63,7 +63,7 @@ struct DiskMapView: View {
         let panel = NSOpenPanel()
         panel.canChooseDirectories = true
         panel.canChooseFiles = false
-        panel.prompt = "Сканировать"
+        panel.prompt = String(localized: "Сканировать")
         panel.directoryURL = state.map.target
         guard panel.runModal() == .OK, let url = panel.url else { return false }
         state.map.target = url
@@ -80,10 +80,10 @@ struct DiskMapView: View {
             Text("Посчитаю, что сколько места занимает, и покажу это кругами: чем шире сектор, тем больше папка. Щёлкните сектор, чтобы заглянуть внутрь.")
                 .font(.title3).foregroundStyle(.secondary).multilineTextAlignment(.center).frame(maxWidth: 560)
             HStack(spacing: 10) {
-                choice("Домашняя папка", icon: "house", url: Paths.home)
+                choice(String(localized: "Домашняя папка"), icon: "house", url: Paths.home)
                 choice(DiskScanner.volumeName("/") ?? "Macintosh HD", icon: "internaldrive", url: URL(fileURLWithPath: "/"))
                 Button { _ = pickFolder() } label: {
-                    choiceLabel(isOther ? map.target.lastPathComponent : "Другая папка…", icon: "folder", on: isOther)
+                    choiceLabel(isOther ? map.target.lastPathComponent : String(localized: "Другая папка…"), icon: "folder", on: isOther)
                 }
                 .buttonStyle(.plain)
             }
@@ -92,7 +92,7 @@ struct DiskMapView: View {
                 .buttonStyle(GlowButtonStyle())
                 .keyboardShortcut(.defaultAction)
                 .padding(.top, 6)
-            FullDiskAccessBanner(reason: "Без него контейнеры приложений, Почта и Сообщения не попадут в подсчёт.")
+            FullDiskAccessBanner(reason: String(localized: "Без него контейнеры приложений, Почта и Сообщения не попадут в подсчёт."))
                 .frame(maxWidth: 620).padding(.top, 6)
         }
         .padding(30) }
@@ -189,14 +189,14 @@ struct DiskMapView: View {
                 }
                 Spacer()
                 if let root = map.root, root.denied > 0 {
-                    Label("Не прочитано папок: \(root.denied.formatted())", systemImage: "lock")
+                    Label("Не прочитано папок: \(root.denied.formatted(.number.locale(L10n.locale)))", systemImage: "lock")
                         .foregroundStyle(.orange)
                         .help("Системные или закрытые папки — их размер не учтён. С полным доступом к диску их станет меньше.")
                 }
             }
             .font(.callout)
             if let root = map.root, root.denied > 0, !state.fullDiskAccess, touchesPrivateData(root.path) {
-                FullDiskAccessBanner(reason: "Часть папок не посчитана.")
+                FullDiskAccessBanner(reason: String(localized: "Часть папок не посчитана."))
             }
         }
         .padding(.horizontal, 16).padding(.vertical, 10)
@@ -213,8 +213,8 @@ struct DiskMapView: View {
         let target = map.selected ?? hovered?.node
         return HStack(spacing: 12) {
             if let msg = map.message {
-                Label(msg, systemImage: msg.hasPrefix("Не удалось") ? "exclamationmark.triangle" : "checkmark.circle")
-                    .foregroundStyle(msg.hasPrefix("Не удалось") ? .orange : .secondary)
+                Label(msg, systemImage: map.messageFailed ? "exclamationmark.triangle" : "checkmark.circle")
+                    .foregroundStyle(map.messageFailed ? .orange : .secondary)
                     .lineLimit(1)
             } else if let t = target {
                 Text(t.displayName).fontWeight(.medium).lineLimit(1).truncationMode(.middle)
@@ -299,17 +299,17 @@ private struct ChildList: View, Equatable {
 
     private func sizeText(_ n: FSNode) -> String {
         switch n.kind {
-        case .locked: return "закрыто"
-        case .cloud: return "в облаке"
+        case .locked: return String(localized: "закрыто")
+        case .cloud: return String(localized: "в облаке")
         default: return Fmt.bytes(n.size)
         }
     }
 
     private func note(_ n: FSNode) -> String? {
         switch n.kind {
-        case .locked: return "Данные других приложений. Без полного доступа к диску macOS их не показывает."
-        case .cloud: return "Облачные диски (iCloud, Google Drive, Dropbox…) не сканируются — файлы там в основном в сети."
-        case .smallFiles: return "Файлы меньше 256 КБ в этой папке — одной строкой."
+        case .locked: return String(localized: "Данные других приложений. Без полного доступа к диску macOS их не показывает.")
+        case .cloud: return String(localized: "Облачные диски (iCloud, Google Drive, Dropbox…) не сканируются — файлы там в основном в сети.")
+        case .smallFiles: return String(localized: "Файлы меньше 256 КБ в этой папке — одной строкой.")
         default: return nil
         }
     }

@@ -25,7 +25,8 @@ struct KeyMomApp: App {
         Window("KeyMom", id: "main") {
             ContentView()
                 .environment(state)
-                .environment(\.locale, Locale(identifier: "ru_RU"))
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 820, minHeight: 560)
                 .task { LaunchOptions.apply(to: state) }
         }
@@ -49,6 +50,8 @@ struct KeyMomApp: App {
         // Строка меню: текущая раскладка и Caps Lock. Окно можно закрыть — KeyMom продолжит работать.
         MenuBarExtra {
             MenuBarContent(state: state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
         } label: {
             MenuBarLabel(state: state)
         }
@@ -122,7 +125,8 @@ struct MenuBarContent: View {
 }
 
 /// `open KeyMom.app --args --demo --section convert` (guide|convert|settings); `--hud caps|layout|warning|success` —
-/// показать плашку у курсора; `--no-dock` — только строка меню; `--close-window` — закрыть окно.
+/// показать плашку у курсора; `--no-dock` — только строка меню; `--close-window` — закрыть окно;
+/// `--snapshot <файл.png>` — нарисовать окно в PNG и выйти.
 enum LaunchOptions {
     @MainActor static func apply(to state: AppState) {
         let args = CommandLine.arguments
@@ -135,14 +139,26 @@ enum LaunchOptions {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             if value("--hud") != nil { state.pinnedHUD = true }
             switch value("--hud") {
-            case "caps": state.flash.show(HUDMessage(title: "Caps Lock", flag: "⇪", subtitle: "Включён — буквы будут ЗАГЛАВНЫЕ", style: .caps), duration: 30)
-            case "warning": state.warning.show(HUDMessage(title: "Включён Caps Lock", flag: "⚠️", subtitle: "Пароль может не подойти — нажмите ⇪, чтобы выключить", style: .warning), duration: 30)
-            case "success": state.flash.show(HUDMessage(title: "RU", flag: "🇷🇺", subtitle: "Исправлено: привет", style: .success), duration: 30)
-            case "layout": state.flash.show(HUDMessage(title: "RU", flag: "🇷🇺", subtitle: "Русская – ПК", style: .layout), duration: 30)
+            case "caps": state.flash.show(HUDMessage(title: "Caps Lock", flag: "⇪", subtitle: String(localized: "Включён — буквы будут ЗАГЛАВНЫЕ"), style: .caps), duration: 30)
+            case "warning": state.warning.show(HUDMessage(title: String(localized: "Включён Caps Lock"), flag: "⚠️", subtitle: String(localized: "Пароль может не подойти — нажмите ⇪, чтобы выключить"), style: .warning), duration: 30)
+            case "success": state.flash.show(HUDMessage(title: "RU", flag: "🇷🇺", subtitle: String(localized: "Исправлено: \("привет")"), style: .success), duration: 30)
+            case "layout": state.flash.show(HUDMessage(title: "RU", flag: "🇷🇺", subtitle: RussianVariant.pc.title, style: .layout), duration: 30)
             default: break
             }
             if args.contains("--close-window") {
                 NSApp.windows.first { $0.isVisible && !($0 is NSPanel) && $0.styleMask.contains(.titled) }?.close()
+            }
+        }
+        // `--snapshot <файл.png>` — отрисовать окно в картинку и выйти (для скриншотов переводов; экран не нужен).
+        if let path = value("--snapshot") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                if let w = NSApp.windows.first(where: { $0.isVisible && !($0 is NSPanel) && $0.styleMask.contains(.titled) }),
+                   let v = w.contentView?.superview ?? w.contentView,
+                   let rep = v.bitmapImageRepForCachingDisplay(in: v.bounds) {
+                    v.cacheDisplay(in: v.bounds, to: rep)
+                    try? rep.representation(using: .png, properties: [:])?.write(to: URL(fileURLWithPath: path))
+                }
+                exit(0)
             }
         }
     }

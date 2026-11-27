@@ -43,8 +43,8 @@ struct PendingAction: Identifiable {
 
     var title: String {
         switch action {
-        case .forceQuit: "Принудительно завершить «\(name)»?"
-        default: childCount > 0 ? "Завершить «\(name)» и дочерние процессы?" : "Завершить «\(name)»?"
+        case .forceQuit: String(localized: "Принудительно завершить «\(name)»?")
+        default: childCount > 0 ? String(localized: "Завершить «\(name)» и дочерние процессы?") : String(localized: "Завершить «\(name)»?")
         }
     }
 
@@ -52,13 +52,13 @@ struct PendingAction: Identifiable {
         var parts: [String] = []
         switch action {
         case .forceQuit:
-            parts.append("Процесс PID \(rootPID) будет остановлен немедленно (SIGKILL). Несохранённые данные будут потеряны.")
+            parts.append(String(localized: "Процесс PID \(rootPID) будет остановлен немедленно (SIGKILL). Несохранённые данные будут потеряны."))
         default:
-            parts.append("Процессу PID \(rootPID) будет отправлен запрос на завершение. Приложения смогут сохранить данные.")
+            parts.append(String(localized: "Процессу PID \(rootPID) будет отправлен запрос на завершение. Приложения смогут сохранить данные."))
         }
-        if childCount > 0 { parts.append("Вместе с ним будет завершено дочерних процессов: \(childCount).") }
-        if includesForeign { parts.append("Среди них есть системные процессы — может понадобиться пароль администратора.") }
-        if pids.contains(getpid()) { parts.append("Это сам PerfMom — приложение закроется.") }
+        if childCount > 0 { parts.append(String(localized: "Вместе с ним будет завершено дочерних процессов: \(childCount).")) }
+        if includesForeign { parts.append(String(localized: "Среди них есть системные процессы — может понадобиться пароль администратора.")) }
+        if pids.contains(getpid()) { parts.append(String(localized: "Это сам PerfMom — приложение закроется.")) }
         return parts.joined(separator: "\n\n")
     }
 }
@@ -72,8 +72,16 @@ struct AlertInfo: Identifiable {
 
 @MainActor @Observable
 final class AppState {
-    let monitor = Monitor()
-    let startup = StartupStore()
+    let demo: Bool
+    let monitor: Monitor
+    let startup: StartupStore
+
+    init(demo: Bool = false) {
+        self.demo = demo
+        monitor = Monitor(demo: demo)
+        startup = StartupStore(demo: demo)
+        trustedPaths = demo ? [] : Set(UserDefaults.standard.stringArray(forKey: "trustedPaths") ?? [])
+    }
 
     var section: SidebarSection = .processes
     var selectedPID: pid_t?
@@ -91,8 +99,10 @@ final class AppState {
     // MARK: Безопасность
 
     /// Пути, которым пользователь доверяет (снимает ложные срабатывания). Хранится между запусками.
-    var trustedPaths: Set<String> = Set(UserDefaults.standard.stringArray(forKey: "trustedPaths") ?? []) {
-        didSet { UserDefaults.standard.set(Array(trustedPaths).sorted(), forKey: "trustedPaths") }
+    var trustedPaths: Set<String> {
+        didSet {
+            if !demo { UserDefaults.standard.set(Array(trustedPaths).sorted(), forKey: "trustedPaths") }
+        }
     }
 
     func isTrusted(_ r: ProcessRecord) -> Bool { !r.path.isEmpty && trustedPaths.contains(r.path) }
@@ -218,10 +228,10 @@ final class AppState {
     // MARK: Управление процессами
 
     func request(_ action: ProcessAction, pid: pid_t? = nil, includeChildren: Bool = false) {
-        guard let pid = pid ?? selectedPID, let rec = monitor.byPID[pid] else { return }
+        guard !demo, let pid = pid ?? selectedPID, let rec = monitor.byPID[pid] else { return }
         if protectedPIDs.contains(pid) {
-            alert = AlertInfo(title: "Этот процесс нельзя трогать",
-                              message: pid == 0 ? "kernel_task — это ядро macOS." : "launchd — корневой процесс системы. Его остановка приведёт к перезагрузке.")
+            alert = AlertInfo(title: String(localized: "Этот процесс нельзя трогать"),
+                              message: pid == 0 ? String(localized: "kernel_task — это ядро macOS.") : String(localized: "launchd — корневой процесс системы. Его остановка приведёт к перезагрузке."))
             return
         }
         let kids = includeChildren ? monitor.descendants(of: pid) : []
@@ -239,30 +249,32 @@ final class AppState {
     }
 
     func perform(_ p: PendingAction) {
+        guard !demo else { return }
         let outcome = ProcessControl.send(p.action, to: p.pids)
         if !outcome.denied.isEmpty {
             let denied = PendingAction(action: p.action, pids: outcome.denied, name: p.name, rootPID: p.rootPID,
                                        childCount: max(0, outcome.denied.count - 1), includesForeign: true)
             alert = AlertInfo(
-                title: "Недостаточно прав",
-                message: "Процессов, принадлежащих другим пользователям: \(outcome.denied.count). Чтобы выполнить «\(p.action.title.lowercased())», нужен пароль администратора.",
+                title: String(localized: "Недостаточно прав"),
+                message: String(localized: "Процессов, принадлежащих другим пользователям: \(outcome.denied.count). Чтобы выполнить «\(p.action.title.lowercased())», нужен пароль администратора."),
                 retryAsAdmin: denied
             )
         } else if !outcome.failed.isEmpty {
-            alert = AlertInfo(title: "Не удалось выполнить действие",
+            alert = AlertInfo(title: String(localized: "Не удалось выполнить действие"),
                               message: outcome.failed.map { "PID \($0.0): \($0.1)" }.joined(separator: "\n"))
         }
         refreshSoon()
     }
 
     func performAsAdmin(_ p: PendingAction) {
+        guard !demo else { return }
         Task {
             do {
                 try await ProcessControl.sendAsAdmin(p.action, to: p.pids)
             } catch AdminRunner.Failure.cancelled {
                 return
             } catch {
-                alert = AlertInfo(title: "Ошибка", message: error.localizedDescription)
+                alert = AlertInfo(title: String(localized: "Ошибка"), message: error.localizedDescription)
             }
             refreshSoon()
         }

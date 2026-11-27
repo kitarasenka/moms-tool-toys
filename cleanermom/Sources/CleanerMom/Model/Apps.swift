@@ -71,26 +71,26 @@ enum AppScanner {
             let url = lib.appendingPathComponent(rel)
             if fm.fileExists(atPath: url.path) { found.append((url, kind)) }
         }
-        check("Application Support/\(bid)", "Данные приложения")
-        check("Caches/\(bid)", "Кэш")
-        check("Containers/\(bid)", "Контейнер (данные и настройки)")
-        check("Preferences/\(bid).plist", "Настройки")
-        check("Saved Application State/\(bid).savedState", "Состояние окон")
-        check("HTTPStorages/\(bid)", "Сетевые данные")
+        check("Application Support/\(bid)", String(localized: "Данные приложения"))
+        check("Caches/\(bid)", String(localized: "Кэш"))
+        check("Containers/\(bid)", String(localized: "Контейнер (данные и настройки)"))
+        check("Preferences/\(bid).plist", String(localized: "Настройки"))
+        check("Saved Application State/\(bid).savedState", String(localized: "Состояние окон"))
+        check("HTTPStorages/\(bid)", String(localized: "Сетевые данные"))
         check("HTTPStorages/\(bid).binarycookies", "Cookies")
         check("Cookies/\(bid).binarycookies", "Cookies")
-        check("WebKit/\(bid)", "Данные веб-страниц")
-        check("Logs/\(bid)", "Журналы")
-        check("Application Scripts/\(bid)", "Скрипты")
+        check("WebKit/\(bid)", String(localized: "Данные веб-страниц"))
+        check("Logs/\(bid)", String(localized: "Журналы"))
+        check("Application Scripts/\(bid)", String(localized: "Скрипты"))
         for n in names where !n.isEmpty {
-            check("Application Support/\(n)", "Данные приложения")
-            check("Caches/\(n)", "Кэш")
-            check("Logs/\(n)", "Журналы")
+            check("Application Support/\(n)", String(localized: "Данные приложения"))
+            check("Caches/\(n)", String(localized: "Кэш"))
+            check("Logs/\(n)", String(localized: "Журналы"))
         }
         // Файлы с bundle id в начале имени: настройки ByHost, агенты автозапуска, помощники.
         let prefixDirs: [(String, String)] = [
-            ("Preferences/ByHost", "Настройки"), ("LaunchAgents", "Агент автозапуска"),
-            ("Containers", "Контейнер помощника"), ("Application Scripts", "Скрипты"),
+            ("Preferences/ByHost", String(localized: "Настройки")), ("LaunchAgents", String(localized: "Агент автозапуска")),
+            ("Containers", String(localized: "Контейнер помощника")), ("Application Scripts", String(localized: "Скрипты")),
         ]
         for (rel, kind) in prefixDirs {
             let dir = lib.appendingPathComponent(rel)
@@ -103,7 +103,7 @@ enum AppScanner {
         let groups = lib.appendingPathComponent("Group Containers")
         for url in (try? fm.contentsOfDirectory(at: groups, includingPropertiesForKeys: nil)) ?? [] {
             let n = url.lastPathComponent
-            if n.hasSuffix("." + bid) || n == "group." + bid { found.append((url, "Общий контейнер")) }
+            if n.hasSuffix("." + bid) || n == "group." + bid { found.append((url, String(localized: "Общий контейнер"))) }
         }
 
         var seen = Set<String>()

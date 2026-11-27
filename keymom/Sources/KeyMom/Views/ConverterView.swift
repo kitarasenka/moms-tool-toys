@@ -47,7 +47,7 @@ struct ConverterView: View {
                 Text("Русская раскладка: \(state.variant.title)").font(.caption).foregroundStyle(.secondary)
             }
             ScrollView {
-                Text(result?.0 ?? (state.convertInput.isEmpty ? " " : "Исправлять нечего — здесь нет букв."))
+                Text(result?.0 ?? (state.convertInput.isEmpty ? " " : String(localized: "Исправлять нечего — здесь нет букв.")))
                     .font(.system(size: 15))
                     .foregroundStyle(result == nil ? .secondary : .primary)
                     .textSelection(.enabled)

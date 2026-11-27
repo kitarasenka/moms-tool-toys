@@ -8,8 +8,8 @@ struct JournalView: View {
         let list = state.journalEntries
         Group {
             if list.isEmpty {
-                EmptyStateView(icon: "clock.arrow.circlepath", title: "Журнал пуст",
-                               text: "Здесь появится всё, что DesktopMom переложил или отправил в Корзину, — с кнопкой «Вернуть».")
+                EmptyStateView(icon: "clock.arrow.circlepath", title: String(localized: "Журнал пуст"),
+                               text: String(localized: "Здесь появится всё, что DesktopMom переложил или отправил в Корзину, — с кнопкой «Вернуть»."))
             } else {
                 List {
                     ForEach(list) { e in JournalRow(entry: e) }
@@ -18,7 +18,7 @@ struct JournalView: View {
             }
         }
         .navigationTitle("Журнал")
-        .navigationSubtitle(list.isEmpty ? "" : "\(list.count) \(Fmt.plural(list.count, "запись", "записи", "записей"))")
+        .navigationSubtitle(list.isEmpty ? "" : String(localized: "\(list.count) записей"))
         .toolbar {
             ToolbarItem {
                 Button("Очистить журнал") { confirmClear = true }.disabled(list.isEmpty)
@@ -48,23 +48,24 @@ struct JournalRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 Text(entry.name).lineLimit(1).truncationMode(.middle)
                 Text(entry.action == .trashed
-                     ? "\(state.pretty(from)) → Корзина"
+                     ? String(localized: "\(state.pretty(from)) → Корзина")
                      : "\(state.pretty(from)) → \(to.map(state.pretty) ?? "?")")
                     .font(.caption).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
             }
             Spacer(minLength: 8)
             Text(Fmt.dateTime(entry.date)).font(.caption).foregroundStyle(.secondary)
             if entry.undone {
-                Tag(text: "возвращено", tint: .green)
+                Tag(text: String(localized: "возвращено"), tint: .green)
             } else {
                 Button("Вернуть") { state.undo(entry) }
                     .disabled(!state.canUndo(entry))
-                    .help(state.canUndo(entry) ? "Положить обратно, откуда взяли"
-                                               : "Файла уже нет на новом месте или старое место занято")
+                    .help(state.canUndo(entry) ? String(localized: "Положить обратно, откуда взяли")
+                                               : String(localized: "Файла уже нет на новом месте или старое место занято"))
             }
             Button { state.reveal(entry) } label: { Image(systemName: "magnifyingglass") }
                 .buttonStyle(.borderless)
-                .help(entry.action == .trashed && !entry.undone ? "Показать в Корзине" : "Показать в Finder")
+                .help(entry.action == .trashed && !entry.undone ? String(localized: "Показать в Корзине")
+                                                                : String(localized: "Показать в Finder"))
         }
         .padding(.vertical, 2)
     }

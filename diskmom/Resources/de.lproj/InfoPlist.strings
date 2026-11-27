@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "DiskMom ermittelt, wie viel Platz die Dateien auf dem Schreibtisch belegen, und sucht dort nach Duplikaten.";
+"NSDocumentsFolderUsageDescription" = "DiskMom ermittelt, wie viel Platz die Dokumente belegen, und sucht dort nach Duplikaten.";
+"NSDownloadsFolderUsageDescription" = "DiskMom ermittelt, wie viel Platz die Downloads belegen, und sucht dort nach Duplikaten.";
+"NSRemovableVolumesUsageDescription" = "DiskMom zeigt, womit ein externes Laufwerk belegt ist, wenn du es für die Karte oder die Duplikatsuche ausgewählt hast.";
+"NSNetworkVolumesUsageDescription" = "DiskMom zeigt, womit ein Netzlaufwerk belegt ist, wenn du es für die Karte oder die Duplikatsuche ausgewählt hast.";

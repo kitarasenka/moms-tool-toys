@@ -53,23 +53,21 @@ struct DiskInfo: Sendable {
 
 enum Fmt {
     /// Байты как в Finder (десятичные единицы, локаль системы).
-    static func bytes(_ v: Int64) -> String { v.formatted(.byteCount(style: .file)) }
+    static func bytes(_ v: Int64) -> String { v.formatted(.byteCount(style: .file).locale(L10n.locale)) }
 
     static func date(_ d: Date?) -> String {
         guard let d else { return "—" }
-        return d.formatted(date: .abbreviated, time: .omitted)
+        return d.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale))
     }
 
     static func ago(_ d: Date?) -> String {
-        guard let d else { return "неизвестно" }
-        return d.formatted(.relative(presentation: .named))
+        guard let d else { return String(localized: "неизвестно") }
+        return d.formatted(.relative(presentation: .named).locale(L10n.locale))
     }
 
-    static func count(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let m10 = n % 10, m100 = n % 100
-        let w = (m10 == 1 && m100 != 11) ? one : ((2...4).contains(m10) && !(12...14).contains(m100) ? few : many)
-        return "\(n.formatted()) \(w)"
-    }
+    static func items(_ n: Int) -> String { String(localized: "\(n) объектов") }
+    static func itemsMoved(_ n: Int) -> String { String(localized: "\(n) объектов перенесены") }
+    static func files(_ n: Int) -> String { String(localized: "\(n) файлов") }
 }
 
 // MARK: - Пути
@@ -137,7 +135,7 @@ enum Shell {
     static func runAsAdmin(_ command: String) -> Result {
         let script = "do shell script \"\(command)\" with administrator privileges"
         let r = run("/usr/bin/osascript", ["-e", script])
-        if !r.ok, r.output.contains("-128") { return Result(ok: false, output: "Отменено") }
+        if !r.ok, r.output.contains("-128") { return Result(ok: false, output: String(localized: "Отменено")) }
         return r
     }
 

@@ -57,7 +57,7 @@ struct HotkeyKeys: View {
                 KeyCap(symbol: sym, name: name, size: size)
                 Text("+").font(.system(size: 16 * size, weight: .semibold)).foregroundStyle(.secondary)
             }
-            KeyCap(symbol: "Пробел", wide: true, size: size)
+            KeyCap(symbol: String(localized: "Пробел"), wide: true, size: size)
         }
     }
 }

@@ -8,9 +8,9 @@ enum Pane: Int, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .report: "Отчёт о Mac"
-        case .call: "Позвать на помощь"
-        case .problems: "Частые проблемы"
+        case .report: String(localized: "Отчёт о Mac")
+        case .call: String(localized: "Позвать на помощь")
+        case .problems: String(localized: "Частые проблемы")
         }
     }
 
@@ -68,8 +68,8 @@ final class AppState {
         }
     }
 
-    func show(_ message: String) {
-        toast = message
+    func show(_ message: String.LocalizationValue) {
+        toast = String(localized: message)
         toastTask?.cancel()
         toastTask = Task {
             try? await Task.sleep(for: .seconds(3.5))
@@ -89,10 +89,10 @@ final class AppState {
     func saveReportToDesktop() {
         let desk = FileManager.default.urls(for: .desktopDirectory, in: .userDomainMask)[0]
         let stamp = Date().formatted(.iso8601.year().month().day())
-        var url = desk.appendingPathComponent("Отчёт о Mac \(stamp).txt")
+        var url = desk.appendingPathComponent(String(localized: "Отчёт о Mac \(stamp).txt"))
         var n = 2
         while FileManager.default.fileExists(atPath: url.path) {
-            url = desk.appendingPathComponent("Отчёт о Mac \(stamp) (\(n)).txt")
+            url = desk.appendingPathComponent(String(localized: "Отчёт о Mac \(stamp) (\(n)).txt"))
             n += 1
         }
         do {
@@ -125,7 +125,7 @@ final class AppState {
         NSWorkspace.shared.open(url)
     }
 
-    nonisolated static let askText = "Привет! Можешь помочь с компьютером? Сейчас удобно?"
+    nonisolated static let askText = String(localized: "Привет! Можешь помочь с компьютером? Сейчас удобно?")
 
     /// Сообщения с готовым текстом (NSSharingService подставляет получателя); если не вышло — просто открыть чат.
     func message(_ h: Helper, text: String = AppState.askText) {
@@ -161,7 +161,7 @@ final class AppState {
         }
         if let mail = Contact.email(h.email), let s = NSSharingService(named: .composeEmail) {
             s.recipients = [mail]
-            s.subject = "Отчёт о моём Mac"
+            s.subject = String(localized: "Отчёт о моём Mac")
             if s.canPerform(withItems: [text]) { s.perform(withItems: [text]); return }
         }
         if h.telegramName != nil { telegram(h, copying: text); return }
@@ -180,7 +180,7 @@ final class AppState {
     var runningApps: [RunningApp] {
         NSWorkspace.shared.runningApplications
             .filter { $0.activationPolicy == .regular && $0.bundleIdentifier != Bundle.main.bundleIdentifier && $0.bundleIdentifier != "com.apple.finder" }
-            .map { RunningApp(id: $0.processIdentifier, name: $0.localizedName ?? "Приложение", icon: $0.icon, app: $0) }
+            .map { RunningApp(id: $0.processIdentifier, name: $0.localizedName ?? String(localized: "Приложение"), icon: $0.icon, app: $0) }
             .sorted { $0.name.localizedCompare($1.name) == .orderedAscending }
     }
 

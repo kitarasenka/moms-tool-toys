@@ -6,11 +6,16 @@ enum Demo {
         Date.now.addingTimeInterval(-(days * 86_400 + hours * 3_600))
     }
 
+    /// Как macOS называет снимок на языке приложения: «Снимок экрана 2026-11-27 в 11.33.57.png», «Screenshot … at ….png».
     private static func shotName(_ d: Date, video: Bool = false) -> String {
         let f = DateFormatter()
-        f.locale = Fmt.ru
-        f.dateFormat = "yyyy-MM-dd 'в' HH.mm.ss"
-        return (video ? "Запись экрана " : "Снимок экрана ") + f.string(from: d) + (video ? ".mov" : ".png")
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        let day = f.string(from: d)
+        f.dateFormat = "HH.mm.ss"
+        let time = f.string(from: d)
+        return video ? String(localized: "Запись экрана \(day) в \(time).mov")
+                     : String(localized: "Снимок экрана \(day) в \(time).png")
     }
 
     static func desktop(_ r: Roots) -> [Entry] {
@@ -29,19 +34,19 @@ enum Demo {
                              size: Int64(i % 11 == 5 ? 48_000_000 : 900_000 + i * 37_000),
                              created: date, modified: date, lastUsed: nil, added: date))
         }
-        add("Квитанция за свет октябрь.pdf", .documents, 184_000, 31)
-        add("Рецепт пирога от Гали.docx", .documents, 46_000, 64)
-        add("Анкета в поликлинику.pdf", .documents, 312_000, 12)
-        add("Список покупок.txt", .documents, 900, 2)
-        add("Паспорт скан.jpg", .images, 2_400_000, 210)
-        add("Внуки на даче.jpg", .images, 5_100_000, 95)
+        add(String(localized: "Квитанция за свет октябрь.pdf"), .documents, 184_000, 31)
+        add(String(localized: "Рецепт пирога от Гали.docx"), .documents, 46_000, 64)
+        add(String(localized: "Анкета в поликлинику.pdf"), .documents, 312_000, 12)
+        add(String(localized: "Список покупок.txt"), .documents, 900, 2)
+        add(String(localized: "Паспорт скан.jpg"), .images, 2_400_000, 210)
+        add(String(localized: "Внуки на даче.jpg"), .images, 5_100_000, 95)
         add("IMG_4471.HEIC", .images, 3_300_000, 40)
-        add("Поздравление.mp4", .media, 86_000_000, 18)
+        add(String(localized: "Поздравление.mp4"), .media, 86_000_000, 18)
         add("Zoom.pkg", .installers, 98_000_000, 160)
-        add("Фото с юбилея.zip", .archives, 410_000_000, 120)
-        add("Новая папка", .folders, 12_000_000, 300, folder: true)
-        add("Новая папка 2", .folders, 0, 260, folder: true)
-        add("Документы для пенсии", .folders, 38_000_000, 45, folder: true)
+        add(String(localized: "Фото с юбилея.zip"), .archives, 410_000_000, 120)
+        add(String(localized: "Новая папка"), .folders, 12_000_000, 300, folder: true)
+        add(String(localized: "Новая папка 2"), .folders, 0, 260, folder: true)
+        add(String(localized: "Документы для пенсии"), .folders, 38_000_000, 45, folder: true)
         return out.sorted { $0.size > $1.size }
     }
 
@@ -59,13 +64,13 @@ enum Demo {
         add("Telegram-macOS-11.2.dmg", .installers, 142_000_000, 25, app: "Telegram")
         add("Skype-8.99.dmg", .installers, 171_000_000, 520)
         add("VLC-3.0.20-universal.dmg", .installers, 54_000_000, 8, app: "VLC")
-        add("Фото с юбилея.zip", .archives, 410_000_000, 120, used: 118)
-        add("Выписка_сбербанк_2025.pdf", .documents, 420_000, 300)
-        add("Билеты Москва—Сочи.pdf", .documents, 210_000, 14, used: 2)
-        add("Сериал 1 серия.mp4", .media, 1_480_000_000, 190)
+        add(String(localized: "Фото с юбилея.zip"), .archives, 410_000_000, 120, used: 118)
+        add(String(localized: "Выписка_сбербанк_2025.pdf"), .documents, 420_000, 300)
+        add(String(localized: "Билеты Москва—Сочи.pdf"), .documents, 210_000, 14, used: 2)
+        add(String(localized: "Сериал 1 серия.mp4"), .media, 1_480_000_000, 190)
         add("IMG_20250712_183344.jpg", .images, 4_200_000, 140)
-        add("инструкция-мультиварка.pdf", .documents, 7_800_000, 610)
-        add("Договор аренды.docx", .documents, 88_000, 3, used: 1)
+        add(String(localized: "инструкция-мультиварка.pdf"), .documents, 7_800_000, 610)
+        add(String(localized: "Договор аренды.docx"), .documents, 88_000, 3, used: 1)
         return out.sorted { $0.size > $1.size }
     }
 }

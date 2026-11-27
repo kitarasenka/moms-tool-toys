@@ -39,8 +39,8 @@ struct NowView: View {
         let events = state.sensors.events.sorted { $0.t > $1.t }
         return Group {
             if events.isEmpty {
-                EmptyStateView(icon: "list.bullet.clipboard", title: "Пока тихо",
-                               text: "Когда какое-нибудь приложение включит камеру или микрофон, здесь появится запись: что, когда и на сколько.") {}
+                EmptyStateView(icon: "list.bullet.clipboard", title: String(localized: "Пока тихо"),
+                               text: String(localized: "Когда какое-нибудь приложение включит камеру или микрофон, здесь появится запись: что, когда и на сколько.")) {}
             } else {
                 List {
                     ForEach(groupedByDay(events), id: \.0) { day, list in
@@ -56,7 +56,7 @@ struct NowView: View {
     private func groupedByDay(_ events: [SensorEvent]) -> [(String, [SensorEvent])] {
         var out: [(String, [SensorEvent])] = []
         for e in events {
-            let d = e.t.formatted(date: .complete, time: .omitted)
+            let d = e.t.formatted(Date.FormatStyle(date: .complete, time: .omitted).locale(L10n.locale))
             if out.last?.0 == d { out[out.count - 1].1.append(e) } else { out.append((d, [e])) }
         }
         return out
@@ -88,14 +88,14 @@ private struct SensorCard: View {
                         .shadow(color: (on ? Color.red : Brand.cyan).opacity(0.6), radius: on ? 16 : 10)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(kind.title).font(.title3.weight(.semibold))
-                        Text(kind == .camera ? (on ? "Сейчас включена" : "Выключена") : (on ? "Сейчас включён" : "Выключен"))
+                        Text(kind == .camera ? (on ? String(localized: "Сейчас включена") : String(localized: "Выключена")) : (on ? String(localized: "Сейчас включён") : String(localized: "Выключен")))
                             .font(.headline)
                             .foregroundStyle(on ? .red : .secondary)
                     }
                     Spacer()
                 }
                 if devices.isEmpty {
-                    Text(kind == .camera ? "Камер не найдено." : "Микрофонов не найдено.")
+                    Text(kind == .camera ? String(localized: "Камер не найдено.") : String(localized: "Микрофонов не найдено."))
                         .font(.callout).foregroundStyle(.secondary)
                 } else {
                     VStack(alignment: .leading, spacing: 6) {
@@ -126,7 +126,7 @@ private struct LogRow: View {
             Text(Fmt.time(event.t)).monospacedDigit().foregroundStyle(.secondary).frame(width: 72, alignment: .leading)
             Image(systemName: event.kind.icon).foregroundStyle(event.on ? AnyShapeStyle(Color.red) : AnyShapeStyle(.secondary)).frame(width: 20)
             Text(event.device).lineLimit(1)
-            Pill(text: event.on ? "включение" : "выключение", color: event.on ? .red : .secondary)
+            Pill(text: event.on ? String(localized: "включение") : String(localized: "выключение"), color: event.on ? .red : .secondary)
             Spacer()
             if let d = duration { Text("работало \(Fmt.duration(d))").font(.caption).foregroundStyle(.secondary) }
         }

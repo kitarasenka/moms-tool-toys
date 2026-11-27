@@ -22,20 +22,20 @@ struct HistoryView: View {
                         DaySummary(day: day)
                         HStack(alignment: .top, spacing: 16) {
                             VStack(spacing: 16) {
-                                chartCard("Процессор", "cpu", buckets: buckets, series: [
-                                    .init(name: "Средняя", color: .blue, value: \.cpu),
-                                    .init(name: "Пик", color: .red.opacity(0.7), value: \.cpuMax, dashed: true),
+                                chartCard(String(localized: "Процессор"), "cpu", buckets: buckets, series: [
+                                    .init(name: String(localized: "Средняя"), color: .blue, value: \.cpu),
+                                    .init(name: String(localized: "Пик"), color: .red.opacity(0.7), value: \.cpuMax, dashed: true),
                                 ], yMax: 100, format: { "\(Int($0)) %" })
-                                chartCard("Память", "memorychip", buckets: buckets, series: [
-                                    .init(name: "Используется", color: .green, value: \.mem),
+                                chartCard(String(localized: "Память"), "memorychip", buckets: buckets, series: [
+                                    .init(name: String(localized: "Используется"), color: .green, value: \.mem),
                                 ], yMax: buckets.map(\.memTotal).max(), format: { Fmt.bytes($0) })
-                                chartCard("Сеть", "network", buckets: buckets, series: [
-                                    .init(name: "Получено", color: .blue, value: \.netIn),
-                                    .init(name: "Отправлено", color: .orange, value: \.netOut),
+                                chartCard(String(localized: "Сеть"), "network", buckets: buckets, series: [
+                                    .init(name: String(localized: "Получено"), color: .blue, value: \.netIn),
+                                    .init(name: String(localized: "Отправлено"), color: .orange, value: \.netOut),
                                 ], yMax: nil, format: { Fmt.rate($0) })
-                                chartCard("Диск", "internaldrive", buckets: buckets, series: [
-                                    .init(name: "Чтение", color: .teal, value: \.diskRead),
-                                    .init(name: "Запись", color: .pink, value: \.diskWrite),
+                                chartCard(String(localized: "Диск"), "internaldrive", buckets: buckets, series: [
+                                    .init(name: String(localized: "Чтение"), color: .teal, value: \.diskRead),
+                                    .init(name: String(localized: "Запись"), color: .pink, value: \.diskWrite),
                                 ], yMax: nil, format: { Fmt.rate($0) })
                             }
                             MomentPanel(bucket: selected, day: day)
@@ -47,11 +47,11 @@ struct HistoryView: View {
                 }
             } else if day != nil {
                 ContentUnavailableView {
-                    Label(isToday ? "Запись только началась" : "Нет записей за этот день", systemImage: "chart.xyaxis.line")
+                    Label(isToday ? String(localized: "Запись только началась") : String(localized: "Нет записей за этот день"), systemImage: "chart.xyaxis.line")
                 } description: {
                     Text(isToday
-                         ? "PerfMom сохраняет нагрузку раз в минуту — первая точка появится в течение минуты. Запись идёт, пока PerfMom запущен; окно можно закрыть — он продолжит работать в строке меню."
-                         : "В этот день PerfMom не был запущен.")
+                         ? String(localized: "PerfMom сохраняет нагрузку раз в минуту — первая точка появится в течение минуты. Запись идёт, пока PerfMom запущен; окно можно закрыть — он продолжит работать в строке меню.")
+                         : String(localized: "В этот день PerfMom не был запущен."))
                 }
             } else {
                 ProgressView().controlSize(.small)
@@ -62,7 +62,7 @@ struct HistoryView: View {
                 Button { shift(-1) } label: { Image(systemName: "chevron.left") }
                     .help("Предыдущий день")
                     .disabled(!availableDays.contains { $0 < date })
-                DatePicker("День", selection: $date, in: ...Date(), displayedComponents: .date)
+                DatePicker(String(localized: "День"), selection: $date, in: ...Date(), displayedComponents: .date)
                     .labelsHidden()
                     .datePickerStyle(.field)
                 Button { shift(1) } label: { Image(systemName: "chevron.right") }
@@ -75,6 +75,10 @@ struct HistoryView: View {
         .navigationTitle("История")
         .task(id: date) {
             hover = nil
+            if state.demo {
+                day = HistoryDay(date: date, points: [], processes: [])
+                return
+            }
             // Сегодняшний день перечитываем раз в минуту — по мере записи новых точек.
             while !Task.isCancelled {
                 let d = date
@@ -150,25 +154,25 @@ struct DayChart: View {
             ForEach(series, id: \.name) { s in
                 ForEach(buckets) { b in
                     if !s.dashed {
-                        AreaMark(x: .value("Время", b.t), y: .value(s.name, b[keyPath: s.value]),
-                                 series: .value("Отрезок", "\(s.name)-\(b.segment)"), stacking: .unstacked)
+                        AreaMark(x: .value(String(localized: "Время"), b.t), y: .value(s.name, b[keyPath: s.value]),
+                                 series: .value(String(localized: "Отрезок"), "\(s.name)-\(b.segment)"), stacking: .unstacked)
                             .foregroundStyle(s.color.opacity(0.15))
                             .interpolationMethod(.monotone)
                     }
-                    LineMark(x: .value("Время", b.t), y: .value(s.name, b[keyPath: s.value]),
-                             series: .value("Отрезок", "\(s.name)-\(b.segment)"))
+                    LineMark(x: .value(String(localized: "Время"), b.t), y: .value(s.name, b[keyPath: s.value]),
+                             series: .value(String(localized: "Отрезок"), "\(s.name)-\(b.segment)"))
                         .foregroundStyle(s.color)
                         .lineStyle(StrokeStyle(lineWidth: s.dashed ? 1 : 1.5, dash: s.dashed ? [3, 3] : []))
                         .interpolationMethod(.monotone)
                     if segmentSizes[b.segment] == 1 {
-                        PointMark(x: .value("Время", b.t), y: .value(s.name, b[keyPath: s.value]))
+                        PointMark(x: .value(String(localized: "Время"), b.t), y: .value(s.name, b[keyPath: s.value]))
                             .foregroundStyle(s.color)
                             .symbolSize(18)
                     }
                 }
             }
             if let hover, hover >= start, hover <= end {
-                RuleMark(x: .value("Время", hover))
+                RuleMark(x: .value(String(localized: "Время"), hover))
                     .foregroundStyle(Color.secondary.opacity(0.6))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [2, 2]))
             }
@@ -180,7 +184,7 @@ struct DayChart: View {
                 AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 3]))
                 AxisValueLabel(collisionResolution: .disabled) {
                     if let d = v.as(Date.self) {
-                        Text(d.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits)))
+                        Text(d.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).locale(L10n.locale)))
                             .font(.caption2)
                             .fixedSize()
                     }
@@ -230,21 +234,21 @@ struct DaySummary: View {
         let dWrite = p.reduce(0) { $0 + $1.diskWrite * $1.dur }
 
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 170), spacing: 12)], spacing: 12) {
-            tile("Средняя загрузка ЦП", "\(Fmt.percent(avgCPU)) %", nil)
-            tile("Пик ЦП", peakCPU.map { "\(Fmt.percent($0.cpuMax)) %" } ?? "—", peakCPU.map { "в \(time($0.t))" })
-            tile("Пик памяти", peakMem.map { Fmt.bytes($0.memMax) } ?? "—",
-                 peakMem.map { "в \(time($0.t)) из \(Fmt.bytes($0.memTotal))" })
-            tile("Сеть", "↓ \(Fmt.bytes(netIn))", "↑ \(Fmt.bytes(netOut))")
-            tile("Диск", "R \(Fmt.bytes(dRead))", "W \(Fmt.bytes(dWrite))")
-            tile("Записано", Fmt.duration(day.recordedSeconds),
-                 p.first.map { "с \(time($0.t)) до \(time($0.t.addingTimeInterval(60)))" }.map { first in
-                     first.replacingOccurrences(of: "до \(time(p.first!.t.addingTimeInterval(60)))",
-                                                with: "до \(time((p.last?.t ?? p.first!.t).addingTimeInterval(60)))")
+            tile(String(localized: "Средняя загрузка ЦП"), "\(Fmt.percent(avgCPU)) %", nil)
+            tile(String(localized: "Пик ЦП"), peakCPU.map { "\(Fmt.percent($0.cpuMax)) %" } ?? "—", peakCPU.map { String(localized: "в \(time($0.t))") })
+            tile(String(localized: "Пик памяти"), peakMem.map { Fmt.bytes($0.memMax) } ?? "—",
+                 peakMem.map { String(localized: "в \(time($0.t)) из \(Fmt.bytes($0.memTotal))") })
+            tile(String(localized: "Сеть"), "↓ \(Fmt.bytes(netIn))", "↑ \(Fmt.bytes(netOut))")
+            tile(String(localized: "Диск"), "R \(Fmt.bytes(dRead))", "W \(Fmt.bytes(dWrite))")
+            tile(String(localized: "Записано"), Fmt.duration(day.recordedSeconds),
+                 p.first.map { String(localized: "с \(time($0.t)) до \(time($0.t.addingTimeInterval(60)))") }.map { first in
+                     first.replacingOccurrences(of: String(localized: "до \(time(p.first!.t.addingTimeInterval(60)))"),
+                                                with: String(localized: "до \(time((p.last?.t ?? p.first!.t).addingTimeInterval(60)))"))
                  })
         }
     }
 
-    private func time(_ d: Date) -> String { d.formatted(date: .omitted, time: .shortened) }
+    private func time(_ d: Date) -> String { d.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)) }
 
     private func tile(_ title: String, _ value: String, _ caption: String?) -> some View {
         VStack(alignment: .leading, spacing: 3) {
@@ -273,17 +277,17 @@ struct MomentPanel: View {
         VStack(alignment: .leading, spacing: 12) {
             if let b = bucket {
                 let end = b.t.addingTimeInterval(5 * 60)
-                Text("\(b.t.formatted(date: .omitted, time: .shortened)) – \(end.formatted(date: .omitted, time: .shortened))")
+                Text("\(b.t.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale))) – \(end.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)))")
                     .font(.headline)
                 VStack(alignment: .leading, spacing: 4) {
-                    LegendDot(color: .blue, title: "ЦП", value: "\(Fmt.percent(b.cpu)) % (пик \(Fmt.percent(b.cpuMax)))")
-                    LegendDot(color: .green, title: "Память", value: Fmt.bytes(b.mem))
-                    LegendDot(color: .blue, title: "Сеть ↓", value: Fmt.rate(b.netIn))
-                    LegendDot(color: .orange, title: "Сеть ↑", value: Fmt.rate(b.netOut))
-                    LegendDot(color: .teal, title: "Диск", value: Fmt.rate(b.diskRead + b.diskWrite))
+                    LegendDot(color: .blue, title: String(localized: "ЦП"), value: String(localized: "\(Fmt.percent(b.cpu)) % (пик \(Fmt.percent(b.cpuMax)))"))
+                    LegendDot(color: .green, title: String(localized: "Память"), value: Fmt.bytes(b.mem))
+                    LegendDot(color: .blue, title: String(localized: "Сеть ↓"), value: Fmt.rate(b.netIn))
+                    LegendDot(color: .orange, title: String(localized: "Сеть ↑"), value: Fmt.rate(b.netOut))
+                    LegendDot(color: .teal, title: String(localized: "Диск"), value: Fmt.rate(b.diskRead + b.diskWrite))
                 }
-                topList("Больше всего ЦП", b.topCPU) { "\(Fmt.percent($0)) %" }
-                topList("Больше всего памяти", b.topMem) { Fmt.bytes($0) }
+                topList(String(localized: "Больше всего ЦП"), b.topCPU) { "\(Fmt.percent($0)) %" }
+                topList(String(localized: "Больше всего памяти"), b.topMem) { Fmt.bytes($0) }
                 if b.minutes < 5 {
                     Text("Записано минут в интервале: \(b.minutes) из 5")
                         .font(.caption).foregroundStyle(.tertiary)
@@ -335,7 +339,7 @@ struct DayProcesses: View {
         let maxCPU = list.first?.cpuSeconds ?? 1
         let recorded = max(day.recordedSeconds, 1)
 
-        Card("Кто нагружал систему за день", systemImage: "list.number") {
+        Card(String(localized: "Кто нагружал систему за день"), systemImage: "list.number") {
             Text("Helper-процессы суммируются в своё приложение")
                 .font(.caption).foregroundStyle(.secondary)
         } content: {
@@ -374,7 +378,7 @@ struct DayProcesses: View {
                 }
             }
             if list.count > 12 {
-                Button(showAll ? "Свернуть" : "Показать все (\(min(list.count, 60)))") { showAll.toggle() }
+                Button(showAll ? String(localized: "Свернуть") : String(localized: "Показать все (\(min(list.count, 60)))")) { showAll.toggle() }
                     .buttonStyle(.link)
                     .padding(.top, 4)
             }

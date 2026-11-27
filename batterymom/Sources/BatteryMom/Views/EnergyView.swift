@@ -5,15 +5,15 @@ struct EnergyView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            ScreenHeader(title: "Расход приложений",
-                         subtitle: "Кто сильнее всего тратит энергию прямо сейчас. Это та же оценка, что в «Мониторинге системы», — относительная, не ватты. Помощники приложений (вкладки браузера и т. п.) сложены в само приложение.") {
+            ScreenHeader(title: String(localized: "Расход приложений"),
+                         subtitle: String(localized: "Кто сильнее всего тратит энергию прямо сейчас. Это та же оценка, что в «Мониторинге системы», — относительная, не ватты. Помощники приложений (вкладки браузера и т. п.) сложены в само приложение.")) {
                 refreshButton
             }
             if state.energy.isEmpty {
                 Card {
                     HStack(spacing: 10) {
                         if state.energyLoading { ProgressView().controlSize(.small) }
-                        Text(state.energyLoading ? "Замеряю… (около двух секунд)" : "Нет данных — нажмите «Обновить».")
+                        Text(state.energyLoading ? String(localized: "Замеряю… (около двух секунд)") : String(localized: "Нет данных — нажмите «Обновить»."))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -61,7 +61,7 @@ struct EnergyView: View {
                             HStack(alignment: .firstTextBaseline) {
                                 Text(app.name).font(.body.weight(.medium)).lineLimit(1)
                                 if app.processCount > 1 {
-                                    Text(Fmt.count(app.processCount, "процесс", "процесса", "процессов"))
+                                    Text(Fmt.processes(app.processCount))
                                         .font(.caption).foregroundStyle(.secondary)
                                 }
                                 if app.bundlePath == nil {

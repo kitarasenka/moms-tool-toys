@@ -66,7 +66,7 @@ struct HotkeyGuide: View {
         }
     }
 
-    private func warning(_ text: String) -> some View {
+    private func warning(_ text: LocalizedStringKey) -> some View {
         Label(text, systemImage: "exclamationmark.triangle.fill")
             .font(.callout)
             .foregroundStyle(.orange)
@@ -94,10 +94,10 @@ struct GuideSheet: View {
 /// Рисунок: окно какого-то приложения, поверх — быстрая панель ClipMom, внизу — клавиши ⇧ ⌘ V.
 struct QuickPanelIllustration: View {
     private let rows: [(icon: String, title: String)] = [
-        ("text.alignleft", "Адрес доставки: ул. Лесная, 5"),
+        ("text.alignleft", String(localized: "Адрес доставки: ул. Лесная, 5")),
         ("link", "maps.apple.com/?q=…"),
-        ("photo", "Снимок экрана"),
-        ("doc", "Отчёт за ноябрь.pdf"),
+        ("photo", String(localized: "Снимок экрана")),
+        ("doc", String(localized: "Отчёт за ноябрь.pdf")),
     ]
 
     var body: some View {

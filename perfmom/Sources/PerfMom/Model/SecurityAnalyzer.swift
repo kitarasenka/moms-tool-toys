@@ -13,10 +13,10 @@ enum RiskLevel: Int, Comparable, CaseIterable, Sendable {
 
     var title: String {
         switch self {
-        case .none: "Нет замечаний"
-        case .info: "Замечание"
-        case .warning: "Обратите внимание"
-        case .danger: "Подозрительно"
+        case .none: String(localized: "Нет замечаний")
+        case .info: String(localized: "Замечание")
+        case .warning: String(localized: "Обратите внимание")
+        case .danger: String(localized: "Подозрительно")
         }
     }
 
@@ -41,7 +41,7 @@ struct SecurityFinding: Identifiable, Equatable, Sendable {
 
 struct SecurityAssessment: Equatable, Sendable {
     var findings: [SecurityFinding] = []
-    var signer = "Проверяется…"
+    var signer = String(localized: "Проверяется…")
     var isPlatform = false
     var hardenedRuntime = false
 
@@ -102,7 +102,7 @@ final class SecurityAnalyzer: @unchecked Sendable {
         for i in procs.indices {
             let r = procs[i]
             guard r.pid > 0, r.state != .zombie else {
-                procs[i].security = SecurityAssessment(signer: r.pid == 0 ? "Ядро macOS" : "—", isPlatform: true)
+                procs[i].security = SecurityAssessment(signer: r.pid == 0 ? String(localized: "Ядро macOS") : "—", isPlatform: true)
                 continue
             }
             let key = "\(r.pid)-\(r.startTime?.timeIntervalSince1970 ?? 0)"
@@ -121,20 +121,20 @@ final class SecurityAnalyzer: @unchecked Sendable {
             }
             let flags = KernelCodeSigning.flags(r.pid)
             if let f = flags, f & KernelCodeSigning.valid == 0 {
-                add("invalid", "Подпись недействительна",
-                    "Ядро пометило код процесса как изменённый после запуска — так бывает при внедрении кода.", 4)
+                add("invalid", String(localized: "Подпись недействительна"),
+                    String(localized: "Ядро пометило код процесса как изменённый после запуска — так бывает при внедрении кода."), 4)
             }
             if let f = flags, f & KernelCodeSigning.debugged != 0, !a.isPlatform {
-                add("debugged", "Подключён отладчик", "К процессу подключался отладчик или его память изменялась извне.", 1)
+                add("debugged", String(localized: "Подключён отладчик"), String(localized: "К процессу подключался отладчик или его память изменялась извне."), 1)
             }
             if entry.noCertificate {
                 if (r.netInTotal ?? 0) + (r.netOutTotal ?? 0) > 0 {
-                    add("network", "Сетевая активность без сертификата",
-                        "Программа без подписи разработчика обменивается данными по сети.", 1)
+                    add("network", String(localized: "Сетевая активность без сертификата"),
+                        String(localized: "Программа без подписи разработчика обменивается данными по сети."), 1)
                 }
                 if r.cpu >= 80 {
-                    add("cpu", "Высокая нагрузка без сертификата",
-                        "Неподписанная программа загружает процессор на \(Fmt.percent(r.cpu)) % — так выглядят, например, майнеры.", 1)
+                    add("cpu", String(localized: "Высокая нагрузка без сертификата"),
+                        String(localized: "Неподписанная программа загружает процессор на \(Fmt.percent(r.cpu)) % — так выглядят, например, майнеры."), 1)
                 }
             }
             procs[i].security = a
@@ -155,20 +155,20 @@ final class SecurityAnalyzer: @unchecked Sendable {
         // Ядро не отдаёт путь (ENOENT), если файл удалён до первого замера; если позже —
         // ловим проверкой существования при ежеминутном пересчёте.
         if r.path.isEmpty || !fm.fileExists(atPath: r.path) {
-            add("deleted", "Исполняемый файл удалён",
-                "Процесс «\(r.name)» работает, но его файла больше нет на диске — частый приём, чтобы замести следы.", 4)
+            add("deleted", String(localized: "Исполняемый файл удалён"),
+                String(localized: "Процесс «\(r.name)» работает, но его файла больше нет на диске — частый приём, чтобы замести следы."), 4)
         }
         checkParent(r, byPID: byPID, add: add)
 
         if a.isPlatform {
             // Копия системной утилиты под чужим именем/в чужом месте сохраняет подпись Apple,
             // поэтому расположение и имя проверяем и у платформенных бинарников.
-            a.signer = "Apple (система)"
+            a.signer = String(localized: "Apple (система)")
             checkLocation(r, noCertificate: false, add: add)
             if Self.systemNames.contains(r.name) || r.name.lowercased().hasPrefix("com.apple."),
                !Self.systemDirs.contains(where: { r.path.hasPrefix($0) }) {
-                add("masquerade", "Маскируется под системный процесс",
-                    "Системная утилита Apple запущена под именем «\(r.name)» из \(r.path) — настоящий компонент macOS лежит в системных папках.", 4)
+                add("masquerade", String(localized: "Маскируется под системный процесс"),
+                    String(localized: "Системная утилита Apple запущена под именем «\(r.name)» из \(r.path) — настоящий компонент macOS лежит в системных папках."), 4)
             }
             return Cached(base: a, noCertificate: false, complete: true)
         }
@@ -177,7 +177,7 @@ final class SecurityAnalyzer: @unchecked Sendable {
         var signing: SigningInfo??
         var complete = true
         if r.path.isEmpty {
-            a.signer = "Файл удалён — проверить нельзя"
+            a.signer = String(localized: "Файл удалён — проверить нельзя")
         } else if let cached = signingCache[r.path] {
             signing = .some(cached)
         } else if budget > 0, fm.fileExists(atPath: r.path) {
@@ -193,21 +193,21 @@ final class SecurityAnalyzer: @unchecked Sendable {
         if let signing {
             if let s = signing {
                 if s.unsigned {
-                    a.signer = "Нет подписи"
+                    a.signer = String(localized: "Нет подписи")
                     noCertificate = true
-                    add("unsigned", "Нет цифровой подписи", "Файл не подписан — неизвестно, кто его выпустил и не изменён ли он.", 3)
+                    add("unsigned", String(localized: "Нет цифровой подписи"), String(localized: "Файл не подписан — неизвестно, кто его выпустил и не изменён ли он."), 3)
                 } else if s.isAdhoc {
-                    a.signer = "Ad-hoc (без сертификата)"
+                    a.signer = String(localized: "Ad-hoc (без сертификата)")
                     noCertificate = true
-                    add("adhoc", "Подпись без сертификата",
-                        "Ad-hoc подпись не указывает разработчика. Нормально для самосборных программ и Homebrew, но так же подписывают и вредоносы.", 1)
+                    add("adhoc", String(localized: "Подпись без сертификата"),
+                        String(localized: "Ad-hoc подпись не указывает разработчика. Нормально для самосборных программ и Homebrew, но так же подписывают и вредоносы."), 1)
                 } else if s.isApple {
                     a.signer = "Apple"
                 } else {
                     a.signer = Self.vendorName(s)
                 }
             } else {
-                a.signer = "Не удалось проверить"
+                a.signer = String(localized: "Не удалось проверить")
             }
         }
 
@@ -215,18 +215,18 @@ final class SecurityAnalyzer: @unchecked Sendable {
         checkMasquerade(r, signing: signing ?? nil, add: add)
 
         if noCertificate, isQuarantined(r.path) {
-            add("quarantine", "Скачан из интернета без сертификата",
-                "У файла есть карантинная метка загрузки, но нет подписи разработчика — Gatekeeper такие файлы обычно блокирует.", 2)
+            add("quarantine", String(localized: "Скачан из интернета без сертификата"),
+                String(localized: "У файла есть карантинная метка загрузки, но нет подписи разработчика — Gatekeeper такие файлы обычно блокирует."), 2)
         }
         if r.uid == myUID, hasDylibInjection(r) {
-            add("inject", "Внедрение библиотек (DYLD_INSERT_LIBRARIES)",
-                "В окружении процесса задана подгрузка сторонних библиотек — классический способ перехвата чужой программы.", 4)
+            add("inject", String(localized: "Внедрение библиотек (DYLD_INSERT_LIBRARIES)"),
+                String(localized: "В окружении процесса задана подгрузка сторонних библиотек — классический способ перехвата чужой программы."), 4)
         }
         if let job = jobsByTarget[r.path] ?? PathTools.outermostApp(r.path).flatMap({ jobsByTarget[$0] }) {
             let risky = noCertificate || job.isScript || job.signing?.unsigned == true || job.signing?.isAdhoc == true
             if risky {
-                add("persistence", "Закреплён в автозагрузке",
-                    "Запускается автоматически через «\(job.label)» (\(job.scope.title.lowercased())), при этом без подписи разработчика.", 2)
+                add("persistence", String(localized: "Закреплён в автозагрузке"),
+                    String(localized: "Запускается автоматически через «\(job.label)» (\(job.scope.title.lowercased())), при этом без подписи разработчика."), 2)
             }
         }
         return Cached(base: a, noCertificate: noCertificate, complete: complete)
@@ -252,8 +252,8 @@ final class SecurityAnalyzer: @unchecked Sendable {
               let app = PathTools.outermostApp(parent.path) else { return }
         let appName = ((app as NSString).lastPathComponent as NSString).deletingPathExtension
         guard Self.riskyParents.contains(appName) else { return }
-        add("parent", "Необычный родитель",
-            "«\(appName)» запустил «\(r.name)». Документы и браузеры не должны запускать командную оболочку — так работают вредоносные макросы и эксплойты.", 2)
+        add("parent", String(localized: "Необычный родитель"),
+            String(localized: "«\(appName)» запустил «\(r.name)». Документы и браузеры не должны запускать командную оболочку — так работают вредоносные макросы и эксплойты."), 2)
     }
 
     private static let hiddenAllowed: Set<String> = [
@@ -266,29 +266,29 @@ final class SecurityAnalyzer: @unchecked Sendable {
         let p = r.path
         guard !p.isEmpty else { return }
         let suspicious: [(String, String)] = [
-            ("/tmp/", "временной папки"), ("/private/tmp/", "временной папки"), ("/var/tmp/", "временной папки"),
-            ("/private/var/tmp/", "временной папки"), ("/Users/Shared/", "общей папки /Users/Shared"),
-            (home + "/Downloads/", "папки «Загрузки»"), (home + "/.Trash/", "Корзины"),
-            ("/private/var/folders/", "временной папки приложения"),
+            ("/tmp/", String(localized: "временной папки")), ("/private/tmp/", String(localized: "временной папки")), ("/var/tmp/", String(localized: "временной папки")),
+            ("/private/var/tmp/", String(localized: "временной папки")), ("/Users/Shared/", String(localized: "общей папки /Users/Shared")),
+            (home + "/Downloads/", String(localized: "папки «Загрузки»")), (home + "/.Trash/", String(localized: "Корзины")),
+            ("/private/var/folders/", String(localized: "временной папки приложения")),
         ]
         if let hit = suspicious.first(where: { p.hasPrefix($0.0) }) {
             // Временные папки приложений (/var/folders) используют и легальные установщики — штрафуем мягче.
             let weight = hit.0 == "/private/var/folders/" ? (noCertificate ? 2 : 0) : 3
             if weight > 0 {
-                add("location", "Запущен из \(hit.1)",
-                    "Обычные программы не работают из \(hit.1); туда часто распаковываются вредоносы.", weight)
+                add("location", String(localized: "Запущен из \(hit.1)"),
+                    String(localized: "Обычные программы не работают из \(hit.1); туда часто распаковываются вредоносы."), weight)
             }
             return
         }
         if p.hasPrefix("/Volumes/") {
-            add("volume", "Запущен с внешнего диска или образа",
-                "Программа работает прямо с подключённого тома (DMG, флешка), а не из «Программ».", 1)
+            add("volume", String(localized: "Запущен с внешнего диска или образа"),
+                String(localized: "Программа работает прямо с подключённого тома (DMG, флешка), а не из «Программ»."), 1)
         }
         if noCertificate, p.hasPrefix(home + "/") {
             let components = p.dropFirst(home.count + 1).split(separator: "/").dropLast()
             if let hidden = components.first(where: { $0.hasPrefix(".") && !Self.hiddenAllowed.contains(String($0)) }) {
-                add("hidden", "Спрятан в скрытой папке",
-                    "Файл без сертификата лежит в скрытой папке «\(hidden)» — так прячут программы от пользователя.", 2)
+                add("hidden", String(localized: "Спрятан в скрытой папке"),
+                    String(localized: "Файл без сертификата лежит в скрытой папке «\(hidden)» — так прячут программы от пользователя."), 2)
             }
         }
     }
@@ -310,8 +310,8 @@ final class SecurityAnalyzer: @unchecked Sendable {
         let looksSystem = Self.systemNames.contains(name) || name.lowercased().hasPrefix("com.apple.")
             || name != r.name // пробелы по краям имени — приём маскировки
         guard looksSystem else { return }
-        add("masquerade", "Маскируется под системный процесс",
-            "Имя «\(r.name)» совпадает с компонентом macOS, но файл не подписан Apple и лежит в \(r.path).", 4)
+        add("masquerade", String(localized: "Маскируется под системный процесс"),
+            String(localized: "Имя «\(r.name)» совпадает с компонентом macOS, но файл не подписан Apple и лежит в \(r.path)."), 4)
     }
 
     private func isQuarantined(_ path: String) -> Bool {
@@ -344,7 +344,7 @@ final class SecurityAnalyzer: @unchecked Sendable {
     }
 
     static func vendorName(_ s: SigningInfo) -> String {
-        guard let auth = s.authority else { return "Подписан" }
+        guard let auth = s.authority else { return String(localized: "Подписан") }
         var name = auth.replacingOccurrences(of: "Developer ID Application: ", with: "")
             .replacingOccurrences(of: "Apple Development: ", with: "")
         if let team = s.teamID { name = name.replacingOccurrences(of: " (\(team))", with: "") }
@@ -364,14 +364,14 @@ final class SecurityAnalyzer: @unchecked Sendable {
         let target = PathTools.innermostApp(path) ?? path
         var code: SecStaticCode?
         guard SecStaticCodeCreateWithPath(URL(fileURLWithPath: target) as CFURL, [], &code) == errSecSuccess, let code else {
-            return DeepVerification(valid: false, notarized: false, message: "Не удалось открыть файл для проверки")
+            return DeepVerification(valid: false, notarized: false, message: String(localized: "Не удалось открыть файл для проверки"))
         }
         var cfError: Unmanaged<CFError>?
         let status = SecStaticCodeCheckValidityWithErrors(code, [], nil, &cfError)
         guard status == errSecSuccess else {
-            let reason = (cfError?.takeRetainedValue()).map { CFErrorCopyDescription($0) as String } ?? "код \(status)"
+            let reason = (cfError?.takeRetainedValue()).map { CFErrorCopyDescription($0) as String } ?? String(localized: "код \(status)")
             return DeepVerification(valid: false, notarized: false,
-                                    message: status == errSecCSUnsigned ? "Файл не подписан" : "Подпись повреждена или файл изменён: \(reason)")
+                                    message: status == errSecCSUnsigned ? String(localized: "Файл не подписан") : String(localized: "Подпись повреждена или файл изменён: \(reason)"))
         }
         func satisfies(_ req: String) -> Bool {
             var requirement: SecRequirement?
@@ -380,12 +380,12 @@ final class SecurityAnalyzer: @unchecked Sendable {
         }
         // OID 1.2.840.113635.100.6.1.9 — сертификат Mac App Store; такие приложения не нотаризуют.
         if satisfies("anchor apple generic and certificate leaf[field.1.2.840.113635.100.6.1.9] exists") {
-            return DeepVerification(valid: true, notarized: true, message: "Подпись цела, приложение из Mac App Store")
+            return DeepVerification(valid: true, notarized: true, message: String(localized: "Подпись цела, приложение из Mac App Store"))
         }
         if satisfies("notarized") {
-            return DeepVerification(valid: true, notarized: true, message: "Подпись цела, файл нотаризован Apple")
+            return DeepVerification(valid: true, notarized: true, message: String(localized: "Подпись цела, файл нотаризован Apple"))
         }
         return DeepVerification(valid: true, notarized: false,
-                                message: "Подпись цела, но файл не нотаризован Apple — Gatekeeper предупредил бы о нём при первом запуске")
+                                message: String(localized: "Подпись цела, но файл не нотаризован Apple — Gatekeeper предупредил бы о нём при первом запуске"))
     }
 }

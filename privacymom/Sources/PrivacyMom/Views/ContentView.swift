@@ -66,7 +66,7 @@ private struct AccessStatus: View {
                 .foregroundStyle(state.fullDiskAccess ? AnyShapeStyle(Brand.gradient) : AnyShapeStyle(.orange))
             VStack(alignment: .leading, spacing: 1) {
                 Text("Полный доступ к диску").font(.caption)
-                Text(state.fullDiskAccess ? "есть" : "нет — часть данных скрыта")
+                Text(state.fullDiskAccess ? String(localized: "есть") : String(localized: "нет — часть данных скрыта"))
                     .font(.caption2).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
@@ -74,6 +74,6 @@ private struct AccessStatus: View {
         .padding(10)
         .background(.background.secondary.opacity(0.6), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
         .onTapGesture { if !state.fullDiskAccess { FullDiskAccess.openSettings() } }
-        .help(state.fullDiskAccess ? "PrivacyMom видит базы разрешений и данные Safari" : "Нажмите, чтобы открыть настройки")
+        .help(state.fullDiskAccess ? String(localized: "PrivacyMom видит базы разрешений и данные Safari") : String(localized: "Нажмите, чтобы открыть настройки"))
     }
 }

@@ -37,6 +37,15 @@ enum SelfTest {
         expect(Classifier.looksLikeScreenshot(name: "Запись экрана 2026-11-02 в 10.11.12.mov"), "«Запись экрана … .mov»")
         expect(!Classifier.looksLikeScreenshot(name: "Screenshot ideas.docx"), "«Screenshot ideas.docx» — не снимок")
         expect(!Classifier.looksLikeScreenshot(name: "отпуск.jpg"), "обычное фото — не снимок")
+        // Имена, которые macOS даёт снимкам и записям экрана на других языках
+        for n in ["Screen Recording 2024-01-01 at 10.00.00.mov", "Bildschirmfoto 2024-01-01 um 10.00.00.png",
+                  "Bildschirmaufnahme 2024-01-01 um 10.00.00.mov", "Capture d’écran 2024-01-01 à 10.00.00.png",
+                  "Capture d'écran 2024-01-01 à 10.00.00.png", "Enregistrement de l’écran 2024-01-01 à 10.00.00.mov",
+                  "截屏2024-01-01 10.00.00.png", "屏幕录制2024-01-01 10.00.00.mov",
+                  "لقطة شاشة 2024-01-01 في 10.00.00.png", "تسجيل الشاشة 2024-01-01 في 10.00.00.mov"] {
+            expect(Classifier.looksLikeScreenshot(name: n), "«\(n)»")
+        }
+        expect(!Classifier.looksLikeScreenshot(name: "Bildschirmfoto Ideen.pages"), "«Bildschirmfoto Ideen.pages» — не снимок")
         let tagged = roots.desktop.appendingPathComponent("IMG_0001.png")
         let plain = roots.desktop.appendingPathComponent("IMG_0002.png")
         write(tagged); write(plain)
@@ -67,6 +76,11 @@ enum SelfTest {
         var comps = DateComponents(); comps.year = 2026; comps.month = 11; comps.day = 5; comps.hour = 12
         let nov = Calendar(identifier: .gregorian).date(from: comps)!
         expect(Organizer.monthFolder(for: nov) == "2026-11 ноябрь", "папка месяца «\(Organizer.monthFolder(for: nov))»")
+        expect(Organizer.monthFolder(for: nov, locale: Locale(identifier: "en_US")) == "2026-11 November", "по-английски — «2026-11 November»")
+        expect(Organizer.monthFolder(for: nov, locale: Locale(identifier: "de_DE")) == "2026-11 November", "по-немецки — «2026-11 November»")
+        expect(Organizer.monthFolder(for: nov, locale: Locale(identifier: "ar_SA")).hasPrefix("2026-11 "),
+               "по-арабски номер месяца латинскими цифрами: «\(Organizer.monthFolder(for: nov, locale: Locale(identifier: "ar_SA")))»")
+        expect(roots.defaultScreenshots.lastPathComponent == "Снимки экрана", "папка снимков по умолчанию — «Снимки экрана»")
         let base = roots.defaultScreenshots.appendingPathComponent("2026-11 ноябрь", isDirectory: true)
         write(base.appendingPathComponent("IMG_0001.png"), "старый")
         write(base.appendingPathComponent("IMG_0001 2.png"), "старый 2")
@@ -79,6 +93,19 @@ enum SelfTest {
                "ничего не перезаписано, со стола исчез")
         r = Organizer.move([(roots.desktop.appendingPathComponent("ссылка"), base)], root: roots.desktop, home: home)
         expect(r.failures.isEmpty && read(outside.appendingPathComponent("secret.txt")) == "секрет", "ссылка переезжает как ссылка, цель цела")
+
+        print("Смена языка не плодит папки")
+        expect(Organizer.monthDir(in: roots.defaultScreenshots, for: nov) == base, "есть «2026-11 ноябрь» — кладём в неё")
+        comps.month = 12
+        let dec = Calendar(identifier: .gregorian).date(from: comps)!
+        expect(Organizer.monthDir(in: roots.defaultScreenshots, for: dec).lastPathComponent == Organizer.monthFolder(for: dec),
+               "нового месяца ещё нет — папка с названием на языке приложения")
+        let pics = home.appendingPathComponent("Pictures", isDirectory: true)
+        try? fm.createDirectory(at: pics.appendingPathComponent("Снимки экрана"), withIntermediateDirectories: true)
+        expect(Paths.folder(in: pics, localized: "Screenshots", russian: "Снимки экрана").lastPathComponent == "Снимки экрана",
+               "английский DesktopMom продолжает русскую папку, если она уже есть")
+        expect(Paths.folder(in: home, localized: "Screenshots", russian: "Снимки экрана").lastPathComponent == "Screenshots",
+               "русской нет — папка на языке приложения")
 
         print("Отказы")
         let viaDots = roots.desktop.appendingPathComponent("../outside.txt")

@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "DiskMom 会统计桌面上文件占用的空间，并在其中查找重复文件。";
+"NSDocumentsFolderUsageDescription" = "DiskMom 会统计“文稿”占用的空间，并在其中查找重复文件。";
+"NSDownloadsFolderUsageDescription" = "DiskMom 会统计“下载”占用的空间，并在其中查找重复文件。";
+"NSRemovableVolumesUsageDescription" = "如果你选择外置磁盘用于地图或重复文件查找，DiskMom 会显示其中的内容占用。";
+"NSNetworkVolumesUsageDescription" = "如果你选择网络磁盘用于地图或重复文件查找，DiskMom 会显示其中的内容占用。";

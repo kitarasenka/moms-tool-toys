@@ -9,14 +9,26 @@ enum SidebarSection: String, Hashable, CaseIterable {
 @Observable @MainActor
 final class AppState {
     var section: SidebarSection = .smart
-    var disk = DiskInfo.current()
-    var fullDiskAccess = FullDiskAccess.granted
-    let junk = JunkStore()
-    let large = LargeFilesStore()
-    let apps = UninstallerStore()
-    let maintenance = MaintenanceStore()
+    var disk: DiskInfo
+    var fullDiskAccess: Bool
+    let junk: JunkStore
+    let large: LargeFilesStore
+    let apps: UninstallerStore
+    let maintenance: MaintenanceStore
+    private let demo: Bool
+
+    init(demo: Bool = false) {
+        self.demo = demo
+        disk = demo ? DiskInfo(total: 256_000_000_000, available: 38_000_000_000) : .current()
+        fullDiskAccess = !demo && FullDiskAccess.granted
+        junk = JunkStore(demo: demo)
+        large = LargeFilesStore(demo: demo)
+        apps = UninstallerStore(demo: demo)
+        maintenance = MaintenanceStore(demo: demo)
+    }
 
     func refreshSystem() {
+        guard !demo else { return }
         disk = DiskInfo.current()
         fullDiskAccess = FullDiskAccess.granted
     }
@@ -26,6 +38,8 @@ final class AppState {
 
 @Observable @MainActor
 final class JunkStore {
+    private let demo: Bool
+    init(demo: Bool = false) { self.demo = demo }
     enum Phase: Equatable { case idle, scanning, ready, cleaning, done }
 
     let categories = Catalog.all
@@ -49,8 +63,9 @@ final class JunkStore {
     var finderTrashMessage: String?
 
     func emptyTrashViaFinder() async {
+        guard !demo else { return }
         let r = await Task.detached { Shell.finderEmptyTrash() }.value
-        finderTrashMessage = r.ok ? "Корзина очищена." : "Не получилось: \(r.output)"
+        finderTrashMessage = r.ok ? String(localized: "Корзина очищена.") : String(localized: "Не получилось: \(r.output)")
     }
 
     func items(_ c: JunkCategory) -> [JunkItem] { results[c.id]?.items ?? [] }
@@ -82,6 +97,7 @@ final class JunkStore {
     }
 
     func scan() async {
+        guard !demo else { return }
         phase = .scanning
         report = nil
         let ctx = ScanContext.current()
@@ -100,6 +116,7 @@ final class JunkStore {
     }
 
     func clean() async {
+        guard !demo else { return }
         var batch: [(item: JunkItem, mode: RemovalMode)] = []
         for c in categories {
             for item in items(c) where selected.contains(item.id) { batch.append((item, c.mode)) }
@@ -136,8 +153,17 @@ final class JunkStore {
 
 @Observable @MainActor
 final class LargeFilesStore {
+    private let demo: Bool
+    init(demo: Bool = false) { self.demo = demo }
     enum Age: String, CaseIterable, Identifiable {
-        case any = "Любые", halfYear = "Не менялись полгода", year = "Не менялись больше года"
+        case any, halfYear, year
+        var title: String {
+            switch self {
+            case .any: String(localized: "Любые")
+            case .halfYear: String(localized: "Не менялись полгода")
+            case .year: String(localized: "Не менялись больше года")
+            }
+        }
         var id: String { rawValue }
         var cutoff: Date? {
             switch self {
@@ -172,6 +198,7 @@ final class LargeFilesStore {
     var selectedFiles: [LargeFile] { files.filter { selected.contains($0.id) } }
 
     func scan() async {
+        guard !demo else { return }
         scanning = true
         seen = 0
         let r = await Task.detached(priority: .userInitiated) {
@@ -184,6 +211,7 @@ final class LargeFilesStore {
     }
 
     func trashSelected() async {
+        guard !demo else { return }
         let batch = selectedFiles
         let r = await Task.detached { LargeFileScanner.trash(batch) }.value
         let removed = Set(r.removed)
@@ -197,6 +225,11 @@ final class LargeFilesStore {
 
 @Observable @MainActor
 final class UninstallerStore {
+    private let demo: Bool
+    init(demo: Bool = false) {
+        self.demo = demo
+        loaded = demo
+    }
     var apps: [AppInfo] = []
     var sizes: [String: Int64] = [:]
     var loading = false
@@ -223,6 +256,7 @@ final class UninstallerStore {
     var current: AppInfo? { apps.first { $0.id == selection } }
 
     func load() async {
+        guard !demo else { return }
         loading = true
         apps = await Task.detached { AppScanner.installedApps() }.value
         loading = false
@@ -236,6 +270,7 @@ final class UninstallerStore {
     }
 
     func select(_ id: String?) async {
+        guard !demo else { return }
         selection = id
         leftovers = []
         selectedLeftovers = []
@@ -255,6 +290,7 @@ final class UninstallerStore {
     }
 
     func uninstall() async {
+        guard !demo else { return }
         guard let app = current else { return }
         working = true
         defer { working = false }
@@ -265,16 +301,16 @@ final class UninstallerStore {
             try? await Task.sleep(for: .milliseconds(500))
         }
         if running.contains(where: { !$0.isTerminated }) {
-            message = "\(app.name) не закрылся. Закройте его вручную и попробуйте снова."
+            message = String(localized: "\(app.name) не закрылся. Закройте его вручную и попробуйте снова.")
             return
         }
         let chosen = leftovers.filter { selectedLeftovers.contains($0.id) }
         let size = sizes[app.id] ?? 0
         let r = await Task.detached { AppScanner.uninstall(app, appSize: size, leftovers: chosen) }.value
         if r.failures.isEmpty {
-            message = "\(app.name) удалён в Корзину, освободится \(Fmt.bytes(r.freed)) после её очистки."
+            message = String(localized: "\(app.name) удалён в Корзину, освободится \(Fmt.bytes(r.freed)) после её очистки.")
         } else {
-            message = "Удалено не всё:\n" + r.failures.joined(separator: "\n")
+            message = String(localized: "Удалено не всё:\n") + r.failures.joined(separator: "\n")
         }
         if !FileManager.default.fileExists(atPath: app.url.path) {
             apps.removeAll { $0.id == app.id }
@@ -288,6 +324,8 @@ final class UninstallerStore {
 
 @Observable @MainActor
 final class MaintenanceStore {
+    private let demo: Bool
+    init(demo: Bool = false) { self.demo = demo }
     enum Status: Equatable {
         case idle, running
         case done(Date)
@@ -297,8 +335,9 @@ final class MaintenanceStore {
     var status: [String: Status] = [:]
 
     func run(_ task: MaintenanceTask) async {
+        guard !demo else { return }
         status[task.id] = .running
         let r = await Task.detached(priority: .userInitiated) { task.run() }.value
-        status[task.id] = r.ok ? .done(Date()) : .failed(r.output.isEmpty ? "Не получилось" : r.output)
+        status[task.id] = r.ok ? .done(Date()) : .failed(r.output.isEmpty ? String(localized: "Не получилось") : r.output)
     }
 }

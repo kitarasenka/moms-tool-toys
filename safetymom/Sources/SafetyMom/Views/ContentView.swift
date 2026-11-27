@@ -53,14 +53,14 @@ private struct SidebarFooter: View {
                     .foregroundStyle(state.fullDiskAccess ? AnyShapeStyle(Brand.gradient) : AnyShapeStyle(.orange))
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Полный доступ к диску").font(.caption)
-                    Text(state.fullDiskAccess ? "есть" : "нет — Safari не проверить")
+                    Text(state.fullDiskAccess ? String(localized: "есть") : String(localized: "нет — Safari не проверить"))
                         .font(.caption2).foregroundStyle(.secondary)
                 }
                 Spacer(minLength: 0)
             }
             .contentShape(Rectangle())
             .onTapGesture { if !state.fullDiskAccess { FullDiskAccess.openSettings() } }
-            .help(state.fullDiskAccess ? "SafetyMom видит настройки Safari" : "Нажмите, чтобы открыть настройки")
+            .help(state.fullDiskAccess ? String(localized: "SafetyMom видит настройки Safari") : String(localized: "Нажмите, чтобы открыть настройки"))
             if state.demo {
                 Text("Демо-режим: выдуманные данные").font(.caption2).foregroundStyle(.secondary)
             } else if let t = state.checkedAt {

@@ -8,7 +8,7 @@ struct PermissionsView: View {
         let p = state.permissions
         Group {
             if p.phase != .ready {
-                LoadingView(text: "Читаю базы разрешений…")
+                LoadingView(text: String(localized: "Читаю базы разрешений…"))
             } else if !p.snapshot.userReadable && !p.snapshot.systemReadable {
                 onboarding
             } else {
@@ -49,9 +49,9 @@ struct PermissionsView: View {
                 Card {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Как включить").font(.headline)
-                        step(1, "В открывшемся окне «Полный доступ к диску» найдите PrivacyMom и включите переключатель. Если его нет в списке — нажмите «+» и выберите PrivacyMom.app.")
-                        step(2, "macOS может попросить пароль или Touch ID — это нормально.")
-                        step(3, "Вернитесь в PrivacyMom: он сам перечитает разрешения. Если ничего не изменилось — перезапустите приложение.")
+                        step(1, String(localized: "В открывшемся окне «Полный доступ к диску» найдите PrivacyMom и включите переключатель. Если его нет в списке — нажмите «+» и выберите PrivacyMom.app."))
+                        step(2, String(localized: "macOS может попросить пароль или Touch ID — это нормально."))
+                        step(3, String(localized: "Вернитесь в PrivacyMom: он сам перечитает разрешения. Если ничего не изменилось — перезапустите приложение."))
                     }
                 }
                 .frame(maxWidth: 560)
@@ -88,7 +88,7 @@ struct PermissionsView: View {
         return VStack(spacing: 0) {
             VStack(spacing: 10) {
                 if !p.snapshot.userReadable || !p.snapshot.systemReadable {
-                    Text("Прочитана только \(p.snapshot.userReadable ? "пользовательская" : "системная") база — часть разрешений может не показываться.")
+                    Text("Прочитана только \(p.snapshot.userReadable ? String(localized: "пользовательская") : String(localized: "системная")) база — часть разрешений может не показываться.")
                         .font(.caption).foregroundStyle(.orange)
                 }
                 highlights
@@ -103,16 +103,16 @@ struct PermissionsView: View {
             }
             .frame(maxHeight: .infinity)
         }
-        .searchable(text: $p.search, placement: .toolbar, prompt: "Приложение или служба")
+        .searchable(text: $p.search, placement: .toolbar, prompt: String(localized: "Приложение или служба"))
     }
 
     private var highlights: some View {
         let s = state.permissions.snapshot
         return HStack(spacing: 10) {
-            StatTile(icon: "camera.fill", title: "доступ к камере", value: "\(s.granted("kTCCServiceCamera"))")
-            StatTile(icon: "mic.fill", title: "к микрофону", value: "\(s.granted("kTCCServiceMicrophone"))")
-            StatTile(icon: "rectangle.dashed.badge.record", title: "запись экрана", value: "\(s.granted("kTCCServiceScreenCapture"))")
-            StatTile(icon: "internaldrive.fill", title: "полный доступ к диску", value: "\(s.granted("kTCCServiceSystemPolicyAllFiles"))")
+            StatTile(icon: "camera.fill", title: String(localized: "доступ к камере"), value: "\(s.granted("kTCCServiceCamera"))")
+            StatTile(icon: "mic.fill", title: String(localized: "к микрофону"), value: "\(s.granted("kTCCServiceMicrophone"))")
+            StatTile(icon: "rectangle.dashed.badge.record", title: String(localized: "запись экрана"), value: "\(s.granted("kTCCServiceScreenCapture"))")
+            StatTile(icon: "internaldrive.fill", title: String(localized: "полный доступ к диску"), value: "\(s.granted("kTCCServiceSystemPolicyAllFiles"))")
         }
     }
 
@@ -146,8 +146,8 @@ struct PermissionsView: View {
     private func entryList(_ groups: [ServiceGroup]) -> some View {
         Group {
             if groups.isEmpty {
-                EmptyStateView(icon: "checkmark.shield", title: "Ничего не найдено",
-                               text: state.permissions.search.isEmpty ? "Ни одно приложение не получало таких разрешений." : "Попробуйте другой запрос.") {}
+                EmptyStateView(icon: "checkmark.shield", title: String(localized: "Ничего не найдено"),
+                               text: state.permissions.search.isEmpty ? String(localized: "Ни одно приложение не получало таких разрешений.") : String(localized: "Попробуйте другой запрос.")) {}
             } else {
                 List {
                     ForEach(groups) { g in

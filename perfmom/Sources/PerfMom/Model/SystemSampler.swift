@@ -47,7 +47,7 @@ struct MachineInfo: Sendable {
 
     static let current = MachineInfo(
         model: Sysctl.string("hw.model") ?? "Mac",
-        cpuBrand: Sysctl.string("machdep.cpu.brand_string") ?? "Процессор",
+        cpuBrand: Sysctl.string("machdep.cpu.brand_string") ?? String(localized: "Процессор"),
         physicalCores: Sysctl.int("hw.physicalcpu") ?? 0,
         logicalCores: Sysctl.int("hw.logicalcpu") ?? 0,
         performanceCores: Sysctl.int("hw.perflevel0.physicalcpu"),

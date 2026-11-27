@@ -6,7 +6,7 @@ struct DesktopView: View {
     var body: some View {
         Group {
             if state.desktopDenied {
-                AccessDeniedView(folder: "Рабочий стол") { state.scanDesktop() }
+                AccessDeniedView(folder: String(localized: "Рабочий стол")) { state.scanDesktop() }
             } else if !state.desktopScanned {
                 ProgressView("Смотрю, что лежит на Рабочем столе…").frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -30,17 +30,18 @@ struct DesktopView: View {
             }
         }
         .navigationTitle("Рабочий стол")
-        .navigationSubtitle(state.desktopBusy ? "обновляется…" : "")
+        .navigationSubtitle(state.desktopBusy ? String(localized: "обновляется…") : "")
     }
 
     private var summary: some View {
         let all = state.desktop
         let shots = state.entries(.screenshots)
         return HStack(spacing: 10) {
-            StatTile(value: "\(all.count)", label: "на Рабочем столе", icon: "menubar.dock.rectangle")
-            StatTile(value: "\(shots.count)", label: Fmt.plural(shots.count, "снимок экрана", "снимка экрана", "снимков экрана"),
+            StatTile(value: "\(all.count)", label: String(localized: "на Рабочем столе"), icon: "menubar.dock.rectangle")
+            StatTile(value: "\(shots.count)", label: String(localized: "\(shots.count) снимков экрана (подпись)"),
                      icon: "camera.viewfinder", tint: shots.isEmpty ? .green : .orange)
-            StatTile(value: Fmt.bytes(all.reduce(0) { $0 + $1.size }), label: "занимает всё вместе", icon: "internaldrive")
+            StatTile(value: Fmt.bytes(all.reduce(0) { $0 + $1.size }), label: String(localized: "занимает всё вместе"),
+                     icon: "internaldrive")
         }
     }
 }
@@ -52,8 +53,8 @@ struct FileGroupsList: View {
     var body: some View {
         let groups = DeskGroup.allCases.filter { !state.entries($0).isEmpty }
         if groups.isEmpty {
-            EmptyStateView(icon: "sparkles", title: "Рабочий стол чист",
-                           text: "Здесь ничего не лежит — красота. Новые снимки экрана появятся тут, если не сохранять их в отдельную папку.")
+            EmptyStateView(icon: "sparkles", title: String(localized: "Рабочий стол чист"),
+                           text: String(localized: "Здесь ничего не лежит — красота. Новые снимки экрана появятся тут, если не сохранять их в отдельную папку."))
         } else {
             List {
                 ForEach(groups) { g in
@@ -83,7 +84,7 @@ struct EntryRow: View {
         HStack(spacing: 10) {
             FileIcon(entry: entry)
             Text(entry.name).lineLimit(1).truncationMode(.middle)
-            if entry.isSymlink { Tag(text: "ссылка") }
+            if entry.isSymlink { Tag(text: String(localized: "ссылка")) }
             Spacer(minLength: 8)
             Text(Fmt.date(entry.created)).font(.caption).foregroundStyle(.secondary)
             Text(Fmt.bytes(entry.size)).font(.caption).monospacedDigit().foregroundStyle(.secondary)
@@ -109,7 +110,9 @@ struct ScreenshotsCard: View {
             if shots.isEmpty {
                 Text("На Рабочем столе нет снимков экрана.").foregroundStyle(.secondary)
             } else {
-                Text("\(shots.count) \(Fmt.plural(shots.count, "снимок", "снимка", "снимков")) и записей экрана, \(Fmt.bytes(shots.reduce(0) { $0 + $1.size })). DesktopMom переложит их в папку по месяцам — ничего не удаляется.")
+                let size = Fmt.bytes(shots.reduce(0) { $0 + $1.size })
+                Text(String(localized: "\(shots.count) снимков и записей экрана, \(size).") + " "
+                     + String(localized: "DesktopMom переложит их в папку по месяцам — ничего не удаляется."))
                     .font(.callout).fixedSize(horizontal: false, vertical: true)
                 VStack(alignment: .leading, spacing: 3) {
                     ForEach(plan.prefix(4), id: \.month) { m in
@@ -117,7 +120,7 @@ struct ScreenshotsCard: View {
                             .font(.caption).foregroundStyle(.secondary)
                     }
                     if plan.count > 4 {
-                        Text("и ещё \(plan.count - 4) \(Fmt.plural(plan.count - 4, "месяц", "месяца", "месяцев"))")
+                        Text(String(localized: "и ещё \(plan.count - 4) месяцев"))
                             .font(.caption).foregroundStyle(.secondary).padding(.leading, 22)
                     }
                 }
@@ -138,7 +141,7 @@ struct ScreenshotsCard: View {
             .controlSize(.large)
             .disabled(shots.isEmpty || state.desktopBusy)
         }
-        .confirmationDialog("Разложить \(shots.count) \(Fmt.plural(shots.count, "снимок", "снимка", "снимков")) экрана?",
+        .confirmationDialog(String(localized: "Разложить \(shots.count) снимков экрана?"),
                             isPresented: $confirm) {
             Button("Разложить") { state.organizeScreenshots() }
             Button("Отмена", role: .cancel) {}
@@ -199,7 +202,7 @@ struct TidyCard: View {
                     .disabled(picked.isEmpty || state.desktopBusy)
             }
         }
-        .confirmationDialog("Убрать со стола \(Fmt.plural(picked.count, "\(picked.count) объект", "\(picked.count) объекта", "\(picked.count) объектов"))?",
+        .confirmationDialog(String(localized: "Убрать со стола \(picked.count) объектов?"),
                             isPresented: $confirm) {
             Button("Убрать") { state.tidyOthers() }
             Button("Отмена", role: .cancel) {}

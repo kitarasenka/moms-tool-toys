@@ -20,15 +20,15 @@ struct OverviewView: View {
                 }
 
                 LazyVGrid(columns: columns, alignment: .leading, spacing: 16) {
-                    TopList(title: "Больше всего ЦП", systemImage: "flame",
+                    TopList(title: String(localized: "Больше всего ЦП"), systemImage: "flame",
                             records: Array(m.processes.sorted { $0.cpu > $1.cpu }.prefix(7))) {
                         "\(Fmt.percent($0.cpu)) %"
                     }
-                    TopList(title: "Больше всего памяти", systemImage: "memorychip",
+                    TopList(title: String(localized: "Больше всего памяти"), systemImage: "memorychip",
                             records: Array(m.processes.sorted { $0.memory > $1.memory }.prefix(7))) {
                         Fmt.bytes($0.memory)
                     }
-                    TopList(title: "Больше всего сети", systemImage: "arrow.up.arrow.down",
+                    TopList(title: String(localized: "Больше всего сети"), systemImage: "arrow.up.arrow.down",
                             records: Array(m.processes.filter { $0.netTotalRate > 0 }
                                 .sorted { $0.netTotalRate > $1.netTotalRate }.prefix(7))) {
                         "↓ \(Fmt.rate($0.netIn))  ↑ \(Fmt.rate($0.netOut))"
@@ -44,9 +44,9 @@ struct OverviewView: View {
         let info = m.machine
         let cores: String = {
             if let p = info.performanceCores, let e = info.efficiencyCores {
-                return "\(info.physicalCores) ядер (\(p) производительных + \(e) эффективности)"
+                return String(localized: "Ядер: \(info.physicalCores) (производительных: \(p), эффективности: \(e))")
             }
-            return "\(info.physicalCores) ядер, \(info.logicalCores) потоков"
+            return String(localized: "Ядер: \(info.physicalCores), потоков: \(info.logicalCores)")
         }()
         return HStack(alignment: .center, spacing: 14) {
             Image(systemName: "desktopcomputer")
@@ -64,10 +64,10 @@ struct OverviewView: View {
                 if let boot = m.system.bootTime {
                     Label("Без перезагрузки \(Fmt.duration(Date().timeIntervalSince(boot)))", systemImage: "clock")
                 }
-                Label("Нагрузка \(m.system.loadAverage.map { $0.formatted(.number.precision(.fractionLength(2))) }.joined(separator: "  "))",
+                Label("Нагрузка \(m.system.loadAverage.map { $0.formatted(.number.precision(.fractionLength(2)).locale(L10n.locale)) }.joined(separator: "  "))",
                       systemImage: "chart.bar")
                     .help("Средняя нагрузка за 1, 5 и 15 минут")
-                Label("\(m.processes.count) процессов · \(Fmt.number(m.totalThreads)) потоков", systemImage: "square.stack.3d.up")
+                Label("Процессов: \(m.processes.count) · потоков: \(Fmt.number(m.totalThreads))", systemImage: "square.stack.3d.up")
             }
             .font(.callout)
             .foregroundStyle(.secondary)
@@ -76,20 +76,20 @@ struct OverviewView: View {
     }
 
     private func cpuCard(_ m: Monitor, _ s: SystemSnapshot) -> some View {
-        Card("Процессор", systemImage: "cpu") {
+        Card(String(localized: "Процессор"), systemImage: "cpu") {
             HStack(alignment: .top) {
-                BigValue(value: Fmt.percent(s.cpuTotal), unit: "%", caption: "общая загрузка")
+                BigValue(value: Fmt.percent(s.cpuTotal), unit: "%", caption: String(localized: "общая загрузка"))
                 Spacer()
                 VStack(alignment: .leading, spacing: 4) {
-                    LegendDot(color: .red, title: "Система", value: "\(Fmt.percent(s.cpuSystem)) %")
-                    LegendDot(color: .blue, title: "Пользователь", value: "\(Fmt.percent(s.cpuUser)) %")
-                    LegendDot(color: .secondary.opacity(0.4), title: "Простой", value: "\(Fmt.percent(max(0, 100 - s.cpuTotal))) %")
+                    LegendDot(color: .red, title: String(localized: "Система"), value: "\(Fmt.percent(s.cpuSystem)) %")
+                    LegendDot(color: .blue, title: String(localized: "Пользователь"), value: "\(Fmt.percent(s.cpuUser)) %")
+                    LegendDot(color: .secondary.opacity(0.4), title: String(localized: "Простой"), value: "\(Fmt.percent(max(0, 100 - s.cpuTotal))) %")
                 }
                 .frame(width: 190)
             }
             HistoryChart(series: [
-                ChartSeries(name: "Пользователь", color: .blue, values: m.cpuUserHistory),
-                ChartSeries(name: "Система", color: .red, values: m.cpuSystemHistory),
+                ChartSeries(name: String(localized: "Пользователь"), color: .blue, values: m.cpuUserHistory),
+                ChartSeries(name: String(localized: "Система"), color: .red, values: m.cpuSystemHistory),
             ], maxValue: 100, stacked: true)
             .frame(height: 90)
             CoreBars(values: s.perCore).frame(height: 44)
@@ -98,24 +98,24 @@ struct OverviewView: View {
 
     private func memoryCard(_ m: Monitor, _ s: SystemSnapshot) -> some View {
         let pressure: (String, Color) = switch s.memPressure {
-        case 4: ("Критическая", .red)
-        case 2: ("Повышенная", .yellow)
-        default: ("Нормальная", .green)
+        case 4: (String(localized: "Критическая"), .red)
+        case 2: (String(localized: "Повышенная"), .yellow)
+        default: (String(localized: "Нормальная"), .green)
         }
-        return Card("Память", systemImage: "memorychip") {
+        return Card(String(localized: "Память"), systemImage: "memorychip") {
             Label(pressure.0, systemImage: "circle.fill")
                 .font(.caption)
                 .foregroundStyle(pressure.1)
                 .help("Нагрузка на память")
         } content: {
             HStack(alignment: .top) {
-                BigValue(value: Fmt.bytes(s.memUsed), caption: "из \(Fmt.bytes(s.memTotal))")
+                BigValue(value: Fmt.bytes(s.memUsed), caption: String(localized: "из \(Fmt.bytes(s.memTotal))"))
                 Spacer()
                 VStack(alignment: .leading, spacing: 4) {
-                    LegendDot(color: .blue, title: "Приложения", value: Fmt.bytes(s.memApp))
-                    LegendDot(color: .orange, title: "Зарезервировано", value: Fmt.bytes(s.memWired))
-                    LegendDot(color: .purple, title: "Сжато", value: Fmt.bytes(s.memCompressed))
-                    LegendDot(color: .gray, title: "Кэш файлов", value: Fmt.bytes(s.memCached))
+                    LegendDot(color: .blue, title: String(localized: "Приложения"), value: Fmt.bytes(s.memApp))
+                    LegendDot(color: .orange, title: String(localized: "Зарезервировано"), value: Fmt.bytes(s.memWired))
+                    LegendDot(color: .purple, title: String(localized: "Сжато"), value: Fmt.bytes(s.memCompressed))
+                    LegendDot(color: .gray, title: String(localized: "Кэш файлов"), value: Fmt.bytes(s.memCached))
                 }
                 .frame(width: 210)
             }
@@ -125,7 +125,7 @@ struct OverviewView: View {
                 .init(color: .purple, value: Double(s.memCompressed), id: 2),
                 .init(color: .gray, value: Double(s.memCached), id: 3),
             ], total: Double(s.memTotal))
-            HistoryChart(series: [ChartSeries(name: "Используется", color: .green, values: m.memoryHistory)],
+            HistoryChart(series: [ChartSeries(name: String(localized: "Используется"), color: .green, values: m.memoryHistory)],
                          maxValue: Double(max(s.memTotal, 1)))
                 .frame(height: 60)
             HStack {
@@ -139,41 +139,41 @@ struct OverviewView: View {
     }
 
     private func networkCard(_ m: Monitor, _ s: SystemSnapshot) -> some View {
-        Card("Сеть", systemImage: "network") {
+        Card(String(localized: "Сеть"), systemImage: "network") {
             HStack(spacing: 24) {
-                BigValue(value: Fmt.rate(s.netIn), caption: "↓ получено")
-                BigValue(value: Fmt.rate(s.netOut), caption: "↑ отправлено")
+                BigValue(value: Fmt.rate(s.netIn), caption: String(localized: "↓ получено"))
+                BigValue(value: Fmt.rate(s.netOut), caption: String(localized: "↑ отправлено"))
                 Spacer()
             }
             HistoryChart(series: [
-                ChartSeries(name: "Получено", color: .blue, values: m.netInHistory),
-                ChartSeries(name: "Отправлено", color: .orange, values: m.netOutHistory),
+                ChartSeries(name: String(localized: "Получено"), color: .blue, values: m.netInHistory),
+                ChartSeries(name: String(localized: "Отправлено"), color: .orange, values: m.netOutHistory),
             ])
             .frame(height: 80)
             HStack {
-                LegendDot(color: .blue, title: "Получено", value: Fmt.bytes(s.netInTotal))
+                LegendDot(color: .blue, title: String(localized: "Получено"), value: Fmt.bytes(s.netInTotal))
                 Spacer(minLength: 24)
-                LegendDot(color: .orange, title: "Отправлено", value: Fmt.bytes(s.netOutTotal))
+                LegendDot(color: .orange, title: String(localized: "Отправлено"), value: Fmt.bytes(s.netOutTotal))
             }
         }
     }
 
     private func diskCard(_ m: Monitor, _ s: SystemSnapshot) -> some View {
-        Card("Диск", systemImage: "internaldrive") {
+        Card(String(localized: "Диск"), systemImage: "internaldrive") {
             HStack(spacing: 24) {
-                BigValue(value: Fmt.rate(s.diskRead), caption: "чтение")
-                BigValue(value: Fmt.rate(s.diskWrite), caption: "запись")
+                BigValue(value: Fmt.rate(s.diskRead), caption: String(localized: "чтение"))
+                BigValue(value: Fmt.rate(s.diskWrite), caption: String(localized: "запись"))
                 Spacer()
             }
             HistoryChart(series: [
-                ChartSeries(name: "Чтение", color: .teal, values: m.diskReadHistory),
-                ChartSeries(name: "Запись", color: .pink, values: m.diskWriteHistory),
+                ChartSeries(name: String(localized: "Чтение"), color: .teal, values: m.diskReadHistory),
+                ChartSeries(name: String(localized: "Запись"), color: .pink, values: m.diskWriteHistory),
             ])
             .frame(height: 80)
             HStack {
-                LegendDot(color: .teal, title: "Прочитано", value: Fmt.bytes(s.diskReadTotal))
+                LegendDot(color: .teal, title: String(localized: "Прочитано"), value: Fmt.bytes(s.diskReadTotal))
                 Spacer(minLength: 24)
-                LegendDot(color: .pink, title: "Записано", value: Fmt.bytes(s.diskWriteTotal))
+                LegendDot(color: .pink, title: String(localized: "Записано"), value: Fmt.bytes(s.diskWriteTotal))
             }
         }
     }

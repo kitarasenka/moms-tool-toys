@@ -8,7 +8,7 @@ struct DownloadsView: View {
         @Bindable var state = state
         Group {
             if state.downloadsDenied {
-                AccessDeniedView(folder: "Загрузки") { state.scanDownloads() }
+                AccessDeniedView(folder: String(localized: "Загрузки")) { state.scanDownloads() }
             } else if !state.downloadsScanned {
                 ProgressView("Смотрю, что лежит в Загрузках…").frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
@@ -16,8 +16,9 @@ struct DownloadsView: View {
                     controls.padding(12)
                     Divider()
                     if state.visibleDownloads.isEmpty {
-                        EmptyStateView(icon: "checkmark.seal", title: "Здесь пусто",
-                                       text: state.downloads.isEmpty ? "В Загрузках ничего нет." : "Под этот фильтр ничего не подходит.")
+                        EmptyStateView(icon: "checkmark.seal", title: String(localized: "Здесь пусто"),
+                                       text: state.downloads.isEmpty ? String(localized: "В Загрузках ничего нет.")
+                                                                     : String(localized: "Под этот фильтр ничего не подходит."))
                     } else {
                         table
                     }
@@ -27,8 +28,8 @@ struct DownloadsView: View {
             }
         }
         .navigationTitle("Загрузки")
-        .navigationSubtitle(state.downloadsBusy ? "обновляется…" : Fmt.files(state.downloads.count))
-        .confirmationDialog("Перенести в Корзину \(Fmt.files(state.selectedDownloads.count))?", isPresented: $confirm) {
+        .navigationSubtitle(state.downloadsBusy ? String(localized: "обновляется…") : Fmt.files(state.downloads.count))
+        .confirmationDialog(String(localized: "Перенести в Корзину \(Fmt.files(state.selectedDownloads.count))?"), isPresented: $confirm) {
             Button("В Корзину", role: .destructive) { state.trashSelected() }
             Button("Отмена", role: .cancel) {}
         } message: {
@@ -81,10 +82,10 @@ struct DownloadsView: View {
                     FileIcon(entry: e, size: 20)
                     Text(e.name).lineLimit(1).truncationMode(.middle)
                     if let app = e.installedMatch {
-                        Tag(text: "уже установлено", tint: .green)
+                        Tag(text: String(localized: "уже установлено"), tint: .green)
                             .help("Похоже на «\(app)» в «Программах». Это догадка по имени файла.")
                     }
-                    if e.isOld(days: state.oldDays) { Tag(text: "давно", tint: .orange) }
+                    if e.isOld(days: state.oldDays) { Tag(text: String(localized: "давно"), tint: .orange) }
                 }
                 .contextMenu { Button("Показать в Finder") { state.reveal(e.url) } }
             }
@@ -103,7 +104,8 @@ struct DownloadsView: View {
     private var footer: some View {
         HStack {
             let n = state.selectedDownloads.count
-            Text(n == 0 ? "Ничего не отмечено" : "Отмечено: \(Fmt.files(n)), \(Fmt.bytes(state.selectedSize))")
+            Text(n == 0 ? String(localized: "Ничего не отмечено")
+                        : String(localized: "Отмечено: \(Fmt.files(n)), \(Fmt.bytes(state.selectedSize))"))
                 .monospacedDigit()
             Spacer()
             if n > 0 { Button("Снять отметки") { state.dlSelected = [] } }

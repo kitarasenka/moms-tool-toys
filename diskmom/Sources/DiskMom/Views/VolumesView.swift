@@ -9,8 +9,8 @@ struct VolumesView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
                 if let msg = store.message {
-                    Label(msg, systemImage: msg.hasPrefix("Не удалось") ? "exclamationmark.triangle" : "checkmark.circle")
-                        .foregroundStyle(msg.hasPrefix("Не удалось") ? .orange : .secondary)
+                    Label(msg, systemImage: store.messageFailed ? "exclamationmark.triangle" : "checkmark.circle")
+                        .foregroundStyle(store.messageFailed ? .orange : .secondary)
                 }
                 ForEach(store.volumes) { v in VolumeCard(volume: v) }
                 if store.volumes.isEmpty && !store.loading {
@@ -49,9 +49,9 @@ private struct VolumeCard: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 8) {
                         Text(v.name).font(.title3.weight(.semibold)).lineLimit(1)
-                        badge(v.kind.rawValue)
-                        if v.isRoot { badge("Загрузочный") }
-                        if v.isReadOnly { badge("Только чтение") }
+                        badge(v.kind.title)
+                        if v.isRoot { badge(String(localized: "Загрузочный")) }
+                        if v.isReadOnly { badge(String(localized: "Только чтение")) }
                     }
                     let frac = v.usedFraction
                     SizeBar(fraction: frac, color: frac > 0.9 ? .red : (frac > 0.8 ? .orange : nil), height: 10)
@@ -62,10 +62,10 @@ private struct VolumeCard: View {
                     }
                     .monospacedDigit()
                     HStack(spacing: 14) {
-                        detail("Формат", v.format)
-                        if let dev = v.device { detail("Устройство", dev) }
-                        if let bus = v.bus { detail("Подключение", bus) }
-                        if let ssd = v.solidState, v.kind != .diskImage { detail("Тип", ssd ? "SSD" : "HDD") }
+                        detail(String(localized: "Формат"), v.format)
+                        if let dev = v.device { detail(String(localized: "Устройство"), dev) }
+                        if let bus = v.bus { detail(String(localized: "Подключение"), bus) }
+                        if let ssd = v.solidState, v.kind != .diskImage { detail(String(localized: "Тип"), ssd ? "SSD" : "HDD") }
                         health(v)
                     }
                     .font(.caption)

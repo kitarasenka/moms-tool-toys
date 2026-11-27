@@ -7,10 +7,10 @@ enum ClipKind: String, Codable, CaseIterable {
 
     var title: String {
         switch self {
-        case .text: "Текст"
-        case .link: "Ссылка"
-        case .image: "Картинка"
-        case .files: "Файлы"
+        case .text: String(localized: "Текст")
+        case .link: String(localized: "Ссылка")
+        case .image: String(localized: "Картинка")
+        case .files: String(localized: "Файлы")
         }
     }
 
@@ -53,12 +53,12 @@ struct ClipItem: Codable, Identifiable, Equatable {
     var title: String {
         switch kind {
         case .image:
-            if let w = pixelWidth, let h = pixelHeight { return "Картинка \(w)×\(h)" }
-            return "Картинка"
+            if let w = pixelWidth, let h = pixelHeight { return String(localized: "Картинка \(w)×\(h)") }
+            return String(localized: "Картинка")
         case .files:
             let names = (files ?? []).map { ($0 as NSString).lastPathComponent }
-            if names.count <= 1 { return names.first ?? "Файл" }
-            return "\(names[0]) и ещё \(names.count - 1)"
+            if names.count <= 1 { return names.first ?? String(localized: "Файл") }
+            return String(localized: "\(names[0]) и ещё \(names.count - 1)")
         case .text, .link:
             let t = (text ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             let first = t.split(whereSeparator: \.isNewline).first.map(String.init) ?? t
@@ -67,7 +67,7 @@ struct ClipItem: Codable, Identifiable, Equatable {
     }
 
     var searchText: String {
-        [text ?? "", sourceName ?? "", kind == .image ? "картинка" : ""].joined(separator: " ")
+        [text ?? "", sourceName ?? "", kind == .image ? String(localized: "картинка") : ""].joined(separator: " ")
     }
 
     var url: URL? { kind == .link ? LinkDetector.detect(text ?? "") : nil }
@@ -85,12 +85,12 @@ enum ClipFilter: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .all: "Всё"
-        case .text: "Текст"
-        case .link: "Ссылки"
-        case .image: "Картинки"
-        case .files: "Файлы"
-        case .pinned: "Закреплённые"
+        case .all: String(localized: "Всё")
+        case .text: String(localized: "Текст")
+        case .link: String(localized: "Ссылки")
+        case .image: String(localized: "Картинки")
+        case .files: String(localized: "Файлы")
+        case .pinned: String(localized: "Закреплённые")
         }
     }
 

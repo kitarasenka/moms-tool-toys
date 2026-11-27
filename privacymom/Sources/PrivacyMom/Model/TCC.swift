@@ -35,36 +35,36 @@ struct TCCService: Sendable {
     }
 
     static let known: [TCCService] = [
-        .init(key: "kTCCServiceCamera", title: "Камера", icon: "camera", pane: "Privacy_Camera", order: 0),
-        .init(key: "kTCCServiceMicrophone", title: "Микрофон", icon: "mic", pane: "Privacy_Microphone", order: 1),
-        .init(key: "kTCCServiceScreenCapture", title: "Запись экрана", icon: "rectangle.dashed.badge.record", pane: "Privacy_ScreenCapture", order: 2),
-        .init(key: "kTCCServiceAccessibility", title: "Универсальный доступ", icon: "accessibility", pane: "Privacy_Accessibility", order: 3),
-        .init(key: "kTCCServiceListenEvent", title: "Мониторинг ввода", icon: "keyboard", pane: "Privacy_ListenEvent", order: 4),
-        .init(key: "kTCCServicePostEvent", title: "Управление вводом", icon: "keyboard.badge.ellipsis", pane: "Privacy_Accessibility", order: 5),
-        .init(key: "kTCCServiceSystemPolicyAllFiles", title: "Полный доступ к диску", icon: "internaldrive", pane: "Privacy_AllFiles", order: 6),
-        .init(key: "kTCCServiceSystemPolicyDocumentsFolder", title: "Папка «Документы»", icon: "doc", pane: "Privacy_FilesAndFolders", order: 7),
-        .init(key: "kTCCServiceSystemPolicyDownloadsFolder", title: "Папка «Загрузки»", icon: "arrow.down.circle", pane: "Privacy_FilesAndFolders", order: 8),
-        .init(key: "kTCCServiceSystemPolicyDesktopFolder", title: "Рабочий стол", icon: "menubar.dock.rectangle", pane: "Privacy_FilesAndFolders", order: 9),
-        .init(key: "kTCCServiceSystemPolicyRemovableVolumes", title: "Съёмные тома", icon: "externaldrive", pane: "Privacy_FilesAndFolders", order: 10),
-        .init(key: "kTCCServiceSystemPolicyNetworkVolumes", title: "Сетевые тома", icon: "externaldrive.connected.to.line.below", pane: "Privacy_FilesAndFolders", order: 11),
-        .init(key: "kTCCServiceFileProviderDomain", title: "Облачные хранилища", icon: "icloud", pane: "Privacy_FilesAndFolders", order: 12),
-        .init(key: "kTCCServiceAddressBook", title: "Контакты", icon: "person.crop.circle", pane: "Privacy_Contacts", order: 13),
-        .init(key: "kTCCServiceCalendar", title: "Календари", icon: "calendar", pane: "Privacy_Calendars", order: 14),
-        .init(key: "kTCCServiceReminders", title: "Напоминания", icon: "checklist", pane: "Privacy_Reminders", order: 15),
-        .init(key: "kTCCServicePhotos", title: "Фото", icon: "photo.on.rectangle", pane: "Privacy_Photos", order: 16),
-        .init(key: "kTCCServiceMediaLibrary", title: "Медиатека", icon: "music.note", pane: "Privacy_Media", order: 17),
+        .init(key: "kTCCServiceCamera", title: String(localized: "Камера"), icon: "camera", pane: "Privacy_Camera", order: 0),
+        .init(key: "kTCCServiceMicrophone", title: String(localized: "Микрофон"), icon: "mic", pane: "Privacy_Microphone", order: 1),
+        .init(key: "kTCCServiceScreenCapture", title: String(localized: "Запись экрана"), icon: "rectangle.dashed.badge.record", pane: "Privacy_ScreenCapture", order: 2),
+        .init(key: "kTCCServiceAccessibility", title: String(localized: "Универсальный доступ"), icon: "accessibility", pane: "Privacy_Accessibility", order: 3),
+        .init(key: "kTCCServiceListenEvent", title: String(localized: "Мониторинг ввода"), icon: "keyboard", pane: "Privacy_ListenEvent", order: 4),
+        .init(key: "kTCCServicePostEvent", title: String(localized: "Управление вводом"), icon: "keyboard.badge.ellipsis", pane: "Privacy_Accessibility", order: 5),
+        .init(key: "kTCCServiceSystemPolicyAllFiles", title: String(localized: "Полный доступ к диску"), icon: "internaldrive", pane: "Privacy_AllFiles", order: 6),
+        .init(key: "kTCCServiceSystemPolicyDocumentsFolder", title: String(localized: "Папка «Документы»"), icon: "doc", pane: "Privacy_FilesAndFolders", order: 7),
+        .init(key: "kTCCServiceSystemPolicyDownloadsFolder", title: String(localized: "Папка «Загрузки»"), icon: "arrow.down.circle", pane: "Privacy_FilesAndFolders", order: 8),
+        .init(key: "kTCCServiceSystemPolicyDesktopFolder", title: String(localized: "Рабочий стол"), icon: "menubar.dock.rectangle", pane: "Privacy_FilesAndFolders", order: 9),
+        .init(key: "kTCCServiceSystemPolicyRemovableVolumes", title: String(localized: "Съёмные тома"), icon: "externaldrive", pane: "Privacy_FilesAndFolders", order: 10),
+        .init(key: "kTCCServiceSystemPolicyNetworkVolumes", title: String(localized: "Сетевые тома"), icon: "externaldrive.connected.to.line.below", pane: "Privacy_FilesAndFolders", order: 11),
+        .init(key: "kTCCServiceFileProviderDomain", title: String(localized: "Облачные хранилища"), icon: "icloud", pane: "Privacy_FilesAndFolders", order: 12),
+        .init(key: "kTCCServiceAddressBook", title: String(localized: "Контакты"), icon: "person.crop.circle", pane: "Privacy_Contacts", order: 13),
+        .init(key: "kTCCServiceCalendar", title: String(localized: "Календари"), icon: "calendar", pane: "Privacy_Calendars", order: 14),
+        .init(key: "kTCCServiceReminders", title: String(localized: "Напоминания"), icon: "checklist", pane: "Privacy_Reminders", order: 15),
+        .init(key: "kTCCServicePhotos", title: String(localized: "Фото"), icon: "photo.on.rectangle", pane: "Privacy_Photos", order: 16),
+        .init(key: "kTCCServiceMediaLibrary", title: String(localized: "Медиатека"), icon: "music.note", pane: "Privacy_Media", order: 17),
         .init(key: "kTCCServiceBluetoothAlways", title: "Bluetooth", icon: "dot.radiowaves.left.and.right", pane: "Privacy_Bluetooth", order: 18),
-        .init(key: "kTCCServiceAppleEvents", title: "Автоматизация", icon: "gearshape.2", pane: "Privacy_Automation", order: 19),
-        .init(key: "kTCCServiceLocalNetwork", title: "Локальная сеть", icon: "network", pane: "Privacy_LocalNetwork", order: 20),
-        .init(key: "kTCCServiceSystemPolicyAppBundles", title: "Управление приложениями", icon: "app.badge", pane: "Privacy_AppBundles", order: 21),
-        .init(key: "kTCCServiceSystemPolicyAppData", title: "Данные других приложений", icon: "folder.badge.person.crop", pane: "Privacy", order: 22),
-        .init(key: "kTCCServiceDeveloperTool", title: "Инструменты разработчика", icon: "hammer", pane: "Privacy_DevTools", order: 23),
-        .init(key: "kTCCServiceSpeechRecognition", title: "Распознавание речи", icon: "waveform", pane: "Privacy_SpeechRecognition", order: 24),
-        .init(key: "kTCCServiceFocusStatus", title: "Статус фокусирования", icon: "moon", pane: "Privacy_Focus", order: 25),
-        .init(key: "kTCCServiceUserAvailability", title: "Статус фокусирования", icon: "moon", pane: "Privacy_Focus", order: 25),
-        .init(key: "kTCCServiceWillow", title: "Дом", icon: "house", pane: "Privacy_HomeKit", order: 26),
-        .init(key: "kTCCServiceLiverpool", title: "Службы синхронизации (системное)", icon: "arrow.triangle.2.circlepath", pane: "Privacy", order: 900),
-        .init(key: "kTCCServiceUbiquity", title: "iCloud Drive (системное)", icon: "icloud", pane: "Privacy", order: 901),
+        .init(key: "kTCCServiceAppleEvents", title: String(localized: "Автоматизация"), icon: "gearshape.2", pane: "Privacy_Automation", order: 19),
+        .init(key: "kTCCServiceLocalNetwork", title: String(localized: "Локальная сеть"), icon: "network", pane: "Privacy_LocalNetwork", order: 20),
+        .init(key: "kTCCServiceSystemPolicyAppBundles", title: String(localized: "Управление приложениями"), icon: "app.badge", pane: "Privacy_AppBundles", order: 21),
+        .init(key: "kTCCServiceSystemPolicyAppData", title: String(localized: "Данные других приложений"), icon: "folder.badge.person.crop", pane: "Privacy", order: 22),
+        .init(key: "kTCCServiceDeveloperTool", title: String(localized: "Инструменты разработчика"), icon: "hammer", pane: "Privacy_DevTools", order: 23),
+        .init(key: "kTCCServiceSpeechRecognition", title: String(localized: "Распознавание речи"), icon: "waveform", pane: "Privacy_SpeechRecognition", order: 24),
+        .init(key: "kTCCServiceFocusStatus", title: String(localized: "Статус фокусирования"), icon: "moon", pane: "Privacy_Focus", order: 25),
+        .init(key: "kTCCServiceUserAvailability", title: String(localized: "Статус фокусирования"), icon: "moon", pane: "Privacy_Focus", order: 25),
+        .init(key: "kTCCServiceWillow", title: String(localized: "Дом"), icon: "house", pane: "Privacy_HomeKit", order: 26),
+        .init(key: "kTCCServiceLiverpool", title: String(localized: "Службы синхронизации (системное)"), icon: "arrow.triangle.2.circlepath", pane: "Privacy", order: 900),
+        .init(key: "kTCCServiceUbiquity", title: String(localized: "iCloud Drive (системное)"), icon: "icloud", pane: "Privacy", order: 901),
     ]
 }
 
@@ -84,10 +84,10 @@ enum TCCAuth: Sendable, Equatable {
 
     var title: String {
         switch self {
-        case .denied: "запрещено"
-        case .allowed: "разрешено"
-        case .limited: "ограничено"
-        case .unknown(let v): "код \(v)"
+        case .denied: String(localized: "запрещено")
+        case .allowed: String(localized: "разрешено")
+        case .limited: String(localized: "ограничено")
+        case .unknown(let v): String(localized: "код \(v)")
         }
     }
 
@@ -95,7 +95,7 @@ enum TCCAuth: Sendable, Equatable {
 }
 
 struct TCCEntry: Identifiable, Sendable {
-    enum Source: String, Sendable { case user = "пользователь", system = "система" }
+    enum Source: String, Sendable { case user = "пользователь", system = "система" } // l10n:skip
 
     var service: String
     var client: String
@@ -128,9 +128,9 @@ enum TCCReader {
 
         var description: String {
             switch self {
-            case .open(let m): "не открыть: \(m)"
-            case .query(let m): "ошибка запроса: \(m)"
-            case .noTable: "нет таблицы access"
+            case .open(let m): String(localized: "не открыть: \(m)")
+            case .query(let m): String(localized: "ошибка запроса: \(m)")
+            case .noTable: String(localized: "нет таблицы access")
             }
         }
     }
@@ -165,7 +165,7 @@ enum TCCReader {
         let rc = sqlite3_open_v2(uri, &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nil)
         defer { sqlite3_close(db) }
         guard rc == SQLITE_OK, let db else {
-            throw ReadError.open(db.map { String(cString: sqlite3_errmsg($0)) } ?? "код \(rc)")
+            throw ReadError.open(db.map { String(cString: sqlite3_errmsg($0)) } ?? String(localized: "код \(rc)"))
         }
 
         // Схема меняется от версии к версии: смотрим, какие колонки есть.
@@ -228,9 +228,9 @@ enum TCCReset {
     }
 
     static func reset(_ e: TCCEntry) -> Shell.Result {
-        if TCCPaths.demo != nil { return .init(ok: false, output: "демо-режим, ничего не сброшено") }
+        if TCCPaths.demo != nil { return .init(ok: false, output: String(localized: "демо-режим, ничего не сброшено")) }
         guard let args = arguments(for: e) else {
-            return .init(ok: false, output: "Эта запись сделана для программы по пути, а не для приложения — tccutil её не сбрасывает.")
+            return .init(ok: false, output: String(localized: "Эта запись сделана для программы по пути, а не для приложения — tccutil её не сбрасывает."))
         }
         return Shell.run("/usr/bin/tccutil", args)
     }

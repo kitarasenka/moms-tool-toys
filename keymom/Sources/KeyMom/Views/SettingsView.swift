@@ -31,7 +31,7 @@ struct SettingsView: View {
                     Image(systemName: state.axTrusted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                         .foregroundStyle(state.axTrusted ? .green : .orange)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(state.axTrusted ? "Универсальный доступ разрешён" : "Универсальный доступ не разрешён")
+                        Text(state.axTrusted ? String(localized: "Универсальный доступ разрешён") : String(localized: "Универсальный доступ не разрешён"))
                         Text("Нужен, чтобы заменять текст в других приложениях. После пересборки KeyMom разрешение иногда приходится выдать заново: выключите и снова включите KeyMom в списке.")
                             .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     }
@@ -55,7 +55,7 @@ struct SettingsView: View {
                 }
                 Toggle("Показывать «RU» / «EN» у курсора при смене раскладки", isOn: $p.layoutHUD)
                 HStack {
-                    Text("Включены: " + state.enabledNames)
+                    Text("Включены: \(state.enabledNames)")
                         .font(.caption).foregroundStyle(.secondary)
                     Spacer()
                     Button("Настройки клавиатуры…") { InputSources.openSettings() }
@@ -86,7 +86,7 @@ struct SettingsView: View {
     }
 
     private var variantNote: String {
-        "Сейчас используется «\(state.variant.title)». От неё зависит, где точка и запятая: в «ПК» они справа внизу (как на Windows), в варианте Apple — на Shift+6 и Shift+7."
+        String(localized: "Сейчас используется «\(state.variant.title)». От неё зависит, где точка и запятая: в «ПК» они справа внизу (как на Windows), в варианте Apple — на Shift+6 и Shift+7.")
     }
 }
 

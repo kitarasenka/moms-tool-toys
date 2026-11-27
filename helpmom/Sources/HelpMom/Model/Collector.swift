@@ -135,9 +135,9 @@ enum Collector {
         let kind: String?
         switch iface?.type {
         case .wifi?: kind = "Wi-Fi"
-        case .wiredEthernet?: kind = "Кабель"
-        case .cellular?: kind = "Мобильная сеть"
-        default: kind = iface.map { _ in path.isExpensive ? "iPhone (режим модема)" : "Сеть" }
+        case .wiredEthernet?: kind = String(localized: "Кабель")
+        case .cellular?: kind = String(localized: "Мобильная сеть")
+        default: kind = iface.map { _ in path.isExpensive ? String(localized: "iPhone (режим модема)") : String(localized: "Сеть") }
         }
         let ip = iface.flatMap { localIPv4(interface: $0.name) }
         let ping = await Task.detached { Shell.run("/sbin/ping", ["-c", "1", "-t", "3", "-q", "1.1.1.1"], timeout: 5) != nil }.value
@@ -286,7 +286,7 @@ enum CrashReports {
             return nil
         }
         if kind == .panic { app = "macOS" }
-        if kind == .memory { app = "Память" }
+        if kind == .memory { app = String(localized: "Память") }
         if app.hasPrefix("ExcUserFault_") { return nil }
         return CrashEvent(app: app, date: date, kind: kind)
     }

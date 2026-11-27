@@ -25,7 +25,7 @@ struct ClipMomApp: App {
         Window("ClipMom", id: "main") {
             ContentView()
                 .environment(state)
-                .environment(\.locale, Locale(identifier: "ru_RU"))
+                .appLocale()
                 .frame(minWidth: 900, minHeight: 540)
                 .task { LaunchOptions.apply(to: state) }
         }
@@ -35,7 +35,7 @@ struct ClipMomApp: App {
                 Button("Настройки…") { state.showSettings = true }.keyboardShortcut(",")
             }
             CommandGroup(after: .sidebar) {
-                Button(state.isRecording ? "Приостановить запись" : "Возобновить запись") { state.togglePause() }
+                Button(state.isRecording ? LocalizedStringKey("Приостановить запись") : "Возобновить запись") { state.togglePause() }
                     .keyboardShortcut("p", modifiers: [.command, .shift])
                 Button("Не записывать 5 минут") { state.pauseFiveMinutes() }
                 Divider()
@@ -49,7 +49,7 @@ struct ClipMomApp: App {
 
         // Значок в строке меню: окно можно закрыть — ClipMom продолжит записывать историю.
         MenuBarExtra {
-            MenuBarContent(state: state)
+            MenuBarContent(state: state).appLocale()
         } label: {
             Image(systemName: state.isRecording ? "list.clipboard" : "pause.circle")
         }
@@ -101,9 +101,9 @@ struct MenuBarContent: View {
         }
         Divider()
         if let until = state.pauseUntil {
-            Text("Пауза до \(until.formatted(date: .omitted, time: .shortened))")
+            Text("Пауза до \(until.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)))")
         }
-        Button(state.isRecording ? "Приостановить запись" : "Возобновить запись") { state.togglePause() }
+        Button(state.isRecording ? LocalizedStringKey("Приостановить запись") : "Возобновить запись") { state.togglePause() }
         if state.isRecording {
             Button("Не записывать 5 минут") { state.pauseFiveMinutes() }
         }

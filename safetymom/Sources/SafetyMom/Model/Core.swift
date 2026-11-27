@@ -4,36 +4,33 @@ import Foundation
 // MARK: - Формат
 
 enum Fmt {
-    static let ru = Locale(identifier: "ru_RU")
-
     static func date(_ d: Date?) -> String {
         guard let d else { return "—" }
-        return d.formatted(.dateTime.day().month(.wide).year().locale(ru))
+        return d.formatted(.dateTime.day().month(.wide).year().locale(L10n.locale))
     }
 
     static func dateTime(_ d: Date) -> String {
-        d.formatted(.dateTime.day().month(.wide).hour().minute().locale(ru))
+        d.formatted(.dateTime.day().month(.wide).hour().minute().locale(L10n.locale))
     }
 
-    static func time(_ d: Date) -> String { d.formatted(.dateTime.hour().minute().locale(ru)) }
+    static func time(_ d: Date) -> String { d.formatted(.dateTime.hour().minute().locale(L10n.locale)) }
 
     /// «3 дня назад», «вчера».
     static func ago(_ d: Date, now: Date = .now) -> String {
-        if now.timeIntervalSince(d) < 60 { return "только что" }
+        if now.timeIntervalSince(d) < 60 { return String(localized: "только что") }
         let f = RelativeDateTimeFormatter()
-        f.locale = ru
+        f.locale = L10n.locale
         f.unitsStyle = .full
         return f.localizedString(for: d, relativeTo: now)
     }
 
-    static func count(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        "\(n) \(plural(n, one, few, many))"
-    }
-
-    static func plural(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let m10 = n % 10, m100 = n % 100
-        return (m10 == 1 && m100 != 11) ? one : ((2...4).contains(m10) && !(12...14).contains(m100) ? few : many)
-    }
+    static func profiles(_ n: Int) -> String { String(localized: "\(n) профилей") }
+    static func items(_ n: Int) -> String { String(localized: "\(n) пунктов") }
+    static func itemsToReview(_ n: Int) -> String { String(localized: "\(n) пунктов стоит") }
+    static func extensions(_ n: Int) -> String { String(localized: "\(n) расширений") }
+    static func sites(_ n: Int) -> String { String(localized: "\(n) сайтов") }
+    static func sitesBlocked(_ n: Int) -> String { String(localized: "\(n) сайтов больше не смогут") }
+    static func lines(_ n: Int) -> String { String(localized: "\(n) строк") }
 }
 
 // MARK: - Пути
@@ -74,18 +71,18 @@ struct SettingsLink: Hashable, Sendable {
     var title: String
     var url: String
 
-    static let fileVault = SettingsLink(title: "Открыть FileVault", url: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?FileVault")
-    static let firewall = SettingsLink(title: "Открыть настройки файрвола", url: "x-apple.systempreferences:com.apple.Network-Settings.extension?Firewall")
-    static let security = SettingsLink(title: "Открыть «Конфиденциальность и безопасность»", url: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Security")
-    static let softwareUpdate = SettingsLink(title: "Открыть «Обновление ПО»", url: "x-apple.systempreferences:com.apple.Software-Update-Settings.extension")
-    static let lockScreen = SettingsLink(title: "Открыть «Экран блокировки»", url: "x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension")
-    static let users = SettingsLink(title: "Открыть «Пользователи и группы»", url: "x-apple.systempreferences:com.apple.Users-Groups-Settings.extension")
-    static let sharing = SettingsLink(title: "Открыть «Общий доступ»", url: "x-apple.systempreferences:com.apple.Sharing-Settings.extension")
-    static let timeMachine = SettingsLink(title: "Открыть Time Machine", url: "x-apple.systempreferences:com.apple.Time-Machine-Settings.extension")
-    static let network = SettingsLink(title: "Открыть «Сеть»", url: "x-apple.systempreferences:com.apple.Network-Settings.extension")
-    static let profiles = SettingsLink(title: "Открыть «Профили»", url: "x-apple.systempreferences:com.apple.Profiles-Settings.extension")
-    static let notifications = SettingsLink(title: "Открыть «Уведомления»", url: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")
-    static let fullDisk = SettingsLink(title: "Открыть «Полный доступ к диску»", url: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")
+    static let fileVault = SettingsLink(title: String(localized: "Открыть FileVault"), url: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?FileVault")
+    static let firewall = SettingsLink(title: String(localized: "Открыть настройки файрвола"), url: "x-apple.systempreferences:com.apple.Network-Settings.extension?Firewall")
+    static let security = SettingsLink(title: String(localized: "Открыть «Конфиденциальность и безопасность»"), url: "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension?Security")
+    static let softwareUpdate = SettingsLink(title: String(localized: "Открыть «Обновление ПО»"), url: "x-apple.systempreferences:com.apple.Software-Update-Settings.extension")
+    static let lockScreen = SettingsLink(title: String(localized: "Открыть «Экран блокировки»"), url: "x-apple.systempreferences:com.apple.Lock-Screen-Settings.extension")
+    static let users = SettingsLink(title: String(localized: "Открыть «Пользователи и группы»"), url: "x-apple.systempreferences:com.apple.Users-Groups-Settings.extension")
+    static let sharing = SettingsLink(title: String(localized: "Открыть «Общий доступ»"), url: "x-apple.systempreferences:com.apple.Sharing-Settings.extension")
+    static let timeMachine = SettingsLink(title: String(localized: "Открыть Time Machine"), url: "x-apple.systempreferences:com.apple.Time-Machine-Settings.extension")
+    static let network = SettingsLink(title: String(localized: "Открыть «Сеть»"), url: "x-apple.systempreferences:com.apple.Network-Settings.extension")
+    static let profiles = SettingsLink(title: String(localized: "Открыть «Профили»"), url: "x-apple.systempreferences:com.apple.Profiles-Settings.extension")
+    static let notifications = SettingsLink(title: String(localized: "Открыть «Уведомления»"), url: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")
+    static let fullDisk = SettingsLink(title: String(localized: "Открыть «Полный доступ к диску»"), url: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")
 }
 
 enum Settings {

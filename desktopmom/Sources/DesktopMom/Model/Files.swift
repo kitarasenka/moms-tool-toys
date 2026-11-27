@@ -11,28 +11,42 @@ enum DeskGroup: String, CaseIterable, Identifiable, Codable, Sendable {
 
     var title: String {
         switch self {
-        case .screenshots: "Снимки и записи экрана"
-        case .documents: "Документы"
-        case .images: "Картинки и фото"
-        case .media: "Видео и музыка"
-        case .installers: "Установщики и программы"
-        case .archives: "Архивы"
-        case .folders: "Папки"
-        case .other: "Прочее"
+        case .screenshots: String(localized: "Снимки и записи экрана")
+        case .documents: String(localized: "Документы")
+        case .images: String(localized: "Картинки и фото")
+        case .media: String(localized: "Видео и музыка")
+        case .installers: String(localized: "Установщики и программы")
+        case .archives: String(localized: "Архивы")
+        case .folders: String(localized: "Папки")
+        case .other: String(localized: "Прочее")
         }
     }
 
-    /// Имя подпапки в «Документы › Разобрать».
+    /// Имя подпапки в «Документы › Разобрать» на языке приложения.
     var folderName: String {
         switch self {
-        case .screenshots: "Снимки экрана"
-        case .documents: "Документы"
-        case .images: "Картинки"
-        case .media: "Видео и музыка"
-        case .installers: "Установщики"
-        case .archives: "Архивы"
-        case .folders: "Папки"
-        case .other: "Прочее"
+        case .screenshots: String(localized: "Снимки экрана")
+        case .documents: String(localized: "Документы")
+        case .images: String(localized: "Картинки")
+        case .media: String(localized: "Видео и музыка")
+        case .installers: String(localized: "Установщики")
+        case .archives: String(localized: "Архивы")
+        case .folders: String(localized: "Папки")
+        case .other: String(localized: "Прочее")
+        }
+    }
+
+    /// То же имя по-русски — так папку называла русская версия; если она уже есть, кладём в неё.
+    var russianFolderName: String {
+        switch self {
+        case .screenshots: "Снимки экрана" // l10n:skip
+        case .documents: "Документы" // l10n:skip
+        case .images: "Картинки" // l10n:skip
+        case .media: "Видео и музыка" // l10n:skip
+        case .installers: "Установщики" // l10n:skip
+        case .archives: "Архивы" // l10n:skip
+        case .folders: "Папки" // l10n:skip
+        case .other: "Прочее" // l10n:skip
         }
     }
 
@@ -95,11 +109,18 @@ enum Classifier {
     static let documentExtensions: Set<String> = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "pages", "numbers",
                                                   "key", "rtf", "rtfd", "txt", "odt", "ods", "odp", "csv", "md", "epub",
                                                   "fb2", "djvu", "html", "htm", "webloc"]
-    private static let screenshotPrefixes = ["снимок экрана", "запись экрана", "screenshot", "screen shot",
-                                             "screen recording", "cleanshot", "bildschirmfoto"]
+    /// Как macOS называет снимки и записи экрана на разных языках (в нижнем регистре) — это данные, не перевод.
+    static let screenshotPrefixes = [
+        "снимок экрана", "запись экрана",                                  // l10n:skip — ru
+        "screenshot", "screen shot", "screen recording", "cleanshot",      // en (+ CleanShot X)
+        "bildschirmfoto", "bildschirmaufnahme",                           // de
+        "capture d’écran", "capture d'écran", "enregistrement de l’écran", "enregistrement de l'écran",  // fr
+        "截屏", "屏幕快照", "屏幕录制",                                         // zh-Hans
+        "لقطة شاشة", "تسجيل الشاشة",                                       // ar
+    ]
 
-    /// По имени: «Снимок экрана 2026-11-02 в 10.11.12.png», «Screen Recording … .mov» — только для картинок и видео,
-    /// чтобы «Screenshot ideas.docx» не уехал в снимки.
+    /// По имени: «Снимок экрана 2026-11-02 в 10.11.12.png», «Screen Recording … .mov», «Bildschirmfoto …» —
+    /// только для картинок и видео, чтобы «Screenshot ideas.docx» не уехал в снимки.
     static func looksLikeScreenshot(name: String) -> Bool {
         let lower = name.lowercased()
         guard screenshotPrefixes.contains(where: { lower.hasPrefix($0) }) else { return false }

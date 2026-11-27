@@ -100,7 +100,7 @@ final class AppState {
         ticks += 1
         if let until = pauseUntil, until <= .now {
             pauseUntil = nil
-            lastEvent = "Запись снова включена"
+            lastEvent = String(localized: "Запись снова включена")
         }
         if ticks % 10 == 0 { refreshAccess() }
         if ticks % 7200 == 0 { applyLimits() }  // раз в час — сроки хранения
@@ -108,21 +108,21 @@ final class AppState {
         let change = tr.check(pb.changeCount)
         tracker = tr
         guard change == .external else { return }
-        guard isRecording else { lastEvent = "Не записано: пауза"; return }
+        guard isRecording else { lastEvent = String(localized: "Не записано: пауза"); return }
 
         let front = NSWorkspace.shared.frontmostApplication
         let source = SourceApp(bundleID: front?.bundleIdentifier, name: front?.localizedName)
         if let ex = prefs.isExcluded(source.bundleID) {
-            lastEvent = "Не записано: скопировано в «\(ex.name)»"
+            lastEvent = String(localized: "Не записано: скопировано в «\(ex.name)»")
             return
         }
         guard access.canAutoRead else {
-            lastEvent = access == .denied ? "Не записано: доступ к буферу запрещён" : "Не записано: macOS спрашивает доступ"
+            lastEvent = access == .denied ? String(localized: "Не записано: доступ к буферу запрещён") : String(localized: "Не записано: macOS спрашивает доступ")
             return
         }
         // Метки «пароль/временное» видны по списку типов — до чтения содержимого.
         if let reason = PasteboardReader.skipReason(types: pb.types ?? []) {
-            lastEvent = "Не записано: \(reason)"
+            lastEvent = String(localized: "Не записано: \(reason)")
             return
         }
         let result = PasteboardReader.read(pb)
@@ -131,14 +131,14 @@ final class AppState {
         case .captured(let c):
             do {
                 let item = try history.ingest(c, source: source)
-                lastEvent = "Записано: \(item.title.prefix(40))"
+                lastEvent = String(localized: "Записано: \(String(item.title.prefix(40)))")
                 sync()
                 scheduleSave()
             } catch {
-                lastEvent = "Ошибка записи: \(error.localizedDescription)"
+                lastEvent = String(localized: "Ошибка записи: \(error.localizedDescription)")
             }
         case .skipped(let reason):
-            lastEvent = "Не записано: \(reason)"
+            lastEvent = String(localized: "Не записано: \(reason)")
         case .nothing:
             break
         }
@@ -150,9 +150,9 @@ final class AppState {
         if let pb = pasteboard {
             let cc = PasteboardWriter.write(item, to: pb, store: history.store)
             tracker?.markOwnWrite(cc)
-            lastEvent = "Скопировано: \(item.title.prefix(40))"
+            lastEvent = String(localized: "Скопировано: \(String(item.title.prefix(40)))")
         } else {
-            lastEvent = "Демо: буфер обмена не тронут"
+            lastEvent = String(localized: "Демо: буфер обмена не тронут")
         }
         history.touch(item.id)
         sync()
@@ -182,7 +182,7 @@ final class AppState {
         history.clear(keepPinned: keepPinned)
         sync()
         scheduleSave()
-        lastEvent = keepPinned ? "История очищена (закреплённые остались)" : "История очищена"
+        lastEvent = keepPinned ? String(localized: "История очищена (закреплённые остались)") : String(localized: "История очищена")
     }
 
     func togglePause() {

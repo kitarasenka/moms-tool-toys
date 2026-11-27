@@ -9,9 +9,9 @@ struct WifiView: View {
         let w = state.wifi
         Group {
             if w.phase != .ready {
-                LoadingView(text: "Читаю запомненные сети…")
+                LoadingView(text: String(localized: "Читаю запомненные сети…"))
             } else if w.device == nil || w.error != nil {
-                EmptyStateView(icon: "wifi.slash", title: "Список сетей недоступен", text: w.error ?? "Wi-Fi не найден.") {
+                EmptyStateView(icon: "wifi.slash", title: String(localized: "Список сетей недоступен"), text: w.error ?? String(localized: "Wi-Fi не найден.")) {
                     Button("Повторить") { Task { await w.load() } }
                 }
             } else {
@@ -26,7 +26,7 @@ struct WifiView: View {
                     .help("Перечитать список (⌘R)")
             }
         }
-        .alert(w.selection.count == 1 ? "Забыть сеть «\(w.selection.first!)»?" : "Забыть \(Fmt.count(w.selection.count, "сеть", "сети", "сетей"))?",
+        .alert(w.selection.count == 1 ? String(localized: "Забыть сеть «\(w.selection.first!)»?") : String(localized: "Забыть \(Fmt.networks(w.selection.count))?"),
                isPresented: $confirm) {
             Button("Забыть", role: .destructive) { Task { await w.forgetSelected() } }
             Button("Отменить", role: .cancel) {}
@@ -37,9 +37,9 @@ struct WifiView: View {
 
     private var forgetText: String {
         let w = state.wifi
-        var t = "Mac перестанет подключаться к \(w.selection.count == 1 ? "этой сети" : "этим сетям") сам. Чтобы вернуться, придётся снова выбрать сеть и ввести пароль."
-        if let c = w.current, w.selection.contains(c) { t += "\n\nСреди выбранных — текущая сеть «\(c)»: соединение может прерваться." }
-        t += "\n\nmacOS попросит пароль администратора. Если включена «Связка ключей iCloud», сеть может вернуться с iPhone."
+        var t = String(localized: "Mac перестанет подключаться к \(w.selection.count == 1 ? String(localized: "этой сети") : String(localized: "этим сетям")) сам. Чтобы вернуться, придётся снова выбрать сеть и ввести пароль.")
+        if let c = w.current, w.selection.contains(c) { t += String(localized: "\n\nСреди выбранных — текущая сеть «\(c)»: соединение может прерваться.") }
+        t += String(localized: "\n\nmacOS попросит пароль администратора. Если включена «Связка ключей iCloud», сеть может вернуться с iPhone.")
         return t
     }
 
@@ -53,8 +53,8 @@ struct WifiView: View {
         return VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(spacing: 10) {
-                    StatTile(icon: "wifi", title: "запомненных сетей", value: "\(w.networks.count)")
-                    StatTile(icon: "checkmark.circle.fill", title: "подключено сейчас",
+                    StatTile(icon: "wifi", title: String(localized: "запомненных сетей"), value: "\(w.networks.count)")
+                    StatTile(icon: "checkmark.circle.fill", title: String(localized: "подключено сейчас"),
                              value: w.current ?? (w.currentChecked ? "—" : "…"))
                 }
                 Text("Mac помнит каждую сеть, к которой подключался, и подключается к ней сам, если увидит рядом. Старые сети кафе, гостиниц и вокзалов лучше забыть.")
@@ -71,7 +71,7 @@ struct WifiView: View {
                                 .foregroundStyle(ssid == w.current ? AnyShapeStyle(Brand.gradient) : AnyShapeStyle(.secondary))
                                 .frame(width: 20)
                             Text(ssid).lineLimit(1)
-                            if ssid == w.current { Pill(text: "подключено", color: .green) }
+                            if ssid == w.current { Pill(text: String(localized: "подключено"), color: .green) }
                             Spacer()
                         }
                         .tag(ssid)
@@ -84,7 +84,7 @@ struct WifiView: View {
             .frame(maxHeight: .infinity)
             Divider()
             HStack {
-                Text(w.selection.isEmpty ? "Выберите сети (⌘ или ⇧ — несколько)" : "Выбрано: \(Fmt.count(w.selection.count, "сеть", "сети", "сетей"))")
+                Text(w.selection.isEmpty ? String(localized: "Выберите сети (⌘ или ⇧ — несколько)") : String(localized: "Выбрано: \(Fmt.networks(w.selection.count))"))
                     .foregroundStyle(.secondary)
                 Spacer()
                 if w.forgetting { ProgressView().controlSize(.small) }
@@ -96,6 +96,6 @@ struct WifiView: View {
             .padding(12)
             .background(.bar)
         }
-        .searchable(text: $search, placement: .toolbar, prompt: "Имя сети")
+        .searchable(text: $search, placement: .toolbar, prompt: String(localized: "Имя сети"))
     }
 }

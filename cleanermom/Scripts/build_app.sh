@@ -11,6 +11,7 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp ".build/release/CleanerMom" "$APP/Contents/MacOS/CleanerMom"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+cp -R Resources/*.lproj "$APP/Contents/Resources/"
 
 echo "▸ Иконка…"
 # Resources/AppIcon.png (1024×1024) → AppIcon.icns

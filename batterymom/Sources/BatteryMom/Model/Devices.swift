@@ -25,13 +25,13 @@ struct DeviceBattery: Identifiable, Sendable, Hashable {
 
         var title: String {
             switch self {
-            case .mouse: "Мышь"
-            case .keyboard: "Клавиатура"
-            case .trackpad: "Трекпад"
-            case .airpods, .airpodsMax, .headphones: "Наушники"
-            case .speaker: "Колонка"
-            case .gamepad: "Геймпад"
-            case .other: "Устройство"
+            case .mouse: String(localized: "Мышь")
+            case .keyboard: String(localized: "Клавиатура")
+            case .trackpad: String(localized: "Трекпад")
+            case .airpods, .airpodsMax, .headphones: String(localized: "Наушники")
+            case .speaker: String(localized: "Колонка")
+            case .gamepad: String(localized: "Геймпад")
+            case .other: String(localized: "Устройство")
             }
         }
     }
@@ -55,7 +55,7 @@ struct DeviceBattery: Identifiable, Sendable, Hashable {
     /// «Л 7 % · П 10 % · футляр 68 %» или «75 %».
     var levelsText: String {
         levels.map { l in
-            let short = l.label.map { ["Левый": "Л", "Правый": "П", "Футляр": "футляр"][$0] ?? $0 }
+            let short = l.label.map { [String(localized: "Левый"): String(localized: "Л"), String(localized: "Правый"): String(localized: "П"), String(localized: "Футляр"): String(localized: "футляр")][$0] ?? $0 }
             return (short.map { "\($0) " } ?? "") + "\(l.percent) %"
         }.joined(separator: " · ")
     }
@@ -78,7 +78,7 @@ enum DeviceScanner {
         var seen = Set<String>()
         for d in list {
             guard let pct = BatteryInfo.int(d["BatteryPercent"]) else { continue }
-            let name = (d["Product"] as? String) ?? (d["Name"] as? String) ?? "Устройство"
+            let name = (d["Product"] as? String) ?? (d["Name"] as? String) ?? String(localized: "Устройство")
             let address = (d["DeviceAddress"] as? String).map(normalizeAddress)
             let key = address ?? name
             guard seen.insert(key).inserted else { continue }  // одно устройство бывает в нескольких сервисах
@@ -120,8 +120,8 @@ enum DeviceScanner {
 
     private static let levelKeys: [(String, String?)] = [
         ("device_batteryLevelMain", nil), ("device_batteryLevel", nil),
-        ("device_batteryLevelLeft", "Левый"), ("device_batteryLevelRight", "Правый"),
-        ("device_batteryLevelCase", "Футляр"),
+        ("device_batteryLevelLeft", String(localized: "Левый")), ("device_batteryLevelRight", String(localized: "Правый")),
+        ("device_batteryLevelCase", String(localized: "Футляр")),
     ]
 
     /// Живые данные ioreg важнее; из system_profiler добавляем то, чего в ioreg нет.
@@ -142,10 +142,10 @@ enum DeviceScanner {
         let n = name.lowercased(), t = (minorType ?? "").lowercased()
         if n.contains("airpods max") || n.contains("max ap") { return .airpodsMax }
         if n.contains("airpods") { return .airpods }
-        if n.contains("mouse") || n.contains("мыш") || t.contains("mouse") { return .mouse }
-        if n.contains("trackpad") || n.contains("трекпад") || t.contains("trackpad") { return .trackpad }
-        if n.contains("keyboard") || n.contains("клавиатур") || t.contains("keyboard") { return .keyboard }
-        if t.contains("headphone") || t.contains("headset") || n.contains("наушник") || n.contains("buds") { return .headphones }
+        if n.contains("mouse") || n.contains("мыш") || t.contains("mouse") { return .mouse } // l10n:skip
+        if n.contains("trackpad") || n.contains("трекпад") || t.contains("trackpad") { return .trackpad } // l10n:skip
+        if n.contains("keyboard") || n.contains("клавиатур") || t.contains("keyboard") { return .keyboard } // l10n:skip
+        if t.contains("headphone") || t.contains("headset") || n.contains("наушник") || n.contains("buds") { return .headphones } // l10n:skip
         if t.contains("speaker") { return .speaker }
         if t.contains("gamepad") || t.contains("joystick") || n.contains("controller") { return .gamepad }
         return .other

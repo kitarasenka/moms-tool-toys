@@ -77,11 +77,11 @@ enum NetworkScanner {
             return (d[p] as? NSNumber).map { "\(host):\($0)" } ?? host
         }
         var out: [ProxyInfo] = []
-        if on("HTTPEnable") { out.append(.init(kind: "Веб-прокси (HTTP)", address: addr("HTTPProxy", "HTTPPort"))) }
-        if on("HTTPSEnable") { out.append(.init(kind: "Защищённый веб-прокси (HTTPS)", address: addr("HTTPSProxy", "HTTPSPort"))) }
-        if on("SOCKSEnable") { out.append(.init(kind: "SOCKS-прокси", address: addr("SOCKSProxy", "SOCKSPort"))) }
+        if on("HTTPEnable") { out.append(.init(kind: String(localized: "Веб-прокси (HTTP)"), address: addr("HTTPProxy", "HTTPPort"))) }
+        if on("HTTPSEnable") { out.append(.init(kind: String(localized: "Защищённый веб-прокси (HTTPS)"), address: addr("HTTPSProxy", "HTTPSPort"))) }
+        if on("SOCKSEnable") { out.append(.init(kind: String(localized: "SOCKS-прокси"), address: addr("SOCKSProxy", "SOCKSPort"))) }
         if on("ProxyAutoConfigEnable") {
-            out.append(.init(kind: "Автонастройка прокси (PAC)", address: d["ProxyAutoConfigURLString"] as? String ?? "?"))
+            out.append(.init(kind: String(localized: "Автонастройка прокси (PAC)"), address: d["ProxyAutoConfigURLString"] as? String ?? "?"))
         }
         return out
     }
@@ -112,19 +112,19 @@ enum NetworkScanner {
         "1.1.1.1": "Cloudflare", "1.0.0.1": "Cloudflare", "2606:4700:4700::1111": "Cloudflare", "2606:4700:4700::1001": "Cloudflare",
         "8.8.8.8": "Google", "8.8.4.4": "Google", "2001:4860:4860::8888": "Google", "2001:4860:4860::8844": "Google",
         "9.9.9.9": "Quad9", "149.112.112.112": "Quad9", "208.67.222.222": "OpenDNS", "208.67.220.220": "OpenDNS",
-        "77.88.8.8": "Яндекс DNS", "77.88.8.1": "Яндекс DNS", "77.88.8.88": "Яндекс DNS (безопасный)",
-        "77.88.8.2": "Яндекс DNS (безопасный)", "77.88.8.7": "Яндекс DNS (семейный)", "77.88.8.3": "Яндекс DNS (семейный)",
+        "77.88.8.8": String(localized: "Яндекс DNS"), "77.88.8.1": String(localized: "Яндекс DNS"), "77.88.8.88": String(localized: "Яндекс DNS (безопасный)"),
+        "77.88.8.2": String(localized: "Яндекс DNS (безопасный)"), "77.88.8.7": String(localized: "Яндекс DNS (семейный)"), "77.88.8.3": String(localized: "Яндекс DNS (семейный)"),
         "94.140.14.14": "AdGuard DNS", "94.140.15.15": "AdGuard DNS", "185.228.168.9": "CleanBrowsing",
         "100.100.100.100": "Tailscale (VPN)",
     ]
 
     static func classifyDNS(_ a: String) -> DNSServer {
-        if let name = publicDNS[a] { return DNSServer(address: a, label: "\(name) — известный надёжный сервис", level: .ok) }
+        if let name = publicDNS[a] { return DNSServer(address: a, label: String(localized: "\(name) — известный надёжный сервис"), level: .ok) }
         if a.hasPrefix("127.") || a == "::1" {
-            return DNSServer(address: a, label: "Программа на этом Mac (VPN или блокировщик рекламы). Если вы такого не ставили — это подозрительно.", level: .warn)
+            return DNSServer(address: a, label: String(localized: "Программа на этом Mac (VPN или блокировщик рекламы). Если вы такого не ставили — это подозрительно."), level: .warn)
         }
-        if isPrivate(a) { return DNSServer(address: a, label: "Ваш роутер или локальная сеть — так и должно быть", level: .ok) }
-        return DNSServer(address: a, label: "Незнакомый сервер. Это может быть DNS провайдера или VPN — тогда всё нормально. Если нет — его могла подставить вредоносная программа.", level: .warn)
+        if isPrivate(a) { return DNSServer(address: a, label: String(localized: "Ваш роутер или локальная сеть — так и должно быть"), level: .ok) }
+        return DNSServer(address: a, label: String(localized: "Незнакомый сервер. Это может быть DNS провайдера или VPN — тогда всё нормально. Если нет — его могла подставить вредоносная программа."), level: .warn)
     }
 
     static func isPrivate(_ a: String) -> Bool {
@@ -164,16 +164,16 @@ enum NetworkScanner {
         if blocked {
             if names.contains(where: { n in securityDomains.contains { n.contains($0) } }) {
                 return HostsEntry(ip: ip, names: names, level: .warn,
-                                  note: "Закрыт доступ к сайту обновлений или антивируса. Так делают вредоносные программы, чтобы Mac не получал защиту.")
+                                  note: String(localized: "Закрыт доступ к сайту обновлений или антивируса. Так делают вредоносные программы, чтобы Mac не получал защиту."))
             }
-            return HostsEntry(ip: ip, names: names, level: .ok, note: "Сайт заблокирован — обычно это делает блокировщик рекламы. Не опасно.")
+            return HostsEntry(ip: ip, names: names, level: .ok, note: String(localized: "Сайт заблокирован — обычно это делает блокировщик рекламы. Не опасно."))
         }
         if names.contains(where: { n in importantDomains.contains { n.contains($0) } }) {
             return HostsEntry(ip: ip, names: names, level: .danger,
-                              note: "Известный сайт направлен на чужой адрес — вместо настоящего сайта может открываться поддельный (например, банк).")
+                              note: String(localized: "Известный сайт направлен на чужой адрес — вместо настоящего сайта может открываться поддельный (например, банк)."))
         }
         return HostsEntry(ip: ip, names: names, level: .warn,
-                          note: "Сайт направлен на другой адрес. Так делают разработчики и некоторые программы; если вы не знаете, откуда эта строка, — покажите её знакомому специалисту.")
+                          note: String(localized: "Сайт направлен на другой адрес. Так делают разработчики и некоторые программы; если вы не знаете, откуда эта строка, — покажите её знакомому специалисту."))
     }
 
     // MARK: Профили

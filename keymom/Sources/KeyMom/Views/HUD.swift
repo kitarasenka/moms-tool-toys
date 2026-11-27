@@ -104,6 +104,7 @@ struct HUDView: View {
         .shadow(color: .black.opacity(0.25), radius: 8, y: 3)
         .padding(12)  // место для тени
         .fixedSize()
+        .environment(\.layoutDirection, L10n.layoutDirection)
     }
 
     private var background: AnyShapeStyle {

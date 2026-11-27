@@ -21,22 +21,22 @@ enum DemoData {
             }
             h.insertRaw(it)
         }
-        let safari = ("com.apple.Safari", "Safari"), notes = ("com.apple.Notes", "Заметки")
-        let mail = ("com.apple.mail", "Почта"), finder = ("com.apple.finder", "Finder")
-        let messages = ("com.apple.MobileSMS", "Сообщения"), pages = ("com.apple.TextEdit", "TextEdit")
+        let safari = ("com.apple.Safari", "Safari"), notes = ("com.apple.Notes", String(localized: "Заметки"))
+        let mail = ("com.apple.mail", String(localized: "Почта")), finder = ("com.apple.finder", "Finder")
+        let messages = ("com.apple.MobileSMS", String(localized: "Сообщения")), pages = ("com.apple.TextEdit", "TextEdit")
         add(.link, "https://www.gosuslugi.ru/help/faq/passport", ago: 20, app: safari)
-        add(.text, "Купить: молоко, гречку, яблоки «Антоновка», батарейки AA для пульта", ago: 150, app: notes)
-        add(.image, nil, ago: 600, app: ("com.apple.Preview", "Просмотр"), png: sampleImage())
-        add(.text, "Здравствуйте! Подтверждаю запись к терапевту на четверг, 10:30. Номер полиса: 7700 1234 5678 9012.",
+        add(.text, String(localized: "Купить: молоко, гречку, яблоки «Антоновка», батарейки AA для пульта"), ago: 150, app: notes)
+        add(.image, nil, ago: 600, app: ("com.apple.Preview", String(localized: "Просмотр")), png: sampleImage())
+        add(.text, String(localized: "Здравствуйте! Подтверждаю запись к терапевту на четверг, 10:30. Номер полиса: 7700 1234 5678 9012."),
             ago: 1_800, app: mail)
-        add(.files, "/Users/Shared/Фото с дачи.heic\n/Users/Shared/Рецепт пирога.pdf", ago: 3_600, app: finder,
-            files: ["/Users/Shared/Фото с дачи.heic", "/Users/Shared/Рецепт пирога.pdf"])
-        add(.text, "Код от домофона: 45К7890", ago: 7_200, app: messages, pinned: true)
+        let photo = "/Users/Shared/" + String(localized: "Фото с дачи.heic"), recipe = "/Users/Shared/" + String(localized: "Рецепт пирога.pdf")
+        add(.files, photo + "\n" + recipe, ago: 3_600, app: finder, files: [photo, recipe])
+        add(.text, String(localized: "Код от домофона: 45К7890"), ago: 7_200, app: messages, pinned: true)
         add(.link, "https://yandex.ru/maps/-/CDqZ2Dk", ago: 20_000, app: messages)
-        add(.text, "Адрес: Москва, ул. Садовая, д. 12, кв. 34, подъезд 2, этаж 5", ago: 86_000, app: pages, pinned: true)
-        add(.text, "Wi-Fi гостевой: MomGuest / пароль на холодильнике", ago: 172_000, app: notes)
+        add(.text, String(localized: "Адрес: Москва, ул. Садовая, д. 12, кв. 34, подъезд 2, этаж 5"), ago: 86_000, app: pages, pinned: true)
+        add(.text, String(localized: "Wi-Fi гостевой: MomGuest / пароль на холодильнике"), ago: 172_000, app: notes)
         add(.link, "https://www.youtube.com/watch?v=dQw4w9WgXcQ", ago: 400_000, app: safari)
-        add(.text, "Рецепт: 3 яйца, стакан сахара, стакан муки, щепотка соли — 40 минут при 180°", ago: 900_000, app: safari)
+        add(.text, String(localized: "Рецепт: 3 яйца, стакан сахара, стакан муки, щепотка соли — 40 минут при 180°"), ago: 900_000, app: safari)
     }
 
     static func sampleImage(width: Int = 640, height: Int = 420) -> Data {

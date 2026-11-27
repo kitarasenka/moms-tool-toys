@@ -7,10 +7,10 @@ enum SidebarSection: String, Hashable, CaseIterable {
 
     var title: String {
         switch self {
-        case .permissions: "Разрешения"
-        case .now: "Сейчас"
-        case .browsers: "Браузеры"
-        case .wifi: "Сети Wi-Fi"
+        case .permissions: String(localized: "Разрешения")
+        case .now: String(localized: "Сейчас")
+        case .browsers: String(localized: "Браузеры")
+        case .wifi: String(localized: "Сети Wi-Fi")
         }
     }
 
@@ -27,14 +27,25 @@ enum SidebarSection: String, Hashable, CaseIterable {
 @Observable @MainActor
 final class AppState {
     var section: SidebarSection = .permissions
-    var fullDiskAccess = FullDiskAccess.granted
-    let permissions = PermissionsStore()
-    let sensors = SensorStore()
-    let browsers = BrowserStore()
-    let wifi = WifiStore()
+    var fullDiskAccess: Bool
+    let permissions: PermissionsStore
+    let sensors: SensorStore
+    let browsers: BrowserStore
+    let wifi: WifiStore
+    private let demo: Bool
+
+    init(demo: Bool = false) {
+        self.demo = demo
+        fullDiskAccess = !demo && FullDiskAccess.granted
+        permissions = PermissionsStore(demo: demo)
+        sensors = SensorStore(demo: demo)
+        browsers = BrowserStore(demo: demo)
+        wifi = WifiStore(demo: demo)
+    }
 
     /// При возвращении в приложение: доступ могли выдать в Настройках — перечитываем.
     func refreshSystem() {
+        guard !demo else { return }
         let was = fullDiskAccess
         fullDiskAccess = FullDiskAccess.granted
         if fullDiskAccess != was || permissions.phase == .ready { Task { await permissions.load() } }
@@ -54,6 +65,11 @@ struct ServiceGroup: Identifiable {
 
 @Observable @MainActor
 final class PermissionsStore {
+    private let demo: Bool
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo { phase = .ready }
+    }
     enum Phase: Equatable { case idle, loading, ready }
 
     var phase: Phase = .idle
@@ -78,6 +94,7 @@ final class PermissionsStore {
     func name(_ e: TCCEntry) -> String { AppResolver.resolve(e.client, isPath: e.clientIsPath).name }
 
     func load() async {
+        guard !demo else { return }
         if phase != .ready { phase = .loading }
         let s = await Task.detached { TCCReader.snapshot() }.value
         snapshot = s
@@ -85,12 +102,13 @@ final class PermissionsStore {
     }
 
     func reset(_ e: TCCEntry) async {
+        guard !demo else { return }
         let r = await Task.detached { TCCReset.reset(e) }.value
         let who = name(e)
         if r.ok {
-            message = "Разрешение «\(e.info.title)» для \(who) сброшено. При следующей попытке приложение спросит снова."
+            message = String(localized: "Разрешение «\(e.info.title)» для \(who) сброшено. При следующей попытке приложение спросит снова.")
         } else {
-            message = "Не удалось сбросить (\(r.output.isEmpty ? "ошибка tccutil" : r.output)). Откройте «Настройки» и выключите \(who) там."
+            message = String(localized: "Не удалось сбросить (\(r.output.isEmpty ? String(localized: "ошибка tccutil") : r.output)). Откройте «Настройки» и выключите \(who) там.")
         }
         await load()
     }
@@ -100,6 +118,14 @@ final class PermissionsStore {
 
 @Observable @MainActor
 final class SensorStore {
+    private let demo: Bool
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo {
+            devices = [SensorDevice(kind: .camera, uid: "camera", name: "FaceTime HD Camera", running: false)]
+            lastPoll = .now
+        }
+    }
     var devices: [SensorDevice] = []
     var events: [SensorEvent] = []
     var lastPoll: Date?
@@ -114,7 +140,7 @@ final class SensorStore {
     var anyMic: Bool { microphones.contains(where: \.running) }
 
     func start() {
-        guard !started else { return }
+        guard !demo, !started else { return }
         started = true
         events = log.load()
         Task {
@@ -126,6 +152,7 @@ final class SensorStore {
     }
 
     func poll() async {
+        guard !demo else { return }
         let new = await Task.detached { Sensors.all() }.value
         let now = Date()
         let changes = SensorDiff.events(old: devices, new: new, at: now)
@@ -141,6 +168,7 @@ final class SensorStore {
     }
 
     func clearLog() {
+        guard !demo else { return }
         try? FileManager.default.removeItem(at: log.url)
         events = []
     }
@@ -150,6 +178,15 @@ final class SensorStore {
 
 @Observable @MainActor
 final class BrowserStore {
+    private let demo: Bool
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo {
+            phase = .ready
+            reports = BrowserDef.all.filter { $0.id == "safari" || $0.id == "chrome" }
+                .map { BrowserReport(def: $0, running: false, profiles: [], targets: [:]) }
+        }
+    }
     enum Phase: Equatable { case idle, loading, ready }
 
     var phase: Phase = .idle
@@ -158,6 +195,7 @@ final class BrowserStore {
     var message: String?
 
     func load(fullDiskAccess: Bool) async {
+        guard !demo else { return }
         if phase != .ready { phase = .loading }
         reports = await Task.detached { BrowserScanner.installedReports(fullDiskAccess: fullDiskAccess) }.value
         phase = .ready
@@ -168,14 +206,15 @@ final class BrowserStore {
     }
 
     func clean(_ r: BrowserReport, _ kind: BrowserDataKind, fullDiskAccess: Bool) async {
+        guard !demo else { return }
         busy = "\(r.id)|\(kind.rawValue)"
         let target = r.target(kind)
         let res = await Task.detached { BrowserScanner.clean(r.def, target) }.value
         busy = nil
         if res.failures.isEmpty {
-            message = "\(r.def.name): \(kind.title.lowercased()) — \(kind.toTrash ? "в Корзине" : "удалено") (\(Fmt.count(res.removed, "файл", "файла", "файлов")), \(Fmt.bytes(res.freed)))."
+            message = String(localized: "\(r.def.name): \(kind.title.lowercased()) — \(kind.toTrash ? String(localized: "в Корзине") : String(localized: "удалено")) (\(Fmt.files(res.removed)), \(Fmt.bytes(res.freed))).")
         } else {
-            message = "\(r.def.name): не всё получилось — " + res.failures.prefix(3).joined(separator: "; ")
+            message = String(localized: "\(r.def.name): не всё получилось — ") + res.failures.prefix(3).joined(separator: "; ")
         }
         await load(fullDiskAccess: fullDiskAccess)
     }
@@ -185,6 +224,17 @@ final class BrowserStore {
 
 @Observable @MainActor
 final class WifiStore {
+    private let demo: Bool
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo {
+            phase = .ready
+            device = "en0"
+            networks = ["Home Wi-Fi", "Guest Wi-Fi"]
+            current = networks.first
+            currentChecked = true
+        }
+    }
     enum Phase: Equatable { case idle, loading, ready }
 
     var phase: Phase = .idle
@@ -198,9 +248,10 @@ final class WifiStore {
     var forgetting = false
 
     func load() async {
+        guard !demo else { return }
         if phase != .ready { phase = .loading }
         let (dev, list, err) = await Task.detached { () -> (String?, [String], String?) in
-            guard let d = WifiNetworks.device() else { return (nil, [], "Wi-Fi на этом Mac не найден.") }
+            guard let d = WifiNetworks.device() else { return (nil, [], String(localized: "Wi-Fi на этом Mac не найден.")) }
             let r = WifiNetworks.preferred(device: d)
             return (d, r.ok ? WifiNetworks.parsePreferred(r.output) : [], r.ok ? nil : r.output)
         }.value
@@ -216,7 +267,7 @@ final class WifiStore {
     }
 
     func forgetSelected() async {
-        guard let dev = device else { return }
+        guard !demo, let dev = device else { return }
         forgetting = true
         let names = networks.filter { selection.contains($0) }
         var done: [String] = []
@@ -225,13 +276,13 @@ final class WifiStore {
             let r = await Task.detached { WifiNetworks.forget(ssid, device: dev) }.value
             if r.ok { done.append(ssid) } else {
                 failed.append("«\(ssid)»: \(r.output)")
-                if r.output == "Отменено" { break }
+                if r.output == String(localized: "Отменено") { break }
             }
         }
         forgetting = false
         selection = []
-        message = (done.isEmpty ? "" : "Забыто: \(done.map { "«\($0)»" }.joined(separator: ", ")). ")
-            + (failed.isEmpty ? "" : "Не получилось: " + failed.joined(separator: "; "))
+        message = (done.isEmpty ? "" : String(localized: "Забыто: \(done.map { "«\($0)»" }.joined(separator: ", ")). "))
+            + (failed.isEmpty ? "" : String(localized: "Не получилось: ") + failed.joined(separator: "; "))
         await load()
     }
 }

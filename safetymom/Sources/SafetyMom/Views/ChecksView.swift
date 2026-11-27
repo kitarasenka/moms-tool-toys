@@ -6,7 +6,7 @@ struct ChecksView: View {
     var body: some View {
         Group {
             if state.checks.isEmpty {
-                LoadingView(text: "Проверяю настройки безопасности…")
+                LoadingView(text: String(localized: "Проверяю настройки безопасности…"))
             } else {
                 ScrollView {
                     VStack(spacing: 12) {

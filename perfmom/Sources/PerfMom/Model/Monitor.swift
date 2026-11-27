@@ -29,7 +29,8 @@ final class Monitor {
     private(set) var processNetInHistory: [pid_t: [Double]] = [:]
     private(set) var processNetOutHistory: [pid_t: [Double]] = [:]
 
-    let machine = MachineInfo.current
+    let machine: MachineInfo
+    private let demo: Bool
     var interval: Double = 2
     var paused = false
 
@@ -40,8 +41,28 @@ final class Monitor {
     @ObservationIgnored private var loop: Task<Void, Never>?
     @ObservationIgnored private var refreshing = false
 
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo {
+            machine = MachineInfo(model: "MacBook Air", cpuBrand: "Apple M2", physicalCores: 8, logicalCores: 8,
+                                  performanceCores: 4, efficiencyCores: 4, memory: 8_000_000_000,
+                                  osVersion: "macOS 15.6", hostName: "MacBook-Air")
+            let browser = ProcessRecord(pid: 4242, ppid: 1, uid: 501, user: "demo", name: "Safari",
+                                        path: "", startTime: nil, state: .running, cpu: 12.5, memory: 402_000_000, threads: 8)
+            let desktop = ProcessRecord(pid: 4243, ppid: 1, uid: 501, user: "demo", name: "Finder",
+                                        path: "", startTime: nil, state: .running, cpu: 1.4, memory: 85_000_000, threads: 4)
+            let snapshot = SystemSnapshot(cpuUser: 14, cpuSystem: 4, perCore: [18, 24, 6, 10, 7, 2, 4, 9],
+                                          memTotal: machine.memory, memApp: 3_400_000_000, memWired: 580_000_000,
+                                          memCompressed: 220_000_000, memCached: 800_000_000, memFree: 3_000_000_000,
+                                          netIn: 240_000, netOut: 13_000, diskRead: 1_200_000, diskWrite: 450_000)
+            apply([browser, desktop], snapshot)
+        } else {
+            machine = .current
+        }
+    }
+
     func start() {
-        guard loop == nil else { return }
+        guard !demo, loop == nil else { return }
         NetworkMonitor.shared.start()
         loop = Task { [weak self] in
             await self?.refresh()
@@ -56,7 +77,7 @@ final class Monitor {
     }
 
     func refresh() async {
-        guard !refreshing else { return }
+        guard !demo, !refreshing else { return }
         refreshing = true
         defer { refreshing = false }
         let ps = processSampler, ss = systemSampler, sa = securityAnalyzer, q = queue
@@ -75,7 +96,7 @@ final class Monitor {
 
     private func apply(_ procs: [ProcessRecord], _ sys: SystemSnapshot) {
         // Первый замер без дельт (все проценты нулевые) в историю не пишем.
-        if lastUpdate != nil { HistoryRecorder.shared.ingest(system: sys, processes: procs) }
+        if !demo, lastUpdate != nil { HistoryRecorder.shared.ingest(system: sys, processes: procs) }
         let map = Dictionary(procs.map { ($0.pid, $0) }, uniquingKeysWith: { a, _ in a })
         var kids: [pid_t: [pid_t]] = [:]
         var rootList: [pid_t] = []
@@ -122,7 +143,7 @@ final class Monitor {
             }
         }
 
-        appPIDs = Set(NSWorkspace.shared.runningApplications
+        appPIDs = demo ? Set(procs.map(\.pid)) : Set(NSWorkspace.shared.runningApplications
             .filter { $0.activationPolicy == .regular }
             .map(\.processIdentifier))
 

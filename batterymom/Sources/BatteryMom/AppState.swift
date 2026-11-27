@@ -8,6 +8,7 @@ enum SidebarSection: String, Hashable, CaseIterable {
 
 @Observable @MainActor
 final class AppState {
+    let demo: Bool
     var section: SidebarSection = .battery
 
     // Батарея
@@ -35,14 +36,30 @@ final class AppState {
 
     var hasBattery: Bool { battery != nil }
 
+    init(demo: Bool = false) {
+        self.demo = demo
+    }
+
     /// Запуск фоновой работы: опрос батареи, запись истории раз в минуту, устройства раз в 5 минут.
     /// Работает и при закрытом окне — BatteryMom остаётся в строке меню.
     func start() {
         guard !started else { return }
         started = true
+        if demo {
+            refreshBattery()
+            devices = [DeviceBattery(id: "mouse", name: "Magic Mouse", kind: .mouse,
+                                     levels: [.init(percent: 72)], connected: true)]
+            energy = [
+                AppEnergy(id: "safari", name: "Safari", power: 9.3, processCount: 3),
+                AppEnergy(id: "finder", name: "Finder", power: 1.5, processCount: 1),
+            ]
+            devicesUpdated = batteryUpdated
+            energyUpdated = batteryUpdated
+            return
+        }
         // Без этого App Nap растягивает минутный таймер, когда окно закрыто, и в истории появляются дыры.
         activity = ProcessInfo.processInfo.beginActivity(options: .userInitiatedAllowingIdleSystemSleep,
-                                                         reason: "Запись истории батареи")
+                                                         reason: String(localized: "Запись истории батареи"))
         refreshBattery()
         PowerEvents.start { Task { @MainActor in self.refreshBattery() } }
 
@@ -67,7 +84,15 @@ final class AppState {
     }
 
     func refreshBattery() {
-        battery = simulateNoBattery ? nil : BatteryReader.read()
+        if simulateNoBattery {
+            battery = nil
+        } else if demo {
+            battery = BatteryInfo(percent: 76, isCharging: false, externalConnected: false, fullyCharged: false,
+                                  minutesToEmpty: 224, cycleCount: 312, designCapacity: 8600, maxCapacity: 7568,
+                                  currentCapacity: 5752, temperature: 32, voltage: 11.8, amperage: -1.6, systemLoad: 18.9)
+        } else {
+            battery = BatteryReader.read()
+        }
         batteryUpdated = Date()
     }
 
@@ -85,7 +110,7 @@ final class AppState {
     }
 
     func refreshDevices() async {
-        guard !devicesLoading else { return }
+        guard !demo, !devicesLoading else { return }
         devicesLoading = true
         devices = await Task.detached(priority: .userInitiated) { DeviceScanner.scan() }.value
         devicesUpdated = Date()
@@ -93,7 +118,7 @@ final class AppState {
     }
 
     func refreshEnergy() async {
-        guard !energyLoading else { return }
+        guard !demo, !energyLoading else { return }
         energyLoading = true
         energy = await Task.detached(priority: .userInitiated) { EnergySampler.sample() }.value
         energyUpdated = Date()
@@ -106,6 +131,18 @@ final class AppState {
         case .energy: await refreshEnergy()
         case .devices: await refreshDevices()
         default: break
+        }
+    }
+
+    func loadHistory(since: Date) async -> [HistoryRecord] {
+        guard demo else {
+            return await Task.detached(priority: .userInitiated) { HistoryStore.shared.load(since: since) }.value
+        }
+        let now = Date()
+        return (0...24).map { i in
+            let date = now.addingTimeInterval(Double(i - 24) * 1800)
+            let percent = i < 12 ? 52 + 4 * i : 100 - 2 * (i - 12)
+            return HistoryRecord(t: date, p: percent, c: i < 12, a: i < 12, w: 12 + Double(i % 7))
         }
     }
 }

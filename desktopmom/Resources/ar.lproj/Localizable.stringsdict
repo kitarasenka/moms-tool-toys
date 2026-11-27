@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%lld дней назад</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>منذ %lld أيام</string>
+			<key>many</key>
+			<string>منذ %lld يومًا</string>
+			<key>one</key>
+			<string>منذ يوم واحد</string>
+			<key>other</key>
+			<string>منذ %lld يوم</string>
+			<key>two</key>
+			<string>منذ يومين</string>
+			<key>zero</key>
+			<string>اليوم</string>
+		</dict>
+	</dict>
+	<key>%lld записей</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld إدخالات</string>
+			<key>many</key>
+			<string>%lld إدخالًا</string>
+			<key>one</key>
+			<string>إدخال واحد</string>
+			<key>other</key>
+			<string>%lld إدخال</string>
+			<key>two</key>
+			<string>إدخالان</string>
+			<key>zero</key>
+			<string>لا إدخالات</string>
+		</dict>
+	</dict>
+	<key>%lld лет назад</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>منذ %lld سنوات</string>
+			<key>many</key>
+			<string>منذ %lld سنة</string>
+			<key>one</key>
+			<string>منذ سنة</string>
+			<key>other</key>
+			<string>منذ %lld سنة</string>
+			<key>two</key>
+			<string>منذ سنتين</string>
+			<key>zero</key>
+			<string>هذا العام</string>
+		</dict>
+	</dict>
+	<key>%lld месяцев назад</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>منذ %lld أشهر</string>
+			<key>many</key>
+			<string>منذ %lld شهرًا</string>
+			<key>one</key>
+			<string>منذ شهر</string>
+			<key>other</key>
+			<string>منذ %lld شهر</string>
+			<key>two</key>
+			<string>منذ شهرين</string>
+			<key>zero</key>
+			<string>هذا الشهر</string>
+		</dict>
+	</dict>
+	<key>%lld снимков и записей экрана, %@.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@, %@.</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld لقطات وتسجيلات</string>
+			<key>many</key>
+			<string>%lld لقطة وتسجيلًا</string>
+			<key>one</key>
+			<string>لقطة أو تسجيل واحد</string>
+			<key>other</key>
+			<string>%lld لقطة وتسجيل</string>
+			<key>two</key>
+			<string>لقطتان أو تسجيلان</string>
+			<key>zero</key>
+			<string>لا لقطات ولا تسجيلات</string>
+		</dict>
+	</dict>
+	<key>%lld снимков экрана (подпись)</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>لقطات شاشة</string>
+			<key>many</key>
+			<string>لقطة شاشة</string>
+			<key>one</key>
+			<string>لقطة شاشة</string>
+			<key>other</key>
+			<string>لقطة شاشة</string>
+			<key>two</key>
+			<string>لقطتا شاشة</string>
+			<key>zero</key>
+			<string>لقطة شاشة</string>
+		</dict>
+	</dict>
+	<key>%lld файлов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld ملفات</string>
+			<key>many</key>
+			<string>%lld ملفًا</string>
+			<key>one</key>
+			<string>ملف واحد</string>
+			<key>other</key>
+			<string>%lld ملف</string>
+			<key>two</key>
+			<string>ملفان</string>
+			<key>zero</key>
+			<string>لا ملفات</string>
+		</dict>
+	</dict>
+	<key>Переложено %lld объектов в «%@». Вернуть можно в журнале.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>نُقلت %lld عناصر إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>many</key>
+			<string>نُقل %lld عنصرًا إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>one</key>
+			<string>نُقل عنصر واحد إلى «%@». يمكن إعادته من السجل.</string>
+			<key>other</key>
+			<string>نُقل %lld عنصر إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>two</key>
+			<string>نُقل عنصران إلى «%@». يمكن إعادتهما من السجل.</string>
+			<key>zero</key>
+			<string>لم يُنقل أي عنصر إلى «%@».</string>
+		</dict>
+	</dict>
+	<key>Переложено %lld снимков экрана в «%@». Вернуть можно в журнале.</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>نُقلت %lld لقطات شاشة إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>many</key>
+			<string>نُقلت %lld لقطة شاشة إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>one</key>
+			<string>نُقلت لقطة شاشة واحدة إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>other</key>
+			<string>نُقلت %lld لقطة شاشة إلى «%@». يمكن إعادتها من السجل.</string>
+			<key>two</key>
+			<string>نُقلت لقطتا شاشة إلى «%@». يمكن إعادتهما من السجل.</string>
+			<key>zero</key>
+			<string>لم تُنقل أي لقطة إلى «%@».</string>
+		</dict>
+	</dict>
+	<key>Разложить %lld снимков экрана?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>ترتيب %lld لقطات شاشة؟</string>
+			<key>many</key>
+			<string>ترتيب %lld لقطة شاشة؟</string>
+			<key>one</key>
+			<string>ترتيب لقطة شاشة واحدة؟</string>
+			<key>other</key>
+			<string>ترتيب %lld لقطة شاشة؟</string>
+			<key>two</key>
+			<string>ترتيب لقطتي شاشة؟</string>
+			<key>zero</key>
+			<string>ترتيب لقطات الشاشة؟</string>
+		</dict>
+	</dict>
+	<key>Убрать со стола %lld объектов?</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>نقل %lld عناصر من سطح المكتب؟</string>
+			<key>many</key>
+			<string>نقل %lld عنصرًا من سطح المكتب؟</string>
+			<key>one</key>
+			<string>نقل عنصر واحد من سطح المكتب؟</string>
+			<key>other</key>
+			<string>نقل %lld عنصر من سطح المكتب؟</string>
+			<key>two</key>
+			<string>نقل عنصرين من سطح المكتب؟</string>
+			<key>zero</key>
+			<string>نقل العناصر من سطح المكتب؟</string>
+		</dict>
+	</dict>
+	<key>и ещё %lld месяцев</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>و%lld أشهر أخرى</string>
+			<key>many</key>
+			<string>و%lld شهرًا آخر</string>
+			<key>one</key>
+			<string>وشهر آخر</string>
+			<key>other</key>
+			<string>و%lld شهر آخر</string>
+			<key>two</key>
+			<string>وشهران آخران</string>
+			<key>zero</key>
+			<string></string>
+		</dict>
+	</dict>
+</dict>
+</plist>

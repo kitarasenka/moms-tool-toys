@@ -8,8 +8,8 @@ struct DevicesView: View {
         let offline = state.devices.filter { !$0.connected }
 
         VStack(alignment: .leading, spacing: 16) {
-            ScreenHeader(title: "Устройства",
-                         subtitle: "Заряд беспроводных мышей, клавиатур, трекпадов и наушников, подключённых по Bluetooth.") {
+            ScreenHeader(title: String(localized: "Устройства"),
+                         subtitle: String(localized: "Заряд беспроводных мышей, клавиатур, трекпадов и наушников, подключённых по Bluetooth.")) {
                 HStack {
                     Button("Настройки Bluetooth") { SystemSettings.openBluetooth() }
                     Button {
@@ -30,8 +30,8 @@ struct DevicesView: View {
                     ProgressView("Ищу устройства…").frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
                     EmptyStateView(icon: "headphones",
-                                   title: "Устройств с батареей не найдено",
-                                   text: "Подключите мышь, клавиатуру или наушники по Bluetooth и нажмите «Обновить». Проводные устройства и iPhone здесь не показываются.") {
+                                   title: String(localized: "Устройств с батареей не найдено"),
+                                   text: String(localized: "Подключите мышь, клавиатуру или наушники по Bluetooth и нажмите «Обновить». Проводные устройства и iPhone здесь не показываются.")) {
                         EmptyView()
                     }
                 }
@@ -39,7 +39,7 @@ struct DevicesView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         if !connected.isEmpty {
-                            group("Подключены", connected)
+                            group(String(localized: "Подключены"), connected)
                         } else {
                             Card {
                                 Label("Сейчас ни одно устройство с батареей не подключено.", systemImage: "antenna.radiowaves.left.and.right.slash")
@@ -47,7 +47,7 @@ struct DevicesView: View {
                             }
                         }
                         if !offline.isEmpty {
-                            group("Не подключены — последний известный заряд", offline)
+                            group(String(localized: "Не подключены — последний известный заряд"), offline)
                         }
                     }
                 }
@@ -85,15 +85,15 @@ struct DeviceCard: View {
                         Text(device.name).font(.headline).lineLimit(1)
                         HStack(spacing: 4) {
                             Circle().fill(device.connected ? Color.green : Color.secondary.opacity(0.5)).frame(width: 7, height: 7)
-                            Text(device.kind.title + (device.connected ? " · подключено" : " · не подключено")
-                                 + (device.charging ? " · заряжается" : ""))
+                            Text(device.kind.title + (device.connected ? String(localized: " · подключено") : String(localized: " · не подключено"))
+                                 + (device.charging ? String(localized: " · заряжается") : ""))
                         }
                         .font(.caption).foregroundStyle(.secondary)
                     }
                     ForEach(device.levels, id: \.self) { l in
                         HStack(spacing: 8) {
                             if device.levels.count > 1 || l.label != nil {
-                                Text(l.label ?? "Заряд").font(.caption).foregroundStyle(.secondary).frame(width: 54, alignment: .leading)
+                                Text(l.label ?? String(localized: "Заряд")).font(.caption).foregroundStyle(.secondary).frame(width: 54, alignment: .leading)
                             }
                             LevelBar(fraction: Double(l.percent) / 100,
                                      style: device.connected ? Brand.levelStyle(l.percent) : AnyShapeStyle(Color.secondary.opacity(0.5)),

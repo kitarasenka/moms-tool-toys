@@ -79,10 +79,10 @@ struct ContentView: View {
                 Button {
                     state.monitor.paused.toggle()
                 } label: {
-                    Label(state.monitor.paused ? "Продолжить" : "Пауза",
+                    Label(state.monitor.paused ? String(localized: "Продолжить") : String(localized: "Пауза"),
                           systemImage: state.monitor.paused ? "play.fill" : "pause.fill")
                 }
-                .help(state.monitor.paused ? "Возобновить обновление" : "Приостановить обновление")
+                .help(state.monitor.paused ? String(localized: "Возобновить обновление") : String(localized: "Приостановить обновление"))
 
                 Menu {
                     Picker("Частота обновления", selection: Bindable(state.monitor).interval) {
@@ -127,8 +127,8 @@ struct SidebarGauges: View {
     var body: some View {
         let s = state.monitor.system
         VStack(alignment: .leading, spacing: 10) {
-            gauge("ЦП", value: s.cpuTotal / 100, text: "\(Fmt.percent(s.cpuTotal)) %", tint: .blue)
-            gauge("Память", value: Double(s.memUsed) / Double(max(s.memTotal, 1)),
+            gauge(String(localized: "ЦП"), value: s.cpuTotal / 100, text: "\(Fmt.percent(s.cpuTotal)) %", tint: .blue)
+            gauge(String(localized: "Память"), value: Double(s.memUsed) / Double(max(s.memTotal, 1)),
                   text: Fmt.bytes(s.memUsed), tint: s.memPressure >= 4 ? .red : (s.memPressure >= 2 ? .yellow : .green))
         }
         .padding(10)

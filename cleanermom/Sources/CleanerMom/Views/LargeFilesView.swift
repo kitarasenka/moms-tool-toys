@@ -5,8 +5,8 @@ struct LargeFilesView: View {
     @State private var confirm = false
 
     private let sizes: [(Int64, String)] = [
-        (20_000_000, "от 20 МБ"), (50_000_000, "от 50 МБ"), (100_000_000, "от 100 МБ"),
-        (500_000_000, "от 500 МБ"), (1_000_000_000, "от 1 ГБ"),
+        (20_000_000, String(localized: "от 20 МБ")), (50_000_000, String(localized: "от 50 МБ")), (100_000_000, String(localized: "от 100 МБ")),
+        (500_000_000, String(localized: "от 500 МБ")), (1_000_000_000, String(localized: "от 1 ГБ")),
     ]
 
     var body: some View {
@@ -15,13 +15,13 @@ struct LargeFilesView: View {
             if large.scanning {
                 VStack(spacing: 12) {
                     ProgressView().controlSize(.large)
-                    Text("Просматриваю домашнюю папку… \(large.seen.formatted()) файлов")
+                    Text("Просматриваю домашнюю папку… \(large.seen.formatted(.number.locale(L10n.locale))) файлов")
                         .foregroundStyle(.secondary).monospacedDigit()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if !large.scanned {
-                EmptyStateView(icon: "doc.on.doc", title: "Крупные и старые файлы",
-                               text: "Найду большие файлы в домашней папке: забытые видео, образы дисков, архивы. Решаете вы — выбранное уйдёт в Корзину.") {
+                EmptyStateView(icon: "doc.on.doc", title: String(localized: "Крупные и старые файлы"),
+                               text: String(localized: "Найду большие файлы в домашней папке: забытые видео, образы дисков, архивы. Решаете вы — выбранное уйдёт в Корзину.")) {
                     Button("Найти крупные файлы") { Task { await large.scan() } }
                         .buttonStyle(.borderedProminent).controlSize(.large)
                 }
@@ -30,7 +30,7 @@ struct LargeFilesView: View {
             }
         }
         .navigationTitle("Крупные файлы")
-        .searchable(text: $large.search, placement: .toolbar, prompt: "Имя или папка")
+        .searchable(text: $large.search, placement: .toolbar, prompt: String(localized: "Имя или папка"))
         .toolbar {
             ToolbarItemGroup {
                 Picker("Размер", selection: $large.minSize) {
@@ -39,7 +39,7 @@ struct LargeFilesView: View {
                 .pickerStyle(.menu)
                 .help("Минимальный размер")
                 Picker("Возраст", selection: $large.age) {
-                    ForEach(LargeFilesStore.Age.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(LargeFilesStore.Age.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.menu)
                 .help("Как давно файл менялся")
@@ -47,7 +47,7 @@ struct LargeFilesView: View {
                     .disabled(large.scanning)
             }
         }
-        .confirmationDialog("Перенести в Корзину \(Fmt.count(large.selectedFiles.count, "файл", "файла", "файлов"))?",
+        .confirmationDialog("Перенести в Корзину \(Fmt.files(large.selectedFiles.count))?",
                             isPresented: $confirm) {
             Button("В Корзину", role: .destructive) { Task { await large.trashSelected(); state.refreshSystem() } }
             Button("Отменить", role: .cancel) {}
@@ -60,7 +60,7 @@ struct LargeFilesView: View {
         @Bindable var large = state.large
         let rows = large.visible
         return VStack(spacing: 0) {
-            FullDiskAccessBanner(reason: "Без него macOS может спрятать часть папок.")
+            FullDiskAccessBanner(reason: String(localized: "Без него macOS может спрятать часть папок."))
                 .padding([.horizontal, .top], 12)
             Table(rows, sortOrder: $large.sortOrder) {
                 TableColumn("") { (f: LargeFile) in
@@ -69,22 +69,22 @@ struct LargeFilesView: View {
                     }
                 }
                 .width(24)
-                TableColumn("Имя", value: \.name) { f in
+                TableColumn(String(localized: "Имя"), value: \.name) { f in
                     HStack(spacing: 8) {
                         FileIcon(url: f.url, size: 18)
                         Text(f.name).lineLimit(1).truncationMode(.middle)
                     }
                 }
                 .width(min: 200, ideal: 320)
-                TableColumn("Папка", value: \.folder) { f in
+                TableColumn(String(localized: "Папка"), value: \.folder) { f in
                     Text(f.folder).foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
                 }
                 .width(min: 140, ideal: 260)
-                TableColumn("Размер", value: \.size) { f in
+                TableColumn(String(localized: "Размер"), value: \.size) { f in
                     Text(Fmt.bytes(f.size)).monospacedDigit()
                 }
                 .width(min: 80, ideal: 90)
-                TableColumn("Изменён", value: \.modified, comparator: OptionalDateComparator()) { f in
+                TableColumn(String(localized: "Изменён"), value: \.modified, comparator: OptionalDateComparator()) { f in
                     Text(Fmt.date(f.modified)).foregroundStyle(.secondary)
                 }
                 .width(min: 90, ideal: 110)

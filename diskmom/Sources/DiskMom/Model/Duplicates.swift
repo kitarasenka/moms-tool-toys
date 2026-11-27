@@ -26,7 +26,7 @@ struct DupGroup: Identifiable, Sendable {
 
 final class DupProgress: @unchecked Sendable {
     struct Snapshot: Sendable {
-        var phase = "Собираю список файлов"
+        var phase = String(localized: "Собираю список файлов")
         var done = 0
         var total = 0
     }
@@ -55,7 +55,7 @@ enum DupFinder {
         var bySize: [Int64: [DupFile]] = [:]
         var seenPaths = Set<String>()
         var seenIDs = Set<NSObject>()
-        progress.set("Собираю список файлов", total: 0)
+        progress.set(String(localized: "Собираю список файлов"), total: 0)
         for root in roots {
             let e = FileManager.default.enumerator(at: root, includingPropertiesForKeys: keys,
                                                    options: [.skipsPackageDescendants, .skipsHiddenFiles],
@@ -78,7 +78,7 @@ enum DupFinder {
         // 2. Начало и конец файла
         let sameSize = bySize.values.filter { $0.count > 1 }
         var candidates = sameSize.flatMap { $0 }
-        progress.set("Сравниваю начало и конец файлов", total: candidates.count)
+        progress.set(String(localized: "Сравниваю начало и конец файлов"), total: candidates.count)
         let partial = hashAll(candidates, progress: progress) { partialHash($0.url, size: $0.size) }
         if progress.isCancelled { return [] }
         var byPartial: [String: [DupFile]] = [:]
@@ -98,7 +98,7 @@ enum DupFinder {
             }
         }
         candidates = needFull
-        progress.set("Сверяю содержимое целиком", total: candidates.count)
+        progress.set(String(localized: "Сверяю содержимое целиком"), total: candidates.count)
         let full = hashAll(candidates, progress: progress) { fullHash($0.url) }
         if progress.isCancelled { return [] }
         var byFull: [String: [DupFile]] = [:]
@@ -223,7 +223,7 @@ enum DupSelection {
         for f in safeToTrash(groups, selected: selected) {
             guard let v = try? f.url.resourceValues(forKeys: [.fileSizeKey, .isRegularFileKey]),
                   v.isRegularFile == true, Int64(v.fileSize ?? -1) == f.size else {
-                r.failures.append("\(f.name): файл изменился или исчез")
+                r.failures.append(String(localized: "\(f.name): файл изменился или исчез"))
                 continue
             }
             do {

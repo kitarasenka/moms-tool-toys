@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "DiskMom calcule l'espace occupé par les fichiers du Bureau et y cherche des doublons.";
+"NSDocumentsFolderUsageDescription" = "DiskMom calcule l'espace occupé par les Documents et y cherche des doublons.";
+"NSDownloadsFolderUsageDescription" = "DiskMom calcule l'espace occupé par les Téléchargements et y cherche des doublons.";
+"NSRemovableVolumesUsageDescription" = "DiskMom montre ce qui occupe un disque externe si vous l'avez choisi pour la carte ou la recherche de doublons.";
+"NSNetworkVolumesUsageDescription" = "DiskMom montre ce qui occupe un disque réseau si vous l'avez choisi pour la carte ou la recherche de doublons.";

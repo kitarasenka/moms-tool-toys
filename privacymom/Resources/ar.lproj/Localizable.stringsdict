@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%lld профилей</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld ملفات تعريف</string>
+			<key>many</key>
+			<string>%lld ملف تعريف</string>
+			<key>one</key>
+			<string>%lld ملف تعريف</string>
+			<key>other</key>
+			<string>%lld ملف تعريف</string>
+			<key>two</key>
+			<string>ملفا تعريف</string>
+			<key>zero</key>
+			<string>%lld ملف تعريف</string>
+		</dict>
+	</dict>
+	<key>%lld сетей</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld شبكات</string>
+			<key>many</key>
+			<string>%lld شبكة</string>
+			<key>one</key>
+			<string>%lld شبكة</string>
+			<key>other</key>
+			<string>%lld شبكة</string>
+			<key>two</key>
+			<string>شبكتان</string>
+			<key>zero</key>
+			<string>%lld شبكة</string>
+		</dict>
+	</dict>
+	<key>%lld файлов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld ملفات</string>
+			<key>many</key>
+			<string>%lld ملفًا</string>
+			<key>one</key>
+			<string>%lld ملف</string>
+			<key>other</key>
+			<string>%lld ملف</string>
+			<key>two</key>
+			<string>ملفان</string>
+			<key>zero</key>
+			<string>%lld ملف</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

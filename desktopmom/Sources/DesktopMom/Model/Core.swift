@@ -19,14 +19,29 @@ struct Roots: Sendable {
     }
 
     var pictures: URL { home.appendingPathComponent("Pictures", isDirectory: true) }
-    /// Куда по умолчанию раскладываются снимки экрана: ~/Pictures/Снимки экрана/<месяц>/.
-    var defaultScreenshots: URL { pictures.appendingPathComponent("Снимки экрана", isDirectory: true) }
+    /// Куда по умолчанию раскладываются снимки экрана: ~/Pictures/Снимки экрана/<месяц>/ (имя — на языке приложения).
+    var defaultScreenshots: URL {
+        Paths.folder(in: pictures, localized: String(localized: "Снимки экрана"),
+                     russian: "Снимки экрана") // l10n:skip — имя папки, созданной русской версией
+    }
     /// Куда «убирается остальное»: ~/Documents/Разобрать/<тип>/.
-    var inbox: URL { home.appendingPathComponent("Documents/Разобрать", isDirectory: true) }
+    var inbox: URL {
+        Paths.folder(in: home.appendingPathComponent("Documents", isDirectory: true), localized: String(localized: "Разобрать"),
+                     russian: "Разобрать") // l10n:skip
+    }
     var appSupport: URL { home.appendingPathComponent("Library/Application Support/DesktopMom", isDirectory: true) }
 }
 
 enum Paths {
+    /// Папка с именем на языке приложения. Если её ещё нет, а русская (созданная раньше) уже есть —
+    /// продолжаем класть в русскую, чтобы не плодить две папки при смене языка.
+    static func folder(in parent: URL, localized: String, russian: String) -> URL {
+        let loc = parent.appendingPathComponent(localized, isDirectory: true)
+        guard localized != russian, !exists(loc) else { return loc }
+        let ru = parent.appendingPathComponent(russian, isDirectory: true)
+        return exists(ru) ? ru : loc
+    }
+
     /// Настоящий путь (ссылки и `..` раскрыты физически, через realpath). Ещё не созданный хвост
     /// дописывается как есть; `..`/`.` в нём — nil (такой путь не принимаем).
     static func canonical(_ url: URL) -> [String]? {
@@ -68,10 +83,12 @@ enum Paths {
         return lstat(url.path, &st) == 0
     }
 
-    private static let names = ["Desktop": "Рабочий стол", "Downloads": "Загрузки", "Pictures": "Изображения",
-                                "Documents": "Документы", "Movies": "Фильмы", "Music": "Музыка", ".Trash": "Корзина"]
+    private static let names = ["Desktop": String(localized: "Рабочий стол"), "Downloads": String(localized: "Загрузки"),
+                                "Pictures": String(localized: "Изображения"), "Documents": String(localized: "Документы"),
+                                "Movies": String(localized: "Фильмы"), "Music": String(localized: "Музыка"),
+                                ".Trash": String(localized: "Корзина")]
 
-    /// «Изображения › Снимки экрана › 2026-11 ноябрь» — путь относительно домашней папки, по-русски.
+    /// «Изображения › Снимки экрана › 2026-11 ноябрь» — путь относительно домашней папки, как его показывает Finder.
     static func pretty(_ url: URL, home: URL) -> String {
         let h = home.standardizedFileURL.pathComponents, p = url.standardizedFileURL.pathComponents
         let rel: [String]
@@ -145,7 +162,6 @@ enum ScreenshotLocation {
 // MARK: - Форматирование
 
 enum Fmt {
-    static let ru = Locale(identifier: "ru_RU")
 
     static func bytes(_ n: Int64) -> String {
         let f = ByteCountFormatter()
@@ -155,30 +171,24 @@ enum Fmt {
 
     static func date(_ d: Date?) -> String {
         guard let d else { return "—" }
-        return d.formatted(.dateTime.day().month(.abbreviated).year().locale(ru))
+        return d.formatted(.dateTime.day().month(.abbreviated).year().locale(L10n.locale))
     }
 
     static func dateTime(_ d: Date) -> String {
-        d.formatted(.dateTime.day().month(.wide).hour().minute().locale(ru))
+        d.formatted(.dateTime.day().month(.wide).hour().minute().locale(L10n.locale))
     }
 
     static func ago(_ d: Date?, now: Date = .now) -> String {
         guard let d else { return "—" }
         let days = Int(now.timeIntervalSince(d) / 86_400)
-        if days < 1 { return "сегодня" }
-        if days < 2 { return "вчера" }
-        if days < 31 { return "\(days) \(plural(days, "день", "дня", "дней")) назад" }
-        if days < 365 { let m = days / 30; return "\(m) \(plural(m, "месяц", "месяца", "месяцев")) назад" }
+        if days < 1 { return String(localized: "сегодня") }
+        if days < 2 { return String(localized: "вчера") }
+        if days < 31 { return String(localized: "\(days) дней назад") }
+        if days < 365 { let m = days / 30; return String(localized: "\(m) месяцев назад") }
         let y = days / 365
-        return "\(y) \(plural(y, "год", "года", "лет")) назад"
+        return String(localized: "\(y) лет назад")
     }
 
-    static func plural(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let m10 = n % 10, m100 = n % 100
-        if m10 == 1 && m100 != 11 { return one }
-        if (2...4).contains(m10) && !(12...14).contains(m100) { return few }
-        return many
-    }
-
-    static func files(_ n: Int) -> String { "\(n) \(plural(n, "файл", "файла", "файлов"))" }
+    /// «3 файла» — формы числа берутся из Localizable.stringsdict.
+    static func files(_ n: Int) -> String { String(localized: "\(n) файлов") }
 }

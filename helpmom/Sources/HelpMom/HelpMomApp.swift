@@ -29,7 +29,8 @@ struct HelpMomApp: App {
         Window("HelpMom", id: "main") {
             ContentView()
                 .environment(state)
-                .environment(\.locale, Locale(identifier: "ru_RU"))
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 900, minHeight: 600)
                 .task { LaunchOptions.apply(to: state) }
         }

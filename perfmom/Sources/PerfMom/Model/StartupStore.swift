@@ -4,6 +4,7 @@ import Observation
 
 @MainActor @Observable
 final class StartupStore {
+    private let demo: Bool
     private(set) var jobs: [LaunchJob] = []
     private(set) var loginItems: [LoginItem] = []
     private(set) var loginAccess: LoginAccess = .unknown
@@ -13,7 +14,16 @@ final class StartupStore {
     private(set) var busy: Set<String> = []
     var errorMessage: String?
 
+    init(demo: Bool = false) {
+        self.demo = demo
+        if demo {
+            loadedOnce = true
+            loginAccess = .granted
+        }
+    }
+
     func reloadJobs() async {
+        guard !demo else { return }
         loadingJobs = true
         jobs = await Task.detached(priority: .userInitiated) { StartupScanner.scanJobs() }.value
         loadingJobs = false
@@ -21,6 +31,7 @@ final class StartupStore {
     }
 
     func setEnabled(_ job: LaunchJob, _ enabled: Bool) async {
+        guard !demo else { return }
         busy.insert(job.id)
         defer { busy.remove(job.id) }
         do {
@@ -33,10 +44,11 @@ final class StartupStore {
     }
 
     func moveToTrash(_ job: LaunchJob) async {
+        guard !demo else { return }
         do {
             try LaunchControl.moveToTrash(job)
         } catch {
-            errorMessage = "Не удалось удалить «\(job.label)»: \(error.localizedDescription)"
+            errorMessage = String(localized: "Не удалось удалить «\(job.label)»: \(error.localizedDescription)")
         }
         await reloadJobs()
     }
@@ -45,6 +57,7 @@ final class StartupStore {
 
     /// Проверяет разрешение молча; если оно уже есть — загружает список.
     func refreshLoginItems() async {
+        guard !demo else { return }
         await LoginItemsService.launchSystemEvents()
         let access = await Task.detached { LoginItemsService.determineAccess(ask: false) }.value
         loginAccess = access
@@ -53,12 +66,14 @@ final class StartupStore {
 
     /// Явный запрос разрешения (показывает системный диалог).
     func requestLoginAccess() async {
+        guard !demo else { return }
         await LoginItemsService.launchSystemEvents()
         loginAccess = await Task.detached { LoginItemsService.determineAccess(ask: true) }.value
         if loginAccess == .granted { loadLoginItems() }
     }
 
     func loadLoginItems() {
+        guard !demo else { return }
         do {
             loginItems = try LoginItemsService.list()
             loginAccess = .granted
@@ -80,6 +95,7 @@ final class StartupStore {
     }
 
     private func perform(_ action: () throws -> Void) {
+        guard !demo else { return }
         do {
             try action()
         } catch {

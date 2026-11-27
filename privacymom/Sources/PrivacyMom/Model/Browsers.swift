@@ -21,7 +21,7 @@ struct BrowserDef: Identifiable, Sendable {
         .init(id: "chrome", name: "Google Chrome", bundleID: "com.google.Chrome",
               engine: .chromium(data: "Google/Chrome", cache: "Google/Chrome")),
         .init(id: "firefox", name: "Firefox", bundleID: "org.mozilla.firefox", engine: .firefox),
-        .init(id: "yandex", name: "Яндекс Браузер", bundleID: "ru.yandex.desktop.yandex-browser",
+        .init(id: "yandex", name: String(localized: "Яндекс Браузер"), bundleID: "ru.yandex.desktop.yandex-browser",
               engine: .chromium(data: "Yandex/YandexBrowser", cache: "Yandex/YandexBrowser")),
         .init(id: "edge", name: "Microsoft Edge", bundleID: "com.microsoft.edgemac",
               engine: .chromium(data: "Microsoft Edge", cache: "Microsoft Edge")),
@@ -43,9 +43,9 @@ enum BrowserDataKind: String, CaseIterable, Identifiable, Sendable {
 
     var title: String {
         switch self {
-        case .history: "История"
+        case .history: String(localized: "История")
         case .cookies: "Cookies"
-        case .cache: "Кэш"
+        case .cache: String(localized: "Кэш")
         }
     }
 
@@ -59,9 +59,9 @@ enum BrowserDataKind: String, CaseIterable, Identifiable, Sendable {
 
     var actionTitle: String {
         switch self {
-        case .history: "Очистить историю"
-        case .cookies: "Очистить cookies"
-        case .cache: "Очистить кэш"
+        case .history: String(localized: "Очистить историю")
+        case .cookies: String(localized: "Очистить cookies")
+        case .cache: String(localized: "Очистить кэш")
         }
     }
 
@@ -199,7 +199,7 @@ enum BrowserScanner {
         case .firefox:
             switch kind {
             case .history:
-                t.unavailable = "История Firefox лежит в одном файле с закладками (places.sqlite) — её очищают в самом Firefox: Настройки → Приватность → «Удалить историю»."
+                t.unavailable = String(localized: "История Firefox лежит в одном файле с закладками (places.sqlite) — её очищают в самом Firefox: Настройки → Приватность → «Удалить историю».")
             case .cookies:
                 let base = roots.appSupport.appendingPathComponent("Firefox/Profiles", isDirectory: true)
                 for p in firefoxProfiles(roots) {
@@ -218,7 +218,7 @@ enum BrowserScanner {
             // Всё, что связано с Safari, закрыто системой: без полного доступа даже не заглядываем
             // (иначе macOS спросит про «данные других приложений»).
             guard fullDiskAccess else {
-                t.unavailable = "нужен доступ"
+                t.unavailable = String(localized: "нужен доступ")
                 return t
             }
             let container = roots.library.appendingPathComponent("Containers/com.apple.Safari/Data/Library", isDirectory: true)
@@ -275,12 +275,12 @@ enum BrowserScanner {
                       trash: (URL) throws -> Void = { try FileManager.default.trashItem(at: $0, resultingItemURL: nil) }) -> CleanResult {
         var r = CleanResult()
         if checkRunning, isRunning(def) {
-            r.failures.append("\(def.name) запущен — закройте его и попробуйте снова.")
+            r.failures.append(String(localized: "\(def.name) запущен — закройте его и попробуйте снова."))
             return r
         }
         let fm = FileManager.default
         for f in target.files {
-            guard isSafe(f.url, root: f.root) else { r.failures.append("пропущено (вне папки браузера): \(Paths.pretty(f.url))"); continue }
+            guard isSafe(f.url, root: f.root) else { r.failures.append(String(localized: "пропущено (вне папки браузера): \(Paths.pretty(f.url))")); continue }
             guard fm.fileExists(atPath: f.url.path) else { continue }
             do {
                 if target.kind.toTrash { try trash(f.url) } else { try fm.removeItem(at: f.url) }

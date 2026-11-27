@@ -102,9 +102,9 @@ struct FixIllustration: View {
         VStack(spacing: 14) {
             HStack(spacing: 12) {
                 // Знаки препинания зависят от русской раскладки — показываем так, как будет у этого пользователя.
-                fakeField(LayoutConverter.convert("Привет, как дела?", direction: .toEnglish, variant: variant), wrong: true)
-                Image(systemName: "arrow.right").font(.title2.weight(.semibold)).foregroundStyle(Brand.blue)
-                fakeField("Привет, как дела?", wrong: false)
+                fakeField(LayoutConverter.convert("Привет, как дела?", direction: .toEnglish, variant: variant), wrong: true)  // l10n:skip
+                Image(systemName: "arrow.forward").font(.title2.weight(.semibold)).foregroundStyle(Brand.blue)
+                fakeField("Привет, как дела?", wrong: false)  // l10n:skip
             }
             HStack(spacing: 10) {
                 Text("нажмите").font(.callout).foregroundStyle(.secondary)

@@ -21,7 +21,8 @@ struct SafetyMomApp: App {
         Window("SafetyMom", id: "main") {
             ContentView()
                 .environment(state)
-                .environment(\.locale, Locale(identifier: "ru_RU"))
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 900, minHeight: 580)
                 .task { LaunchOptions.apply(to: state) }
         }
@@ -73,11 +74,11 @@ enum CLI {
                 print("\(mark) \(c.title): \(c.status)")
             }
             let n = NetworkScanner.scan()
-            print("Прокси: \(n.proxies.isEmpty ? "нет" : n.proxies.map { "\($0.kind) \($0.address)" }.joined(separator: ", "))")
+            print(String(localized: "Прокси: \(n.proxies.isEmpty ? String(localized: "нет") : n.proxies.map { "\($0.kind) \($0.address)" }.joined(separator: ", "))"))
             print("DNS: \(n.dns.map { "\($0.address) [\($0.level)]" }.joined(separator: ", "))")
-            print("hosts: \(n.hosts.count) нестандартных строк; профили: \(n.profiles.count); MDM: \(n.mdm.map { $0 ? "да" : "нет" } ?? "?")")
+            print(String(localized: "hosts: \(n.hosts.count) нестандартных строк; профили: \(n.profiles.count); MDM: \(n.mdm.map { $0 ? String(localized: "да") : String(localized: "нет") } ?? "?")"))
             for b in BrowserScanner.reports(fullDiskAccess: FullDiskAccess.granted) {
-                print("\(b.def.name): профилей \(b.profiles.count), расширений \(b.extensions.count), уведомления разрешены \(b.notifications.count) "
+                print(String(localized: "\(b.def.name): профилей \(b.profiles.count), расширений \(b.extensions.count), уведомления разрешены \(b.notifications.count) ")
                       + b.notifications.map { "\($0.host)[\($0.level)]" }.joined(separator: " "))
                 for e in b.extensions where e.level != .ok {
                     print("   \(e.level == .danger ? "✗" : "!") \(e.name) (\(e.profile)): \(e.flags.map(\.title).joined(separator: ", "))")

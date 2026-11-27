@@ -17,12 +17,14 @@ enum Main {
 
 struct CleanerMomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @State private var state = AppState()
+    @State private var state = AppState(demo: CommandLine.arguments.contains("--demo"))
 
     var body: some Scene {
         Window("CleanerMom", id: "main") {
             ContentView()
                 .environment(state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 940, minHeight: 600)
                 .task { await LaunchOptions.apply(to: state) }
         }
@@ -82,13 +84,13 @@ enum SelfTest {
             for c in Catalog.all {
                 let r = res[c.id] ?? CategoryResult()
                 total += r.total
-                let denied = r.denied.isEmpty ? "" : "  нет доступа: \(r.denied.map(\.lastPathComponent))"
-                print("\(c.title.padding(toLength: 32, withPad: " ", startingAt: 0)) \(Fmt.bytes(r.total).padding(toLength: 10, withPad: " ", startingAt: 0)) \(r.items.count) шт.\(denied)")
+                let denied = r.denied.isEmpty ? "" : String(localized: "  нет доступа: \(r.denied.map(\.lastPathComponent).joined(separator: ", "))")
+                print(String(localized: "\(c.title.padding(toLength: 32, withPad: " ", startingAt: 0)) \(Fmt.bytes(r.total).padding(toLength: 10, withPad: " ", startingAt: 0)) \(r.items.count) шт.\(denied)"))
                 for i in r.items.prefix(3) {
                     print("    \(Fmt.bytes(i.size).padding(toLength: 10, withPad: " ", startingAt: 0)) \(i.title)\(i.note.map { "  [\($0)]" } ?? "")")
                 }
             }
-            print("Итого: \(Fmt.bytes(total)); полный доступ к диску: \(FullDiskAccess.granted ? "да" : "нет")")
+            print(String(localized: "Итого: \(Fmt.bytes(total)); полный доступ к диску: \(FullDiskAccess.granted ? String(localized: "да") : String(localized: "нет"))"))
             sema.signal()
         }
         sema.wait()
@@ -96,10 +98,10 @@ enum SelfTest {
 
     static func apps() {
         let list = AppScanner.installedApps()
-        print("Приложений (не Apple): \(list.count)")
+        print(String(localized: "Приложений (не Apple): \(list.count)"))
         for a in list.prefix(8) {
             let l = AppScanner.leftovers(for: a, measure: false)  // размеры контейнеров требуют согласия TCC
-            print("  \(a.name) [\(a.bundleID)] — следов: \(l.count)")
+            print(String(localized: "  \(a.name) [\(a.bundleID)] — следов: \(l.count)"))
             for x in l.prefix(4) { print("      \(x.kind): \(Paths.pretty(x.url))") }
         }
     }
@@ -129,14 +131,14 @@ enum SelfTest {
 
         var ok = true
         func expect(_ cond: Bool, _ msg: String) { print((cond ? "✓ " : "✗ ") + msg); ok = ok && cond }
-        expect(!fm.fileExists(atPath: good[0].url.path), "папка внутри корня удалена")
-        expect(!fm.fileExists(atPath: good[1].url.path), "файл внутри корня удалён")
-        expect(fm.fileExists(atPath: outside.path), "файл вне корня не тронут")
-        expect(fm.fileExists(atPath: root.path), "сам корень не удалён")
-        expect(fm.fileExists(atPath: Paths.home.appendingPathComponent("Documents").path), "~/Documents не тронута")
-        expect(r.failures.count == 3, "три небезопасных объекта отклонены (\(r.failures.count))")
-        expect(r.freed > 200_000, "освобождено \(Fmt.bytes(r.freed))")
-        print(ok ? "Всё в порядке" : "ЕСТЬ ОШИБКИ")
+        expect(!fm.fileExists(atPath: good[0].url.path), String(localized: "папка внутри корня удалена"))
+        expect(!fm.fileExists(atPath: good[1].url.path), String(localized: "файл внутри корня удалён"))
+        expect(fm.fileExists(atPath: outside.path), String(localized: "файл вне корня не тронут"))
+        expect(fm.fileExists(atPath: root.path), String(localized: "сам корень не удалён"))
+        expect(fm.fileExists(atPath: Paths.home.appendingPathComponent("Documents").path), String(localized: "~/Documents не тронута"))
+        expect(r.failures.count == 3, String(localized: "три небезопасных объекта отклонены (\(r.failures.count))"))
+        expect(r.freed > 200_000, String(localized: "освобождено \(Fmt.bytes(r.freed))"))
+        print(ok ? String(localized: "Всё в порядке") : String(localized: "ЕСТЬ ОШИБКИ"))
         exit(ok ? 0 : 1)
     }
 }

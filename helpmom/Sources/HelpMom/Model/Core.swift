@@ -1,42 +1,63 @@
 import AppKit
 import Foundation
+import SwiftUI
+
+// MARK: - Язык
+
+enum L10n {
+    /// Язык, который macOS выбрала для приложения (ru, если перевода нет).
+    static let language = Bundle.main.preferredLocalizations.first ?? "ru"
+    static let locale = Locale(identifier: language + (Locale.current.region.map { "_" + $0.identifier } ?? ""))
+    /// SwiftUI на macOS сам не зеркалит интерфейс для арабского — задаём направление явно.
+    static let layoutDirection: LayoutDirection =
+        Locale.Language(identifier: language).characterDirection == .rightToLeft ? .rightToLeft : .leftToRight
+}
 
 // MARK: - Формат
 
 enum Fmt {
-    static let ru = Locale(identifier: "ru_RU")
-
     /// «111,9 ГБ», «512 МБ». Диск — десятичные единицы (как в Finder), память — двоичные (`binary: true`, «32 ГБ»).
     static func bytes(_ n: Int64, binary: Bool = false) -> String {
         let base: Double = binary ? 1024 : 1000
-        let units = ["Б", "КБ", "МБ", "ГБ", "ТБ"]
+        let units = [String(localized: "Б"), String(localized: "КБ"), String(localized: "МБ"),
+                     String(localized: "ГБ"), String(localized: "ТБ")]
         var v = Double(n), i = 0
         while abs(v) >= base && i < units.count - 1 { v /= base; i += 1 }
         let digits = (i <= 1 || v >= 100 || v == v.rounded()) ? 0 : 1
-        return "\(v.formatted(.number.precision(.fractionLength(digits)).locale(ru))) \(units[i])"
+        return "\(v.formatted(.number.precision(.fractionLength(digits)).locale(L10n.locale))) \(units[i])"
     }
 
-    static func count(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
+    /// Число со словом в нужной форме. Ключ — из `Localizable.stringsdict` (в .app — правила языка приложения);
+    /// при `swift run` переводов нет — тогда русское правило по формам one/few/many.
+    static func plural(_ n: Int, _ key: String, _ one: String, _ few: String, _ many: String) -> String {
+        let fmt = Bundle.main.localizedString(forKey: key, value: "\u{1}", table: nil)
+        if fmt != "\u{1}" { return String.localizedStringWithFormat(fmt, n) }
         let m10 = n % 10, m100 = n % 100
         let w = (m10 == 1 && m100 != 11) ? one : ((2...4).contains(m10) && !(12...14).contains(m100) ? few : many)
         return "\(n) \(w)"
     }
 
+    static func days(_ n: Int) -> String { plural(n, "%lld дней", "день", "дня", "дней") }  // l10n:skip
+    static func times(_ n: Int) -> String { plural(n, "%lld раз", "раз", "раза", "раз") }  // l10n:skip
+    static func cycles(_ n: Int) -> String { plural(n, "%lld циклов", "цикл", "цикла", "циклов") }  // l10n:skip
+
     /// «12 дней 3 ч», «5 ч 20 мин», «12 мин».
     static func uptime(_ s: TimeInterval) -> String {
         let m = Int(s / 60), h = m / 60, d = h / 24
-        if d > 0 { return "\(count(d, "день", "дня", "дней")) \(h % 24) ч" }
-        if h > 0 { return "\(h) ч \(m % 60) мин" }
-        return "\(max(m, 1)) мин"
+        if d > 0 { return String(localized: "\(days(d)) \(h % 24) ч") }
+        if h > 0 { return String(localized: "\(h) ч \(m % 60) мин") }
+        return String(localized: "\(max(m, 1)) мин")
     }
 
     static func dateTime(_ d: Date) -> String {
-        d.formatted(.dateTime.day().month(.wide).year().hour().minute().locale(ru))
+        d.formatted(.dateTime.day().month(.wide).year().hour().minute().locale(L10n.locale))
     }
 
     static func dayMonth(_ d: Date) -> String {
-        d.formatted(.dateTime.day().month(.wide).locale(ru))
+        d.formatted(.dateTime.day().month(.wide).locale(L10n.locale))
     }
+
+    static func time(_ d: Date) -> String { d.formatted(.dateTime.hour().minute().locale(L10n.locale)) }
 
     static func percent(_ v: Double) -> String { "\(Int(v.rounded())) %" }
 }

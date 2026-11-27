@@ -48,7 +48,7 @@ struct ItemDetail: View {
         HStack(spacing: 12) {
             ClipIcon(item: item, size: 44)
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.kind.title + (item.pinned ? " · закреплено" : "")).font(.headline)
+                Text(item.pinned ? String(localized: "\(item.kind.title) · закреплено") : item.kind.title).font(.headline)
                 HStack(spacing: 5) {
                     SourceIcon(bundleID: item.sourceID, size: 14)
                     Text(meta).lineLimit(1)
@@ -64,7 +64,7 @@ struct ItemDetail: View {
         if let s = item.sourceName { parts.append(s) }
         parts.append(Fmt.dateTime(item.date))
         parts.append(Fmt.bytes(item.bytes))
-        if item.copies > 1 { parts.append("копировали \(item.copies) раз") }
+        if item.copies > 1 { parts.append(String(localized: "копировали \(item.copies) раз")) }
         return parts.joined(separator: " · ")
     }
 
@@ -130,7 +130,7 @@ struct ItemDetail: View {
             .help("Вернуть в буфер обмена (⌘↩)")
 
             Button { state.togglePin(item) } label: {
-                Label(item.pinned ? "Открепить" : "Закрепить", systemImage: item.pinned ? "pin.slash" : "pin")
+                Label(item.pinned ? LocalizedStringKey("Открепить") : "Закрепить", systemImage: item.pinned ? "pin.slash" : "pin")
             }
             .help("Закреплённое не удаляется по сроку и лимиту")
 

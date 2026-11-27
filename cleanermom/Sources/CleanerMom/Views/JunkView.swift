@@ -9,15 +9,15 @@ struct JunkView: View {
         Group {
             switch junk.phase {
             case .idle:
-                EmptyStateView(icon: "trash.circle", title: "Мусор ещё не искали",
-                               text: "Сканирование только смотрит и считает — ничего не удаляется без вашего подтверждения.") {
+                EmptyStateView(icon: "trash.circle", title: String(localized: "Мусор ещё не искали"),
+                               text: String(localized: "Сканирование только смотрит и считает — ничего не удаляется без вашего подтверждения.")) {
                     Button("Сканировать") { Task { await junk.scan() } }
                         .buttonStyle(.borderedProminent).controlSize(.large)
                 }
             case .scanning, .cleaning:
                 VStack(spacing: 12) {
                     ProgressView().controlSize(.large)
-                    Text(junk.phase == .scanning ? "Ищу мусор…" : "Очищаю… \(junk.cleanedCount) из \(junk.cleaningTotal)")
+                    Text(junk.phase == .scanning ? String(localized: "Ищу мусор…") : String(localized: "Очищаю… \(junk.cleanedCount) из \(junk.cleaningTotal)"))
                         .foregroundStyle(.secondary).monospacedDigit()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -61,7 +61,7 @@ struct JunkView: View {
                         .foregroundStyle(.green)
                 }
                 Spacer()
-                Text("Отмечено: \(Fmt.count(junk.selectedCount, "объект", "объекта", "объектов")), \(Fmt.bytes(junk.totalSelected))")
+                Text("Отмечено: \(Fmt.items(junk.selectedCount)), \(Fmt.bytes(junk.totalSelected))")
                     .foregroundStyle(.secondary).monospacedDigit()
                 Button("Очистить") { confirm = true }
                     .buttonStyle(.borderedProminent)
@@ -79,7 +79,7 @@ struct JunkView: View {
         return List(selection: focus) {
             ForEach(JunkGroup.allCases) { group in
                 let cats = junk.categories.filter { $0.group == group }
-                Section(group.rawValue) {
+                Section(group.title) {
                     ForEach(cats) { c in
                         HStack(spacing: 8) {
                             TriCheckbox(state: junk.state(c)) { junk.toggle(c) }
@@ -108,7 +108,7 @@ struct JunkView: View {
                         Image(systemName: c.icon).font(.title2).foregroundStyle(Brand.gradient)
                         Text(c.title).font(.title2.weight(.semibold))
                         Spacer()
-                        Text(Fmt.bytes(junk.selectedSize(c)) + " из " + Fmt.bytes(junk.total(c)))
+                        Text(Fmt.bytes(junk.selectedSize(c)) + String(localized: " из ") + Fmt.bytes(junk.total(c)))
                             .foregroundStyle(.secondary).monospacedDigit()
                     }
                     Text(c.detail).font(.callout).foregroundStyle(.secondary)
@@ -124,8 +124,8 @@ struct JunkView: View {
                     FinderTrashCard().padding(14)
                     Spacer()
                 } else if items.isEmpty {
-                    Text(junk.results[c.id]?.denied.isEmpty == false ? "Нет доступа к папке — нужен полный доступ к диску."
-                                                                      : "Здесь ничего не нашлось.")
+                    Text(junk.results[c.id]?.denied.isEmpty == false ? String(localized: "Нет доступа к папке — нужен полный доступ к диску.")
+                                                                      : String(localized: "Здесь ничего не нашлось."))
                         .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {

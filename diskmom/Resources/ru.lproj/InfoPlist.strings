@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "DiskMom считает, сколько места занимают файлы на Рабочем столе, и ищет среди них дубликаты.";
+"NSDocumentsFolderUsageDescription" = "DiskMom считает, сколько места занимают Документы, и ищет среди них дубликаты.";
+"NSDownloadsFolderUsageDescription" = "DiskMom считает, сколько места занимают Загрузки, и ищет среди них дубликаты.";
+"NSRemovableVolumesUsageDescription" = "DiskMom показывает, чем занят внешний диск, если вы выбрали его для карты или поиска дубликатов.";
+"NSNetworkVolumesUsageDescription" = "DiskMom показывает, чем занят сетевой диск, если вы выбрали его для карты или поиска дубликатов.";

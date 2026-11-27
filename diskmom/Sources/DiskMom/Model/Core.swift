@@ -1,28 +1,38 @@
 import AppKit
 import Foundation
+import SwiftUI
 
 // MARK: - Формат
 
 enum Fmt {
-    /// Байты как в Finder (десятичные единицы, локаль системы).
-    static func bytes(_ v: Int64) -> String { v.formatted(.byteCount(style: .file)) }
+    /// Байты как в Finder (десятичные единицы, язык приложения).
+    static func bytes(_ v: Int64) -> String { v.formatted(.byteCount(style: .file).locale(L10n.locale)) }
 
     static func date(_ d: Date?) -> String {
         guard let d else { return "—" }
-        return d.formatted(date: .abbreviated, time: .shortened)
+        return d.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale))
     }
 
-    static func count(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let m10 = n % 10, m100 = n % 100
-        let w = (m10 == 1 && m100 != 11) ? one : ((2...4).contains(m10) && !(12...14).contains(m100) ? few : many)
-        return "\(n.formatted()) \(w)"
-    }
+    /// «3 файла» — формы множественного числа в Localizable.stringsdict (ключ «%lld файлов»).
+    static func files(_ n: Int) -> String { String(localized: "\(n) файлов") }
 
-    static func files(_ n: Int) -> String { count(n, "файл", "файла", "файлов") }
+    /// «2 копии» — ключ «%lld копий» в Localizable.stringsdict.
+    static func copies(_ n: Int) -> String { String(localized: "\(n) копий") }
 
-    static func seconds(_ t: TimeInterval) -> String { String(format: "%.1f с", t) }
+    static func seconds(_ t: TimeInterval) -> String { String(format: NSLocalizedString("%.1f с", comment: "seconds"), locale: L10n.locale, t) }
 
-    static func percent(_ v: Double) -> String { v.formatted(.percent.precision(.fractionLength(0))) }
+    static func percent(_ v: Double) -> String { v.formatted(.percent.precision(.fractionLength(0)).locale(L10n.locale)) }
+}
+
+// MARK: - Язык
+
+enum L10n {
+    /// Язык, который macOS выбрала для приложения (ru, если перевода нет).
+    static let language = Bundle.main.preferredLocalizations.first ?? "ru"
+    static let locale = Locale(identifier: language + (Locale.current.region.map { "_" + $0.identifier } ?? ""))
+    /// SwiftUI на macOS сам не зеркалит интерфейс для арабского — задаём направление явно.
+    static let layoutDirection: LayoutDirection =
+        Locale.Language(identifier: language).characterDirection == .rightToLeft ? .rightToLeft : .leftToRight
 }
 
 // MARK: - Пути

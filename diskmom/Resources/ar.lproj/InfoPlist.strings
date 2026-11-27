@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "يحسب DiskMom المساحة التي تشغلها الملفات على سطح المكتب ويبحث بينها عن الملفات المكررة.";
+"NSDocumentsFolderUsageDescription" = "يحسب DiskMom المساحة التي تشغلها المستندات ويبحث بينها عن الملفات المكررة.";
+"NSDownloadsFolderUsageDescription" = "يحسب DiskMom المساحة التي تشغلها التنزيلات ويبحث بينها عن الملفات المكررة.";
+"NSRemovableVolumesUsageDescription" = "يعرض DiskMom ما يشغل القرص الخارجي إذا اخترته للخريطة أو للبحث عن الملفات المكررة.";
+"NSNetworkVolumesUsageDescription" = "يعرض DiskMom ما يشغل قرص الشبكة إذا اخترته للخريطة أو للبحث عن الملفات المكررة.";

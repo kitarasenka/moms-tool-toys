@@ -6,10 +6,16 @@ import Foundation
 // в домашней папке или во временной папке пользователя. Cleaner удаляет только то, что строго внутри корня.
 
 enum JunkGroup: String, CaseIterable, Identifiable, Sendable {
-    case system = "Система"
-    case browsers = "Браузеры"
-    case developer = "Разработка"
-    case files = "Файлы и загрузки"
+    case system, browsers, developer, files
+
+    var title: String {
+        switch self {
+        case .system: String(localized: "Система")
+        case .browsers: String(localized: "Браузеры")
+        case .developer: String(localized: "Разработка")
+        case .files: String(localized: "Файлы и загрузки")
+        }
+    }
     var id: String { rawValue }
 }
 
@@ -105,7 +111,7 @@ enum Catalog {
         ("com.apple.Safari", "com.apple.Safari", "Safari"),
         ("Google/Chrome", "com.google.Chrome", "Google Chrome"),
         ("Firefox", "org.mozilla.firefox", "Firefox"),
-        ("Yandex", "ru.yandex.desktop.yandex-browser", "Яндекс Браузер"),
+        ("Yandex", "ru.yandex.desktop.yandex-browser", String(localized: "Яндекс Браузер")),
         ("BraveSoftware", "com.brave.Browser", "Brave"),
         ("Microsoft Edge", "com.microsoft.edgemac", "Microsoft Edge"),
         ("company.thebrowser.Browser", "company.thebrowser.Browser", "Arc"),
@@ -123,7 +129,7 @@ enum Catalog {
         ("Library/Caches/CocoaPods", "CocoaPods"),
         ("Library/Caches/org.swift.swiftpm", "Swift Package Manager"),
         ("Library/Caches/go-build", "Go"),
-        ("Library/Caches/ms-playwright", "Playwright (браузеры для тестов)"),
+        ("Library/Caches/ms-playwright", String(localized: "Playwright (браузеры для тестов)")),
         ("Library/Caches/node-gyp", "node-gyp"),
         ("Library/Caches/deno", "Deno"),
         ("Library/Caches/typescript", "TypeScript"),
@@ -148,12 +154,12 @@ enum Catalog {
         return s
     }()
 
-    static let runningNote = "Приложение запущено — закройте его, чтобы почистить"
+    static let runningNote = String(localized: "Приложение запущено — закройте его, чтобы почистить")
 
     static let all: [JunkCategory] = [
         JunkCategory(
-            id: "caches", title: "Кэши приложений",
-            detail: "Временные данные программ. Приложения создадут их заново — первый запуск может быть чуть медленнее.",
+            id: "caches", title: String(localized: "Кэши приложений"),
+            detail: String(localized: "Временные данные программ. Приложения создадут их заново — первый запуск может быть чуть медленнее."),
             icon: "shippingbox", group: .system, defaultOn: true, mode: .delete
         ) { ctx, c in
             for url in c.children(of: caches) {
@@ -166,32 +172,32 @@ enum Catalog {
             }
         },
         JunkCategory(
-            id: "logs", title: "Журналы и отчёты о сбоях",
-            detail: "Журналы программ и отчёты о сбоях из ~/Library/Logs. Нужны только для поиска ошибок.",
+            id: "logs", title: String(localized: "Журналы и отчёты о сбоях"),
+            detail: String(localized: "Журналы программ и отчёты о сбоях из ~/Library/Logs. Нужны только для поиска ошибок."),
             icon: "doc.text.magnifyingglass", group: .system, defaultOn: true, mode: .delete
         ) { ctx, c in
             let logs = Paths.library.appendingPathComponent("Logs", isDirectory: true)
             for url in c.children(of: logs) where url.lastPathComponent != ".DS_Store" {
                 let name = url.lastPathComponent
-                c.add(url, root: logs, title: name == "DiagnosticReports" ? "Отчёты о сбоях" : name,
+                c.add(url, root: logs, title: name == "DiagnosticReports" ? String(localized: "Отчёты о сбоях") : name,
                       note: ctx.isRunning(name) ? runningNote : nil)
             }
         },
         JunkCategory(
-            id: "temp", title: "Временные файлы",
-            detail: "Файлы из временной папки пользователя, которые не менялись больше недели.",
+            id: "temp", title: String(localized: "Временные файлы"),
+            detail: String(localized: "Файлы из временной папки пользователя, которые не менялись больше недели."),
             icon: "clock.arrow.circlepath", group: .system, defaultOn: true, mode: .delete
         ) { _, c in
             let weekAgo = Date().addingTimeInterval(-7 * 86_400)
             for url in c.children(of: Paths.tmp) {
                 let mod = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
                 guard let mod, mod < weekAgo else { continue }
-                c.add(url, root: Paths.tmp, subtitle: "изменён \(Fmt.date(mod))")
+                c.add(url, root: Paths.tmp, subtitle: String(localized: "изменён \(Fmt.date(mod))"))
             }
         },
         JunkCategory(
-            id: "trash", title: "Корзина",
-            detail: "Всё, что лежит в Корзине. Очистка удаляет файлы окончательно.",
+            id: "trash", title: String(localized: "Корзина"),
+            detail: String(localized: "Всё, что лежит в Корзине. Очистка удаляет файлы окончательно."),
             icon: "trash", group: .system, defaultOn: true, mode: .delete
         ) { _, c in
             let trash = Paths.home.appendingPathComponent(".Trash", isDirectory: true)
@@ -200,20 +206,20 @@ enum Catalog {
             }
         },
         JunkCategory(
-            id: "browsers", title: "Кэш браузеров",
-            detail: "Сохранённые копии страниц и картинок. История, пароли и вход на сайты не затрагиваются.",
+            id: "browsers", title: String(localized: "Кэш браузеров"),
+            detail: String(localized: "Сохранённые копии страниц и картинок. История, пароли и вход на сайты не затрагиваются."),
             icon: "globe", group: .browsers, defaultOn: true, mode: .delete
         ) { ctx, c in
             for b in browsers {
                 let url = caches.appendingPathComponent(b.dir, isDirectory: true)
                 guard FileManager.default.fileExists(atPath: url.path) else { continue }
                 c.add(url, root: url.deletingLastPathComponent(), title: b.name,
-                      note: ctx.isRunning(b.bundleID) ? "Браузер открыт — закройте его, чтобы почистить" : nil)
+                      note: ctx.isRunning(b.bundleID) ? String(localized: "Браузер открыт — закройте его, чтобы почистить") : nil)
             }
         },
         JunkCategory(
             id: "xcode", title: "Xcode",
-            detail: "Промежуточные файлы сборки (DerivedData), символы для подключавшихся устройств и кэш симуляторов.",
+            detail: String(localized: "Промежуточные файлы сборки (DerivedData), символы для подключавшихся устройств и кэш симуляторов."),
             icon: "hammer", group: .developer, defaultOn: true, mode: .delete
         ) { ctx, c in
             let dev = Paths.library.appendingPathComponent("Developer", isDirectory: true)
@@ -222,23 +228,23 @@ enum Catalog {
             for url in c.children(of: derived) where url.lastPathComponent != ".DS_Store" {
                 let name = url.lastPathComponent
                 let project = name.split(separator: "-").dropLast().joined(separator: "-")
-                c.add(url, root: derived, title: "Сборка: \(project.isEmpty ? name : project)",
-                      note: xcodeRunning ? "Xcode запущен — закройте его, чтобы почистить" : nil)
+                c.add(url, root: derived, title: String(localized: "Сборка: \(project.isEmpty ? name : project)"),
+                      note: xcodeRunning ? String(localized: "Xcode запущен — закройте его, чтобы почистить") : nil)
             }
             for os in ["iOS", "watchOS", "tvOS", "visionOS"] {
                 let dir = dev.appendingPathComponent("Xcode/\(os) DeviceSupport", isDirectory: true)
                 for url in c.children(of: dir) where url.lastPathComponent != ".DS_Store" {
-                    c.add(url, root: dir, title: "Символы \(os) \(url.lastPathComponent)")
+                    c.add(url, root: dir, title: String(localized: "Символы \(os) \(url.lastPathComponent)"))
                 }
             }
             let sim = dev.appendingPathComponent("CoreSimulator/Caches", isDirectory: true)
             for url in c.children(of: sim) where url.lastPathComponent != ".DS_Store" {
-                c.add(url, root: sim, title: "Кэш симуляторов: \(url.lastPathComponent)")
+                c.add(url, root: sim, title: String(localized: "Кэш симуляторов: \(url.lastPathComponent)"))
             }
         },
         JunkCategory(
-            id: "devcaches", title: "Кэши пакетных менеджеров",
-            detail: "Скачанные пакеты npm, Homebrew, pip, Gradle и других. Скачаются заново при следующей установке.",
+            id: "devcaches", title: String(localized: "Кэши пакетных менеджеров"),
+            detail: String(localized: "Скачанные пакеты npm, Homebrew, pip, Gradle и других. Скачаются заново при следующей установке."),
             icon: "shippingbox.circle", group: .developer, defaultOn: false, mode: .delete
         ) { _, c in
             for d in devCaches {
@@ -248,8 +254,8 @@ enum Catalog {
             }
         },
         JunkCategory(
-            id: "mail", title: "Вложения Почты",
-            detail: "Копии вложений, которые вы открывали в Почте. Сами письма и вложения в них остаются.",
+            id: "mail", title: String(localized: "Вложения Почты"),
+            detail: String(localized: "Копии вложений, которые вы открывали в Почте. Сами письма и вложения в них остаются."),
             icon: "paperclip", group: .files, defaultOn: true, mode: .delete
         ) { _, c in
             let dir = Paths.inHome("Library/Containers/com.apple.mail/Data/Library/Mail Downloads")
@@ -260,8 +266,8 @@ enum Catalog {
             }
         },
         JunkCategory(
-            id: "ipsw", title: "Обновления iPhone и iPad",
-            detail: "Скачанные файлы прошивок. Они уже установлены или устарели.",
+            id: "ipsw", title: String(localized: "Обновления iPhone и iPad"),
+            detail: String(localized: "Скачанные файлы прошивок. Они уже установлены или устарели."),
             icon: "iphone.and.arrow.forward", group: .files, defaultOn: true, mode: .delete
         ) { _, c in
             for kind in ["iPhone", "iPad", "iPod"] {
@@ -272,20 +278,20 @@ enum Catalog {
             }
         },
         JunkCategory(
-            id: "installers", title: "Установщики в Загрузках",
-            detail: "Образы .dmg и пакеты .pkg из папки «Загрузки». Попадут в Корзину — их можно вернуть.",
+            id: "installers", title: String(localized: "Установщики в Загрузках"),
+            detail: String(localized: "Образы .dmg и пакеты .pkg из папки «Загрузки». Попадут в Корзину — их можно вернуть."),
             icon: "arrow.down.app", group: .files, defaultOn: false, mode: .trash
         ) { _, c in
             let dir = Paths.inHome("Downloads")
             let exts: Set<String> = ["dmg", "pkg", "mpkg", "xip"]
             for url in c.children(of: dir) where exts.contains(url.pathExtension.lowercased()) {
                 let mod = (try? url.resourceValues(forKeys: [.contentModificationDateKey]))?.contentModificationDate
-                c.add(url, root: dir, subtitle: "скачан \(Fmt.date(mod))")
+                c.add(url, root: dir, subtitle: String(localized: "скачан \(Fmt.date(mod))"))
             }
         },
         JunkCategory(
-            id: "backups", title: "Резервные копии iPhone и iPad",
-            detail: "Локальные копии устройств из Finder. Попадут в Корзину — их можно вернуть. Проверьте, что копия есть в iCloud.",
+            id: "backups", title: String(localized: "Резервные копии iPhone и iPad"),
+            detail: String(localized: "Локальные копии устройств из Finder. Попадут в Корзину — их можно вернуть. Проверьте, что копия есть в iCloud."),
             icon: "externaldrive.badge.timemachine", group: .files, defaultOn: false, mode: .trash
         ) { _, c in
             let dir = Paths.inHome("Library/Application Support/MobileSync/Backup")
@@ -293,7 +299,7 @@ enum Catalog {
                 let info = NSDictionary(contentsOf: url.appendingPathComponent("Info.plist"))
                 let device = info?["Device Name"] as? String ?? url.lastPathComponent
                 let date = info?["Last Backup Date"] as? Date
-                c.add(url, root: dir, title: device, subtitle: "копия от \(Fmt.date(date))")
+                c.add(url, root: dir, title: device, subtitle: String(localized: "копия от \(Fmt.date(date))"))
             }
         },
     ]
@@ -380,7 +386,7 @@ enum Cleaner {
             let item = entry.item
             defer { progress(i + 1) }
             guard isSafe(item) else {
-                report.failures.append(.init(path: item.url.path, reason: "вне разрешённой папки — пропущено"))
+                report.failures.append(.init(path: item.url.path, reason: String(localized: "вне разрешённой папки — пропущено")))
                 continue
             }
             do {
@@ -408,11 +414,11 @@ enum Cleaner {
     static func reason(_ error: Error) -> String {
         let ns = error as NSError
         if ns.domain == NSCocoaErrorDomain, ns.code == NSFileWriteNoPermissionError || ns.code == NSFileReadNoPermissionError {
-            return "нет доступа"
+            return String(localized: "нет доступа")
         }
         if let posix = (ns.userInfo[NSUnderlyingErrorKey] as? NSError), posix.domain == NSPOSIXErrorDomain,
            posix.code == Int(EPERM) || posix.code == Int(EACCES) {
-            return "нет доступа"
+            return String(localized: "нет доступа")
         }
         return ns.localizedDescription
     }

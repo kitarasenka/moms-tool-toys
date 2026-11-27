@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%lld профилей</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld профиля</string>
+			<key>many</key>
+			<string>%lld профилей</string>
+			<key>one</key>
+			<string>%lld профиль</string>
+			<key>other</key>
+			<string>%lld профилей</string>
+		</dict>
+	</dict>
+	<key>%lld пунктов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld пункта</string>
+			<key>many</key>
+			<string>%lld пунктов</string>
+			<key>one</key>
+			<string>%lld пункт</string>
+			<key>other</key>
+			<string>%lld пунктов</string>
+		</dict>
+	</dict>
+	<key>%lld пунктов стоит</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld пункта стоит</string>
+			<key>many</key>
+			<string>%lld пунктов стоит</string>
+			<key>one</key>
+			<string>%lld пункт стоит</string>
+			<key>other</key>
+			<string>%lld пунктов стоит</string>
+		</dict>
+	</dict>
+	<key>%lld расширений</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld расширения</string>
+			<key>many</key>
+			<string>%lld расширений</string>
+			<key>one</key>
+			<string>%lld расширение</string>
+			<key>other</key>
+			<string>%lld расширений</string>
+		</dict>
+	</dict>
+	<key>%lld сайтов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld сайта</string>
+			<key>many</key>
+			<string>%lld сайтов</string>
+			<key>one</key>
+			<string>%lld сайт</string>
+			<key>other</key>
+			<string>%lld сайтов</string>
+		</dict>
+	</dict>
+	<key>%lld сайтов больше не смогут</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld сайта больше не смогут</string>
+			<key>many</key>
+			<string>%lld сайтов больше не смогут</string>
+			<key>one</key>
+			<string>%lld сайт больше не сможет</string>
+			<key>other</key>
+			<string>%lld сайтов больше не смогут</string>
+		</dict>
+	</dict>
+	<key>%lld строк</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld строки</string>
+			<key>many</key>
+			<string>%lld строк</string>
+			<key>one</key>
+			<string>%lld строка</string>
+			<key>other</key>
+			<string>%lld строк</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

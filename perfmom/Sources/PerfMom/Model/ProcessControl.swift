@@ -25,10 +25,10 @@ enum ProcessAction: Sendable {
 
     var title: String {
         switch self {
-        case .terminate: "Завершить"
-        case .forceQuit: "Завершить принудительно"
-        case .suspend: "Приостановить"
-        case .resume: "Продолжить"
+        case .terminate: String(localized: "Завершить")
+        case .forceQuit: String(localized: "Завершить принудительно")
+        case .suspend: String(localized: "Приостановить")
+        case .resume: String(localized: "Продолжить")
         }
     }
 
@@ -83,7 +83,7 @@ enum AdminRunner {
 
         var errorDescription: String? {
             switch self {
-            case .cancelled: "Операция отменена"
+            case .cancelled: String(localized: "Операция отменена")
             case .failed(let msg): msg
             }
         }

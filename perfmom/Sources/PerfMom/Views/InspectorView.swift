@@ -38,7 +38,7 @@ struct ProcessInspector: View {
                 .padding([.horizontal, .top], 16)
                 .padding(.bottom, 12)
             Picker("Раздел", selection: $state.inspectorTab) {
-                ForEach(InspectorTab.allCases) { Text($0.rawValue).tag($0) }
+                ForEach(InspectorTab.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
             }
             .pickerStyle(.segmented)
             .labelsHidden()
@@ -48,7 +48,9 @@ struct ProcessInspector: View {
             tabContent
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .task(id: record.pid) { await reload() }
+        .task(id: record.pid) {
+            if !state.demo { await reload() }
+        }
     }
 
     @ViewBuilder private var tabContent: some View {
@@ -92,7 +94,7 @@ struct ProcessInspector: View {
                 details = d
             } catch AdminRunner.Failure.cancelled {
             } catch {
-                state.alert = AlertInfo(title: "Не удалось получить данные", message: error.localizedDescription)
+                state.alert = AlertInfo(title: String(localized: "Не удалось получить данные"), message: error.localizedDescription)
             }
         }
     }
@@ -193,46 +195,46 @@ struct SummaryTab: View {
                     SecuritySection(record: record)
                 }
 
-                InspectorSection("Ресурсы") {
+                InspectorSection(String(localized: "Ресурсы")) {
                     HStack {
-                        MetricTile(title: "ЦП", value: "\(Fmt.percent(record.cpu)) %")
-                        MetricTile(title: "Память", value: Fmt.bytes(record.memory))
-                        MetricTile(title: "Потоки", value: record.threads.map(String.init) ?? "—")
+                        MetricTile(title: String(localized: "ЦП"), value: "\(Fmt.percent(record.cpu)) %")
+                        MetricTile(title: String(localized: "Память"), value: Fmt.bytes(record.memory))
+                        MetricTile(title: String(localized: "Потоки"), value: record.threads.map(String.init) ?? "—")
                     }
                     Text("ЦП, %").font(.caption).foregroundStyle(.secondary).padding(.top, 4)
-                    HistoryChart(series: [ChartSeries(name: "ЦП", color: .blue, values: cpuHistory)],
+                    HistoryChart(series: [ChartSeries(name: String(localized: "ЦП"), color: .blue, values: cpuHistory)],
                                  capacity: 60, maxValue: max(100, (cpuHistory.max() ?? 0) * 1.1))
                         .frame(height: 56)
                     Text("Память").font(.caption).foregroundStyle(.secondary)
-                    HistoryChart(series: [ChartSeries(name: "Память", color: .green, values: memHistory)],
+                    HistoryChart(series: [ChartSeries(name: String(localized: "Память"), color: .green, values: memHistory)],
                                  capacity: 60)
                         .frame(height: 44)
                 }
 
                 NetworkSection(record: record)
 
-                InspectorSection("Диск") {
-                    KeyValueRow(key: "Чтение", value: Fmt.rate(record.diskRead))
-                    KeyValueRow(key: "Запись", value: Fmt.rate(record.diskWrite))
-                    KeyValueRow(key: "Всего прочитано", value: record.diskReadTotal.map(Fmt.bytes) ?? "—")
-                    KeyValueRow(key: "Всего записано", value: record.diskWriteTotal.map(Fmt.bytes) ?? "—")
+                InspectorSection(String(localized: "Диск")) {
+                    KeyValueRow(key: String(localized: "Чтение"), value: Fmt.rate(record.diskRead))
+                    KeyValueRow(key: String(localized: "Запись"), value: Fmt.rate(record.diskWrite))
+                    KeyValueRow(key: String(localized: "Всего прочитано"), value: record.diskReadTotal.map(Fmt.bytes) ?? "—")
+                    KeyValueRow(key: String(localized: "Всего записано"), value: record.diskWriteTotal.map(Fmt.bytes) ?? "—")
                 }
 
-                InspectorSection("Процесс") {
-                    KeyValueRow(key: "Состояние", value: record.state.title)
+                InspectorSection(String(localized: "Процесс")) {
+                    KeyValueRow(key: String(localized: "Состояние"), value: record.state.title)
                     if let start = record.startTime {
-                        KeyValueRow(key: "Запущен", value: Fmt.dateTime(start))
-                        KeyValueRow(key: "Работает", value: Fmt.duration(Date().timeIntervalSince(start)))
+                        KeyValueRow(key: String(localized: "Запущен"), value: Fmt.dateTime(start))
+                        KeyValueRow(key: String(localized: "Работает"), value: Fmt.duration(Date().timeIntervalSince(start)))
                     }
-                    KeyValueRow(key: "Время ЦП", value: Fmt.cpuTime(record.cpuTime))
-                    KeyValueRow(key: "Пользователь", value: "\(record.user) (uid \(record.uid))")
-                    linkRow("Родитель", pid: record.ppid)
+                    KeyValueRow(key: String(localized: "Время ЦП"), value: Fmt.cpuTime(record.cpuTime))
+                    KeyValueRow(key: String(localized: "Пользователь"), value: "\(record.user) (uid \(record.uid))")
+                    linkRow(String(localized: "Родитель"), pid: record.ppid)
                     if let resp = details?.responsiblePID, resp != record.pid {
-                        linkRow("Ответственный", pid: resp)
+                        linkRow(String(localized: "Ответственный"), pid: resp)
                     }
                 }
 
-                InspectorSection("Исполняемый файл") {
+                InspectorSection(String(localized: "Исполняемый файл")) {
                     if record.path.isEmpty {
                         Text("Путь недоступен").foregroundStyle(.secondary)
                     } else {
@@ -241,10 +243,10 @@ struct SummaryTab: View {
                             .textSelection(.enabled)
                             .fixedSize(horizontal: false, vertical: true)
                         if let size = details?.executableSize {
-                            KeyValueRow(key: "Размер", value: Fmt.bytes(size))
+                            KeyValueRow(key: String(localized: "Размер"), value: Fmt.bytes(size))
                         }
                         if let mod = details?.executableModified {
-                            KeyValueRow(key: "Изменён", value: Fmt.dateTime(mod))
+                            KeyValueRow(key: String(localized: "Изменён"), value: Fmt.dateTime(mod))
                         }
                         HStack {
                             Button("Показать в Finder") { AppState.revealInFinder(record.path) }
@@ -263,11 +265,11 @@ struct SummaryTab: View {
                 }
 
                 if let b = details?.bundle {
-                    InspectorSection("Пакет приложения") {
-                        if let name = b.name { KeyValueRow(key: "Название", value: name) }
+                    InspectorSection(String(localized: "Пакет приложения")) {
+                        if let name = b.name { KeyValueRow(key: String(localized: "Название"), value: name) }
                         if let id = b.identifier { KeyValueRow(key: "Bundle ID", value: id, monospaced: true) }
-                        if let v = b.version, !v.isEmpty { KeyValueRow(key: "Версия", value: v) }
-                        KeyValueRow(key: "Расположение", value: b.path)
+                        if let v = b.version, !v.isEmpty { KeyValueRow(key: String(localized: "Версия"), value: v) }
+                        KeyValueRow(key: String(localized: "Расположение"), value: b.path)
                     }
                 }
             }
@@ -298,26 +300,26 @@ struct NetworkSection: View {
         let outHist = m.processNetOutHistory[record.pid] ?? []
         let sockets = record.netInTotal == nil ? nil : (record.netInTotal ?? 0) + (record.netOutTotal ?? 0)
 
-        InspectorSection("Сеть") {
+        InspectorSection(String(localized: "Сеть")) {
             if record.netIn == nil {
                 Text("Данные о сетевой активности недоступны (nettop не запущен).")
                     .font(.callout).foregroundStyle(.secondary)
             } else {
                 HStack {
-                    MetricTile(title: "↓ Получено", value: Fmt.rate(record.netIn))
-                    MetricTile(title: "↑ Отправлено", value: Fmt.rate(record.netOut))
+                    MetricTile(title: String(localized: "↓ Получено"), value: Fmt.rate(record.netIn))
+                    MetricTile(title: String(localized: "↑ Отправлено"), value: Fmt.rate(record.netOut))
                 }
                 if !inHist.isEmpty, inHist.contains(where: { $0 > 0 }) || outHist.contains(where: { $0 > 0 }) {
                     HistoryChart(series: [
-                        ChartSeries(name: "Получено", color: .blue, values: inHist),
-                        ChartSeries(name: "Отправлено", color: .orange, values: outHist),
+                        ChartSeries(name: String(localized: "Получено"), color: .blue, values: inHist),
+                        ChartSeries(name: String(localized: "Отправлено"), color: .orange, values: outHist),
                     ], capacity: 60)
                     .frame(height: 56)
                 } else {
-                    Text(sockets == 0 ? "Процесс не обменивался данными по сети." : "Сейчас трафика нет.")
+                    Text(sockets == 0 ? String(localized: "Процесс не обменивался данными по сети.") : String(localized: "Сейчас трафика нет."))
                         .font(.caption).foregroundStyle(.secondary)
                 }
-                KeyValueRow(key: "По открытым соединениям",
+                KeyValueRow(key: String(localized: "По открытым соединениям"),
                             value: "↓ \(Fmt.bytes(record.netInTotal ?? 0))   ↑ \(Fmt.bytes(record.netOutTotal ?? 0))")
                 Button("Показать соединения") { state.inspectorTab = .files }
                     .controlSize(.small)
@@ -331,17 +333,17 @@ struct SigningSection: View {
     let signing: SigningInfo
 
     var body: some View {
-        InspectorSection("Подпись кода") {
+        InspectorSection(String(localized: "Подпись кода")) {
             HStack(spacing: 6) {
                 Image(systemName: icon).foregroundStyle(color)
                 Text(signing.summary).fontWeight(.medium)
             }
             .font(.callout)
-            if let id = signing.identifier { KeyValueRow(key: "Идентификатор", value: id, monospaced: true) }
+            if let id = signing.identifier { KeyValueRow(key: String(localized: "Идентификатор"), value: id, monospaced: true) }
             if let team = signing.teamID { KeyValueRow(key: "Team ID", value: team, monospaced: true) }
-            if let auth = signing.authority, !signing.isApple { KeyValueRow(key: "Сертификат", value: auth) }
+            if let auth = signing.authority, !signing.isApple { KeyValueRow(key: String(localized: "Сертификат"), value: auth) }
             if !signing.unsigned {
-                KeyValueRow(key: "Hardened Runtime", value: signing.hardenedRuntime ? "Включён" : "Выключен")
+                KeyValueRow(key: "Hardened Runtime", value: signing.hardenedRuntime ? String(localized: "Включён") : String(localized: "Выключен"))
             }
         }
     }
@@ -391,14 +393,14 @@ struct ChainTab: View {
                 }
 
                 if let resp = details?.responsiblePID, resp != record.pid, let r = m.byPID[resp] {
-                    InspectorSection("Ответственное приложение") {
+                    InspectorSection(String(localized: "Ответственное приложение")) {
                         Text("macOS считает этот процесс запущенным от имени:")
                             .font(.caption).foregroundStyle(.secondary)
                         ProcessLink(record: r)
                     }
                 }
 
-                InspectorSection("Дочерние процессы (\(kids.count))") {
+                InspectorSection(String(localized: "Дочерние процессы (\(kids.count))")) {
                     if kids.isEmpty {
                         Text("Нет дочерних процессов").foregroundStyle(.secondary).font(.callout)
                     } else {
@@ -497,7 +499,7 @@ struct ChainFileNode: View {
                 .opacity(path.isEmpty ? 0.4 : 1)
             VStack(alignment: .leading, spacing: 1) {
                 Text("Исполняемый файл").font(.caption).foregroundStyle(.secondary)
-                Text(path.isEmpty ? "Недоступен" : path)
+                Text(path.isEmpty ? String(localized: "Недоступен") : path)
                     .font(.callout.monospaced())
                     .textSelection(.enabled)
                     .fixedSize(horizontal: false, vertical: true)
@@ -543,7 +545,7 @@ struct FilesTab: View {
     var body: some View {
         if let details {
             if !details.filesAvailable {
-                RestrictedView(what: "открытые файлы и сетевые соединения", busy: adminBusy, onAdmin: onAdmin)
+                RestrictedView(what: String(localized: "открытые файлы и сетевые соединения"), busy: adminBusy, onAdmin: onAdmin)
             } else {
                 let items = details.files.filter {
                     query.isEmpty || $0.title.localizedCaseInsensitiveContains(query)
@@ -572,9 +574,9 @@ struct FilesTab: View {
 
     private func groupTitle(_ g: Int) -> String {
         switch g {
-        case 0: "Файлы и папки"
-        case 1: "Сеть и сокеты"
-        default: "Каналы и прочее"
+        case 0: String(localized: "Файлы и папки")
+        case 1: String(localized: "Сеть и сокеты")
+        default: String(localized: "Каналы и прочее")
         }
     }
 }
@@ -628,7 +630,7 @@ struct ModulesTab: View {
     var body: some View {
         if let details {
             if !details.modulesAvailable {
-                RestrictedView(what: "загруженные библиотеки и отображённые файлы", busy: adminBusy, onAdmin: onAdmin)
+                RestrictedView(what: String(localized: "загруженные библиотеки и отображённые файлы"), busy: adminBusy, onAdmin: onAdmin)
             } else {
                 let items = details.modules.filter { query.isEmpty || $0.path.localizedCaseInsensitiveContains(query) }
                 VStack(spacing: 0) {
@@ -700,7 +702,7 @@ struct FilterBar: View {
             .padding(.vertical, 4)
             .background(.quaternary.opacity(0.6), in: RoundedRectangle(cornerRadius: 6))
 
-            Text(count == total ? "\(total)" : "\(count) из \(total)")
+            Text(count == total ? "\(total)" : String(localized: "\(count) из \(total)"))
                 .font(.caption.monospacedDigit())
                 .foregroundStyle(.secondary)
             if viaAdmin {
@@ -751,7 +753,7 @@ struct LaunchTab: View {
         if let details {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    InspectorSection(details.argumentsFromPS ? "Командная строка" : "Аргументы (\(details.arguments.count))") {
+                    InspectorSection(details.argumentsFromPS ? String(localized: "Командная строка") : String(localized: "Аргументы (\(details.arguments.count))")) {
                         if details.arguments.isEmpty {
                             Text("Недоступны").foregroundStyle(.secondary).font(.callout)
                         } else {
@@ -777,7 +779,7 @@ struct LaunchTab: View {
                         }
                     }
 
-                    InspectorSection("Рабочая папка") {
+                    InspectorSection(String(localized: "Рабочая папка")) {
                         if let cwd = details.cwd {
                             HStack {
                                 Text(cwd).font(.callout.monospaced()).textSelection(.enabled)
@@ -792,7 +794,7 @@ struct LaunchTab: View {
                     }
 
                     if !details.environment.isEmpty {
-                        InspectorSection("Окружение") {
+                        InspectorSection(String(localized: "Окружение")) {
                             DisclosureGroup("Переменные (\(details.environment.count))", isExpanded: $showEnv) {
                                 VStack(alignment: .leading, spacing: 4) {
                                     ForEach(details.environment, id: \.self) { line in

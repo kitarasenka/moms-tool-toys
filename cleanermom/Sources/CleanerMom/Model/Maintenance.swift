@@ -24,26 +24,26 @@ struct MaintenanceTask: Identifiable, Sendable {
 
     static let all: [MaintenanceTask] = [
         MaintenanceTask(
-            id: "dns", title: "Сбросить кэш DNS",
-            detail: "Помогает, когда сайт переехал или открывается старая версия, а у других всё работает.",
+            id: "dns", title: String(localized: "Сбросить кэш DNS"),
+            detail: String(localized: "Помогает, когда сайт переехал или открывается старая версия, а у других всё работает."),
             icon: "network", needsAdmin: true,
             command: "dscacheutil -flushcache; killall -HUP mDNSResponder"),
         MaintenanceTask(
-            id: "ram", title: "Освободить оперативную память",
-            detail: "Сбрасывает дисковый кэш в памяти. Полезно перед тяжёлой задачей; пару секунд Mac может притормозить.",
+            id: "ram", title: String(localized: "Освободить оперативную память"),
+            detail: String(localized: "Сбрасывает дисковый кэш в памяти. Полезно перед тяжёлой задачей; пару секунд Mac может притормозить."),
             icon: "memorychip", needsAdmin: true, command: "/usr/sbin/purge"),
         MaintenanceTask(
-            id: "launchservices", title: "Перестроить базу Launch Services",
-            detail: "Убирает дубли в меню «Открыть с помощью» и неверные иконки файлов.",
+            id: "launchservices", title: String(localized: "Перестроить базу Launch Services"),
+            detail: String(localized: "Убирает дубли в меню «Открыть с помощью» и неверные иконки файлов."),
             icon: "square.stack.3d.up", needsAdmin: false, command: "",
             tool: lsregister, args: ["-kill", "-r", "-domain", "local", "-domain", "system", "-domain", "user"]),
         MaintenanceTask(
-            id: "quicklook", title: "Сбросить Quick Look",
-            detail: "Помогает, если по пробелу не показываются превью или миниатюры файлов устарели.",
+            id: "quicklook", title: String(localized: "Сбросить Quick Look"),
+            detail: String(localized: "Помогает, если по пробелу не показываются превью или миниатюры файлов устарели."),
             icon: "eye", needsAdmin: false, command: "/usr/bin/qlmanage -r && /usr/bin/qlmanage -r cache"),
         MaintenanceTask(
-            id: "spotlight", title: "Переиндексировать Spotlight",
-            detail: "Если поиск не находит файлы. Индекс строится заново в фоне — это может занять час и нагрузить Mac.",
+            id: "spotlight", title: String(localized: "Переиндексировать Spotlight"),
+            detail: String(localized: "Если поиск не находит файлы. Индекс строится заново в фоне — это может занять час и нагрузить Mac."),
             icon: "magnifyingglass", needsAdmin: true, command: "/usr/bin/mdutil -E /"),
     ]
 }

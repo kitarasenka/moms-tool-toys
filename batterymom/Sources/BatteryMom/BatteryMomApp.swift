@@ -17,12 +17,14 @@ enum Main {
 
 struct BatteryMomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @State private var state = AppState()
+    @State private var state = AppState(demo: CommandLine.arguments.contains("--demo"))
 
     var body: some Scene {
         Window("BatteryMom", id: "main") {
             ContentView()
                 .environment(state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 900, minHeight: 600)
                 .task {
                     LaunchOptions.apply(to: state)
@@ -45,8 +47,12 @@ struct BatteryMomApp: App {
         // Значок в строке меню: при закрытом окне BatteryMom продолжает работать и записывать историю.
         MenuBarExtra {
             MenuBarContent(state: state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
         } label: {
             MenuBarLabel(battery: state.battery)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
         }
     }
 }
@@ -96,7 +102,11 @@ struct MenuBarContent: View {
             Text("Заряд: \(b.percent) % — \(b.state.short)")
             if let t = b.timeText { Text(t) }
             if let h = b.health {
-                Text("Здоровье: \(Int(h.rounded())) %" + (b.cycleCount.map { ", циклов: \($0)" } ?? ""))
+                if let cycles = b.cycleCount {
+                    Text("Здоровье: \(Int(h.rounded())) % · циклы: \(cycles)")
+                } else {
+                    Text("Здоровье: \(Int(h.rounded())) %")
+                }
             }
             if let w = b.consumption { Text("Потребление: \(Fmt.watts(w))") }
             if let t = b.temperature { Text("Температура: \(Fmt.number(t)) °C") }

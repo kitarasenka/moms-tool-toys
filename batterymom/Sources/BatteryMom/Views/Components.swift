@@ -111,7 +111,7 @@ struct BatteryRing: View {
         .frame(width: diameter, height: diameter)
         .animation(.easeOut(duration: 0.4), value: percent)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Заряд \(percent) %\(charging ? ", заряжается" : "")")
+        .accessibilityLabel("Заряд \(percent) %\(charging ? String(localized: ", заряжается") : "")")
     }
 }
 

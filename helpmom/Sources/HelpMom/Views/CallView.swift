@@ -52,7 +52,7 @@ struct HelperCard: View {
                         .frame(width: 56, height: 56)
                         .background(Brand.gradient, in: Circle())
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(helper.name.isEmpty ? "Без имени" : helper.name).font(.title2.weight(.semibold))
+                        Text(helper.name.isEmpty ? String(localized: "Без имени") : helper.name).font(.title2.weight(.semibold))
                         Text(contacts).foregroundStyle(.secondary).lineLimit(1)
                     }
                     Spacer()
@@ -92,7 +92,7 @@ struct HelperCard: View {
         if !helper.phone.isEmpty { parts.append(helper.phone) }
         if !helper.email.isEmpty { parts.append(helper.email) }
         if let t = helper.telegramName { parts.append("@\(t)") }
-        return parts.isEmpty ? "контакты не указаны" : parts.joined(separator: " · ")
+        return parts.isEmpty ? String(localized: "контакты не указаны") : parts.joined(separator: " · ")
     }
 }
 
@@ -170,15 +170,16 @@ struct HelperEditor: View {
     var body: some View {
         let isNew = !state.helpers.contains { $0.id == helper.id }
         VStack(alignment: .leading, spacing: 16) {
-            Text(isNew ? "Новый помощник" : "Изменить помощника").font(.title2.weight(.semibold))
+            Text(isNew ? String(localized: "Новый помощник") : String(localized: "Изменить помощника")).font(.title2.weight(.semibold))
             Form {
                 TextField("Имя", text: $helper.name, prompt: Text("Например, Маша"))
                 field("Телефон", text: $helper.phone, prompt: "+7 999 123-45-67",
-                      hint: helper.phone.isEmpty || Contact.phone(helper.phone) != nil ? nil : "Похоже, это не номер телефона")
+                      hint: helper.phone.isEmpty || Contact.phone(helper.phone) != nil ? nil : String(localized: "Похоже, это не номер телефона"))
                 field("E-mail (Apple ID)", text: $helper.email, prompt: "masha@icloud.com",
-                      hint: helper.email.isEmpty || Contact.email(helper.email) != nil ? nil : "Проверьте адрес")
+                      hint: helper.email.isEmpty || Contact.email(helper.email) != nil ? nil : String(localized: "Проверьте адрес"))
                 field("Telegram", text: $helper.telegram, prompt: "@masha",
-                      hint: helper.telegram.isEmpty || Contact.telegram(helper.telegram) != nil ? nil : "Имя в Telegram: латиница, цифры и _, от 4 знаков")
+                      hint: helper.telegram.isEmpty || Contact.telegram(helper.telegram) != nil ? nil
+                          : String(localized: "Имя в Telegram: латиница, цифры и _, от 4 знаков"))
             }
             .formStyle(.grouped)
             Text("Телефон или e-mail нужен для FaceTime и Сообщений, Telegram — по желанию. Список хранится только на этом Mac.")
@@ -187,7 +188,7 @@ struct HelperEditor: View {
             HStack {
                 Spacer()
                 Button("Отмена", role: .cancel) { dismiss() }.keyboardShortcut(.cancelAction)
-                Button(isNew ? "Добавить" : "Сохранить") {
+                Button(isNew ? String(localized: "Добавить") : String(localized: "Сохранить")) {
                     helper.name = helper.name.trimmingCharacters(in: .whitespaces)
                     state.save(helper)
                     dismiss()
@@ -200,9 +201,9 @@ struct HelperEditor: View {
         .frame(width: 480)
     }
 
-    private func field(_ title: String, text: Binding<String>, prompt: String, hint: String?) -> some View {
+    private func field(_ title: LocalizedStringKey, text: Binding<String>, prompt: String, hint: String?) -> some View {
         VStack(alignment: .leading, spacing: 3) {
-            TextField(title, text: text, prompt: Text(prompt))
+            TextField(title, text: text, prompt: Text(verbatim: prompt))
             if let hint { Text(hint).font(.caption).foregroundStyle(.orange) }
         }
     }

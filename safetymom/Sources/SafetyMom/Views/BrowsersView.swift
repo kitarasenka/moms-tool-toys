@@ -14,7 +14,7 @@ struct BrowsersView: View {
         @Bindable var state = state
         Group {
             if !state.browsersLoaded {
-                LoadingView(text: "Смотрю браузеры: расширения и уведомления от сайтов…")
+                LoadingView(text: String(localized: "Смотрю браузеры: расширения и уведомления от сайтов…"))
             } else {
                 ScrollView {
                     VStack(spacing: 12) {
@@ -28,7 +28,7 @@ struct BrowsersView: View {
                         if let m = state.message {
                             MessageBar(text: m, isError: state.messageIsError) { state.message = nil }
                         }
-                        FullDiskAccessBanner(reason: "Без него не видно, каким сайтам разрешены уведомления в Safari.")
+                        FullDiskAccessBanner(reason: String(localized: "Без него не видно, каким сайтам разрешены уведомления в Safari."))
                         if state.browsers.isEmpty {
                             Text("Браузеров не найдено.").foregroundStyle(.secondary)
                         }
@@ -57,14 +57,14 @@ struct BrowsersView: View {
                     .disabled(state.browsersLoading)
             }
         }
-        .alert(pending.map { "Запретить уведомления в \($0.report.def.name)?" } ?? "",
+        .alert(pending.map { String(localized: "Запретить уведомления в \($0.report.def.name)?") } ?? "",
                isPresented: Binding(get: { pending != nil }, set: { if !$0 { pending = nil } }), presenting: pending) { p in
             Button("Запретить", role: .destructive) { Task { await state.block(p.sites, in: p.report) } }
             Button("Отменить", role: .cancel) {}
         } message: { p in
             Text(p.sites.count == 1
-                 ? "Сайт \(p.sites[0].host) больше не сможет присылать уведомления. Сам сайт открываться будет как обычно."
-                 : "\(Fmt.count(p.sites.count, "сайт", "сайта", "сайтов")) больше не смогут присылать уведомления: \(p.sites.prefix(5).map(\.host).joined(separator: ", "))\(p.sites.count > 5 ? "…" : ""). Сами сайты открываться будут как обычно.")
+                 ? String(localized: "Сайт \(p.sites[0].host) больше не сможет присылать уведомления. Сам сайт открываться будет как обычно.")
+                 : String(localized: "\(Fmt.sites(p.sites.count)) больше не смогут присылать уведомления: \(p.sites.prefix(5).map(\.host).joined(separator: ", "))\(p.sites.count > 5 ? "…" : ""). Сами сайты открываться будут как обычно."))
             + Text("\n\nКопия прежних настроек браузера сохранится в папке SafetyMom.")
         }
     }
@@ -112,7 +112,7 @@ private struct BrowserHeader<Actions: View>: View {
                     }
                 }
                 if report.profiles.count > 1 {
-                    Text(Fmt.count(report.profiles.count, "профиль", "профиля", "профилей")).font(.caption).foregroundStyle(.secondary)
+                    Text(Fmt.profiles(report.profiles.count)).font(.caption).foregroundStyle(.secondary)
                 }
             }
             Spacer()
@@ -176,11 +176,11 @@ private struct NotificationsCard: View {
     }
 
     private func status(_ list: [SiteNotification]) -> String {
-        if !report.notificationsReadable { return "Не проверить" }
-        if list.isEmpty { return "Нет разрешений" }
+        if !report.notificationsReadable { return String(localized: "Не проверить") }
+        if list.isEmpty { return String(localized: "Нет разрешений") }
         let bad = list.filter { $0.level == .danger }.count
-        if bad > 0 { return "Похоже на спам: \(bad)" }
-        return Fmt.count(list.count, "сайт", "сайта", "сайтов")
+        if bad > 0 { return String(localized: "Похоже на спам: \(bad)") }
+        return Fmt.sites(list.count)
     }
 }
 
@@ -196,8 +196,8 @@ private struct SiteRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(site.host).font(.body.weight(.medium))
                 Text(site.reason).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-                Text(([report.profiles.count > 1 ? "профиль «\(site.profile)»" : nil,
-                       site.since.map { "разрешено \(Fmt.date($0))" }] as [String?]).compactMap { $0 }.joined(separator: " · "))
+                Text(([report.profiles.count > 1 ? String(localized: "профиль «\(site.profile)»") : nil,
+                       site.since.map { String(localized: "разрешено \(Fmt.date($0))") }] as [String?]).compactMap { $0 }.joined(separator: " · "))
                     .font(.caption2).foregroundStyle(.tertiary)
             }
             Spacer()
@@ -205,7 +205,7 @@ private struct SiteRow: View {
                 Button("Запретить") { onBlock() }
                     .controlSize(.small)
                     .disabled(report.running && !state.demo)
-                    .help(report.running && !state.demo ? "Сначала закройте \(report.def.name)" : "Сайт больше не сможет присылать уведомления")
+                    .help(report.running && !state.demo ? String(localized: "Сначала закройте \(report.def.name)") : String(localized: "Сайт больше не сможет присылать уведомления"))
             }
         }
         .padding(.vertical, 7)
@@ -221,7 +221,7 @@ private struct ExtensionsCard: View {
         Card {
             VStack(alignment: .leading, spacing: 10) {
                 BrowserHeader(report: report, level: report.worstExtension, status: status(list)) {
-                    Button(report.def.engine.isSafari ? "Открыть Safari" : "Страница расширений") { state.openExtensions(report) }
+                    Button(report.def.engine.isSafari ? String(localized: "Открыть Safari") : String(localized: "Страница расширений")) { state.openExtensions(report) }
                         .controlSize(.small)
                 }
                 if list.isEmpty {
@@ -243,9 +243,9 @@ private struct ExtensionsCard: View {
 
     private func status(_ list: [BrowserExtension]) -> String {
         let bad = list.filter { $0.level == .danger }.count, warn = list.filter { $0.level == .warn }.count
-        if bad > 0 { return "Подозрительных: \(bad)" }
-        if warn > 0 { return "Проверьте: \(warn)" }
-        return list.isEmpty ? "Нет" : Fmt.count(list.count, "расширение", "расширения", "расширений")
+        if bad > 0 { return String(localized: "Подозрительных: \(bad)") }
+        if warn > 0 { return String(localized: "Проверьте: \(warn)") }
+        return list.isEmpty ? String(localized: "Нет") : Fmt.extensions(list.count)
     }
 }
 
@@ -260,7 +260,7 @@ private struct ExtensionRow: View {
                 HStack(spacing: 6) {
                     Text(ext.name).font(.body.weight(.medium)).lineLimit(1)
                     if !ext.version.isEmpty { Text(ext.version).font(.caption).foregroundStyle(.tertiary) }
-                    if !ext.enabled { Chip(text: "выключено") }
+                    if !ext.enabled { Chip(text: String(localized: "выключено")) }
                 }
                 if !ext.flags.isEmpty {
                     HStack(spacing: 4) {
@@ -270,7 +270,7 @@ private struct ExtensionRow: View {
                 if ext.level != .ok, let why = ext.flags.first(where: \.isRisky) ?? ext.flags.first {
                     Text(why.explain).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
-                let meta = [showProfile ? "профиль «\(ext.profile)»" : nil, ext.installed.map { "установлено \(Fmt.date($0))" }].compactMap { $0 }
+                let meta = [showProfile ? String(localized: "профиль «\(ext.profile)»") : nil, ext.installed.map { String(localized: "установлено \(Fmt.date($0))") }].compactMap { $0 }
                 if !meta.isEmpty {
                     Text(meta.joined(separator: " · ")).font(.caption2).foregroundStyle(.tertiary)
                 }

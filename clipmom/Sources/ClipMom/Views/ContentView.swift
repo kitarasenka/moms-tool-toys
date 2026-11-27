@@ -60,7 +60,7 @@ struct RecordingCard: View {
                 Text(e).font(.caption2).foregroundStyle(.secondary).lineLimit(2)
             }
             HStack(spacing: 6) {
-                Button(state.isRecording ? "Пауза" : "Продолжить") { state.togglePause() }
+                Button(state.isRecording ? LocalizedStringKey("Пауза") : "Продолжить") { state.togglePause() }
                 if state.isRecording {
                     Button("5 мин") { state.pauseFiveMinutes() }.help("Не записывать 5 минут")
                 }
@@ -72,11 +72,11 @@ struct RecordingCard: View {
     }
 
     private var statusText: String {
-        if state.demo { return "Демо-режим" }
-        if let u = state.pauseUntil { return "Пауза до \(u.formatted(date: .omitted, time: .shortened))" }
-        if state.paused { return "Запись на паузе" }
-        if !state.access.canAutoRead { return "Нет доступа к буферу" }
-        return "Запись идёт"
+        if state.demo { return String(localized: "Демо-режим") }
+        if let u = state.pauseUntil { return String(localized: "Пауза до \(u.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)))") }
+        if state.paused { return String(localized: "Запись на паузе") }
+        if !state.access.canAutoRead { return String(localized: "Нет доступа к буферу") }
+        return String(localized: "Запись идёт")
     }
 }
 
@@ -109,7 +109,7 @@ struct HistoryListView: View {
                     .contextMenu(forSelectionType: UUID.self) { ids in
                         if let id = ids.first, let item = state.items.first(where: { $0.id == id }) {
                             Button("Скопировать") { state.copy(item) }
-                            Button(item.pinned ? "Открепить" : "Закрепить") { state.togglePin(item) }
+                            Button(item.pinned ? LocalizedStringKey("Открепить") : "Закрепить") { state.togglePin(item) }
                             Divider()
                             Button("Удалить", role: .destructive) { state.delete(item) }
                         }
@@ -125,9 +125,7 @@ struct HistoryListView: View {
     }
 
     private func subtitle(_ n: Int) -> String {
-        let m10 = n % 10, m100 = n % 100
-        let word = m10 == 1 && m100 != 11 ? "запись" : ((2...4).contains(m10) && !(12...14).contains(m100) ? "записи" : "записей")
-        return "\(n) \(word)"
+        String(localized: "\(n) записей")
     }
 }
 

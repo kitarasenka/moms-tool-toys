@@ -18,18 +18,18 @@ struct ProcessTreeView: View {
         }
 
         Table(rows, selection: selection) {
-            TableColumn("Процесс") { row in
+            TableColumn(String(localized: "Процесс")) { row in
                 TreeNameCell(row: row, state: state)
             }
             .width(min: 260, ideal: 340)
 
-            TableColumn("% ЦП") { row in
+            TableColumn(String(localized: "% ЦП")) { row in
                 Text(Fmt.percent(row.record.cpu)).monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 54, ideal: 60)
 
-            TableColumn("Σ ЦП") { row in
+            TableColumn(String(localized: "Σ ЦП")) { row in
                 Text(row.hasChildren ? Fmt.percent(row.totals.cpu) : "")
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
@@ -38,13 +38,13 @@ struct ProcessTreeView: View {
             }
             .width(min: 54, ideal: 64)
 
-            TableColumn("Память") { row in
+            TableColumn(String(localized: "Память")) { row in
                 Text(Fmt.bytes(row.record.memory)).monospacedDigit()
                     .frame(maxWidth: .infinity, alignment: .trailing)
             }
             .width(min: 70, ideal: 84)
 
-            TableColumn("Σ Память") { row in
+            TableColumn(String(localized: "Σ Память")) { row in
                 Text(row.hasChildren ? Fmt.bytes(row.totals.memory) : "")
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
@@ -52,7 +52,7 @@ struct ProcessTreeView: View {
             }
             .width(min: 70, ideal: 90)
 
-            TableColumn("Сеть") { row in
+            TableColumn(String(localized: "Сеть")) { row in
                 Text(row.record.netIn == nil ? "—" : Fmt.rate(row.record.netTotalRate))
                     .monospacedDigit()
                     .foregroundStyle(row.record.netTotalRate > 0 ? .primary : .secondary)
@@ -61,7 +61,7 @@ struct ProcessTreeView: View {
             }
             .width(min: 70, ideal: 84)
 
-            TableColumn("Σ Сеть") { row in
+            TableColumn(String(localized: "Σ Сеть")) { row in
                 Text(row.hasChildren && row.record.netIn != nil ? Fmt.rate(row.totals.net) : "")
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
@@ -76,12 +76,12 @@ struct ProcessTreeView: View {
             }
             .width(min: 50, ideal: 60)
 
-            TableColumn("Пользователь") { row in
+            TableColumn(String(localized: "Пользователь")) { row in
                 Text(row.record.user).foregroundStyle(row.record.isSystem ? .secondary : .primary)
             }
             .width(min: 70, ideal: 90)
 
-            TableColumn("Путь") { row in
+            TableColumn(String(localized: "Путь")) { row in
                 Text(row.record.path.isEmpty ? "—" : row.record.path)
                     .foregroundStyle(.secondary)
                     .truncationMode(.middle)
@@ -89,6 +89,7 @@ struct ProcessTreeView: View {
             }
             .width(min: 120, ideal: 300)
         }
+        .leadingTableScrollPosition()
         .contextMenu(forSelectionType: Int.self) { slots in
             if let pid = pidAt(slots.first) { ProcessMenuItems(pid: pid, state: state) }
         } primaryAction: { slots in
@@ -100,7 +101,7 @@ struct ProcessTreeView: View {
         .toolbar {
             ToolbarItemGroup(placement: .principal) {
                 Picker("Сортировка", selection: $state.treeSort) {
-                    ForEach(TreeSort.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(TreeSort.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .help("Сортировка процессов внутри каждого уровня")

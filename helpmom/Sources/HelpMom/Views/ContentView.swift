@@ -49,7 +49,7 @@ struct SidebarStatus: View {
                 Image(systemName: r.overall.symbol).foregroundStyle(r.overall.color).font(.title3)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(r.headline).font(.caption.weight(.semibold))
-                    Text(state.demo ? "Демо-режим" : "Проверено в \(r.collectedAt.formatted(date: .omitted, time: .shortened))")
+                    Text(state.demo ? String(localized: "Демо-режим") : String(localized: "Проверено в \(Fmt.time(r.collectedAt))"))
                         .font(.caption2).foregroundStyle(.secondary)
                 }
             } else {

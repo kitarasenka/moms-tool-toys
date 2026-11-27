@@ -57,7 +57,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: axTrusted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                                 .foregroundStyle(axTrusted ? .green : .orange)
-                            Text(axTrusted ? "Универсальный доступ разрешён — выбранное вставится в приложение, где вы были."
+                            Text(axTrusted ? LocalizedStringKey("Универсальный доступ разрешён — выбранное вставится в приложение, где вы были.")
                                            : "Нужен «Универсальный доступ» для ClipMom, иначе запись только копируется.")
                                 .font(.caption).foregroundStyle(.secondary)
                             Spacer()
@@ -110,7 +110,7 @@ struct SettingsView: View {
                     Text("Что скопировано в этих приложениях, ClipMom даже не читает.").font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Хранилище") {
-                    LabeledContent("Папка", value: state.demo ? "временная (демо)" : "~/Library/Application Support/ClipMom")
+                    LabeledContent("Папка", value: state.demo ? String(localized: "временная (демо)") : "~/Library/Application Support/ClipMom")
                     HStack {
                         Button("Показать в Finder") { NSWorkspace.shared.activateFileViewerSelecting([state.store.historyURL]) }
                         Spacer()
@@ -156,7 +156,7 @@ struct SettingsView: View {
         panel.allowedContentTypes = [.application]
         panel.directoryURL = URL(fileURLWithPath: "/Applications")
         panel.allowsMultipleSelection = true
-        panel.prompt = "Добавить"
+        panel.prompt = String(localized: "Добавить")
         guard panel.runModal() == .OK else { return }
         for url in panel.urls {
             if let app = AppIcons.appInfo(at: url), state.prefs.isExcluded(app.bundleID) == nil {

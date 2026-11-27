@@ -107,8 +107,8 @@ struct AccessDeniedView: View {
     let retry: () -> Void
 
     var body: some View {
-        EmptyStateView(icon: "lock.shield", title: "Нет доступа к папке «\(folder)»",
-                       text: "macOS не разрешила DesktopMom заглянуть в эту папку. Откройте «Системные настройки → Конфиденциальность и безопасность → Файлы и папки» и включите для DesktopMom «\(folder)».") {
+        EmptyStateView(icon: "lock.shield", title: String(localized: "Нет доступа к папке «\(folder)»"),
+                       text: String(localized: "macOS не разрешила DesktopMom заглянуть в эту папку. Откройте «Системные настройки → Конфиденциальность и безопасность → Файлы и папки» и включите для DesktopMom «\(folder)».")) {
             HStack {
                 Button("Открыть настройки") { AppState.openFilesAndFoldersSettings() }
                     .buttonStyle(.borderedProminent)

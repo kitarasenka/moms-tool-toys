@@ -11,6 +11,8 @@ rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp ".build/release/DesktopMom" "$APP/Contents/MacOS/DesktopMom"
 cp Resources/Info.plist "$APP/Contents/Info.plist"
+# Переводы: Resources/<язык>.lproj (ключ — русский текст); язык выбирает macOS.
+cp -R Resources/*.lproj "$APP/Contents/Resources/"
 
 echo "▸ Иконка…"
 # Resources/AppIcon.png (1024×1024) → AppIcon.icns

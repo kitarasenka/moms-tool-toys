@@ -20,7 +20,7 @@ struct BrowserDef: Identifiable, Sendable {
     static let all: [BrowserDef] = [
         .init(id: "safari", name: "Safari", bundleID: "com.apple.Safari", engine: .safari),
         .init(id: "chrome", name: "Google Chrome", bundleID: "com.google.Chrome", engine: .chromium(data: "Google/Chrome", scheme: "chrome")),
-        .init(id: "yandex", name: "Яндекс Браузер", bundleID: "ru.yandex.desktop.yandex-browser",
+        .init(id: "yandex", name: String(localized: "Яндекс Браузер"), bundleID: "ru.yandex.desktop.yandex-browser",
               engine: .chromium(data: "Yandex/YandexBrowser", scheme: "browser")),
         .init(id: "firefox", name: "Firefox", bundleID: "org.mozilla.firefox", engine: .firefox),
         .init(id: "edge", name: "Microsoft Edge", bundleID: "com.microsoft.edgemac", engine: .chromium(data: "Microsoft Edge", scheme: "edge")),
@@ -71,33 +71,33 @@ enum ExtFlag: String, Sendable, CaseIterable {
 
     var title: String {
         switch self {
-        case .allSites: "видит все сайты"
-        case .proxy: "меняет прокси"
-        case .management: "управляет расширениями"
-        case .debugger: "отладчик"
-        case .nativeMessaging: "связь с программой на Mac"
+        case .allSites: String(localized: "видит все сайты")
+        case .proxy: String(localized: "меняет прокси")
+        case .management: String(localized: "управляет расширениями")
+        case .debugger: String(localized: "отладчик")
+        case .nativeMessaging: String(localized: "связь с программой на Mac")
         case .cookies: "cookies"
-        case .history: "история"
-        case .notStore: "не из магазина"
-        case .developer: "режим разработчика"
-        case .installedByApp: "поставлено программой"
-        case .recent: "недавно"
+        case .history: String(localized: "история")
+        case .notStore: String(localized: "не из магазина")
+        case .developer: String(localized: "режим разработчика")
+        case .installedByApp: String(localized: "поставлено программой")
+        case .recent: String(localized: "недавно")
         }
     }
 
     var explain: String {
         switch self {
-        case .allSites: "Может читать и менять всё на любом сайте, включая почту и банк. Для блокировщиков рекламы и менеджеров паролей это нормально."
-        case .proxy: "Может пустить весь интернет через чужой сервер — так подменяют сайты и рекламу."
-        case .management: "Может включать, выключать и прятать другие расширения."
-        case .debugger: "Полный контроль над вкладками — нужен только разработчикам."
-        case .nativeMessaging: "Общается с программой, установленной на Mac (например, с менеджером паролей)."
-        case .cookies: "Может читать cookies — то, чем сайты помнят, что вы вошли."
-        case .history: "Видит историю посещений."
-        case .notStore: "Установлено не из магазина расширений — его никто не проверял."
-        case .developer: "Загружено из папки в режиме разработчика."
-        case .installedByApp: "Его поставили не вы, а другая программа или политика — так часто ставят рекламные расширения."
-        case .recent: "Появилось за последние две недели."
+        case .allSites: String(localized: "Может читать и менять всё на любом сайте, включая почту и банк. Для блокировщиков рекламы и менеджеров паролей это нормально.")
+        case .proxy: String(localized: "Может пустить весь интернет через чужой сервер — так подменяют сайты и рекламу.")
+        case .management: String(localized: "Может включать, выключать и прятать другие расширения.")
+        case .debugger: String(localized: "Полный контроль над вкладками — нужен только разработчикам.")
+        case .nativeMessaging: String(localized: "Общается с программой, установленной на Mac (например, с менеджером паролей).")
+        case .cookies: String(localized: "Может читать cookies — то, чем сайты помнят, что вы вошли.")
+        case .history: String(localized: "Видит историю посещений.")
+        case .notStore: String(localized: "Установлено не из магазина расширений — его никто не проверял.")
+        case .developer: String(localized: "Загружено из папки в режиме разработчика.")
+        case .installedByApp: String(localized: "Его поставили не вы, а другая программа или политика — так часто ставят рекламные расширения.")
+        case .recent: String(localized: "Появилось за последние две недели.")
         }
     }
 
@@ -129,9 +129,9 @@ struct SiteNotification: Identifiable, Sendable, Hashable {
 
     var reason: String {
         switch level {
-        case .ok: "Известный сервис — уведомления от него обычно нужны."
-        case .danger: "Похоже на спам: такие сайты присылают «Ваш Mac заражён!», «Вы выиграли!» и рекламу."
-        default: "Незнакомый сайт. Если не помните, что разрешали ему уведомления, — запретите."
+        case .ok: String(localized: "Известный сервис — уведомления от него обычно нужны.")
+        case .danger: String(localized: "Похоже на спам: такие сайты присылают «Ваш Mac заражён!», «Вы выиграли!» и рекламу.")
+        default: String(localized: "Незнакомый сайт. Если не помните, что разрешали ему уведомления, — запретите.")
         }
     }
 }
@@ -185,20 +185,20 @@ enum BrowserScanner {
                 r.extensions += firefoxExtensions(p)
                 r.notifications += firefoxNotifications(p)
             }
-            r.notificationsNote = "Снять разрешение в Firefox можно в его настройках: «Приватность и защита» → «Разрешения» → «Уведомления» → «Параметры…»."
+            r.notificationsNote = String(localized: "Снять разрешение в Firefox можно в его настройках: «Приватность и защита» → «Разрешения» → «Уведомления» → «Параметры…».")
             return r
         case .safari:
             var r = BrowserReport(def: def, installed: true, running: false, profiles: [])
             r.extensions = safariExtensions(Shell.run("/usr/bin/pluginkit", ["-mAvv", "-p", "com.apple.Safari.web-extension"], timeout: 8).output)
                 + safariExtensions(Shell.run("/usr/bin/pluginkit", ["-mAvv", "-p", "com.apple.Safari.extension"], timeout: 8).output)
-            r.extensionsNote = "Включены ли они в самом Safari, видно в Safari → Настройки → Расширения."
+            r.extensionsNote = String(localized: "Включены ли они в самом Safari, видно в Safari → Настройки → Расширения.")
             if fullDiskAccess {
                 r.notifications = safariNotifications(roots.safari.appendingPathComponent("UserNotificationPermissions.plist"))
             } else {
                 r.notificationsReadable = false
             }
-            r.notificationsNote = (fullDiskAccess ? "" : "Без полного доступа к диску список Safari не прочитать. ")
-                + "Снять разрешение: Safari → Настройки → Веб-сайты → Уведомления, или Системные настройки → Уведомления."
+            r.notificationsNote = (fullDiskAccess ? "" : String(localized: "Без полного доступа к диску список Safari не прочитать. "))
+                + String(localized: "Снять разрешение: Safari → Настройки → Веб-сайты → Уведомления, или Системные настройки → Уведомления.")
             return r
         }
     }
@@ -217,11 +217,11 @@ enum BrowserScanner {
             let dir = root.appendingPathComponent(name, isDirectory: true)
             guard fm.fileExists(atPath: dir.appendingPathComponent("Preferences").path) else { continue }
             let display = (cache[name] as? [String: Any])?["name"] as? String
-            out.append(BrowserProfile(dir: dir, name: display.map { $0.isEmpty ? name : $0 } ?? (name == "Default" ? "Основной" : name)))
+            out.append(BrowserProfile(dir: dir, name: display.map { $0.isEmpty ? name : $0 } ?? (name == "Default" ? String(localized: "Основной") : name)))
         }
         // Старая Opera: профиль — сама папка данных.
         if out.isEmpty, fm.fileExists(atPath: root.appendingPathComponent("Preferences").path) {
-            out.append(BrowserProfile(dir: root, name: "Основной"))
+            out.append(BrowserProfile(dir: root, name: String(localized: "Основной")))
         }
         return out
     }
@@ -495,10 +495,10 @@ enum RevokeError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .browserRunning(let n): "Сначала закройте \(n) — иначе он перезапишет настройки при выходе."
-        case .unreadable: "Не получилось прочитать настройки браузера."
-        case .notFound: "Этого разрешения уже нет — возможно, его сняли в самом браузере."
-        case .writeFailed(let e): "Не получилось сохранить настройки: \(e)"
+        case .browserRunning(let n): String(localized: "Сначала закройте \(n) — иначе он перезапишет настройки при выходе.")
+        case .unreadable: String(localized: "Не получилось прочитать настройки браузера.")
+        case .notFound: String(localized: "Этого разрешения уже нет — возможно, его сняли в самом браузере.")
+        case .writeFailed(let e): String(localized: "Не получилось сохранить настройки: \(e)")
         }
     }
 }
@@ -537,7 +537,7 @@ enum NotificationRevoker {
             try fm.setAttributes([.posixPermissions: 0o600], ofItemAtPath: backup.path)
 
             let out = try JSONSerialization.data(withJSONObject: root, options: [.withoutEscapingSlashes])
-            guard (try? JSONSerialization.jsonObject(with: out)) is [String: Any] else { throw RevokeError.writeFailed("проверка не прошла") }
+            guard (try? JSONSerialization.jsonObject(with: out)) is [String: Any] else { throw RevokeError.writeFailed(String(localized: "проверка не прошла")) }
             let tmp = prefs.deletingLastPathComponent().appendingPathComponent(".Preferences.safetymom-\(UUID().uuidString)")
             try out.write(to: tmp)
             if let attrs = try? fm.attributesOfItem(atPath: prefs.path), let perm = attrs[.posixPermissions] {

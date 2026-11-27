@@ -45,8 +45,8 @@ struct NoBatteryView: View {
 
     var body: some View {
         EmptyStateView(icon: "powerplug",
-                       title: "У этого Mac нет встроенной батареи",
-                       text: "Он работает от сети. BatteryMom всё равно покажет заряд беспроводных мышей, клавиатур и наушников и то, какие приложения больше всего нагружают Mac.") {
+                       title: String(localized: "У этого Mac нет встроенной батареи"),
+                       text: String(localized: "Он работает от сети. BatteryMom всё равно покажет заряд беспроводных мышей, клавиатур и наушников и то, какие приложения больше всего нагружают Mac.")) {
             HStack {
                 Button("Устройства") { state.section = .devices }
                 Button("Расход приложений") { state.section = .energy }

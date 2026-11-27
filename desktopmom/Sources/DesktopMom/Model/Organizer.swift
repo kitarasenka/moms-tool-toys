@@ -7,12 +7,12 @@ enum SafetyError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .notTopLevel: "лежит не прямо в своей папке — пропущено"
-        case .destinationOutsideHome: "папка назначения вне домашней папки — пропущено"
-        case .destinationInsideSource: "нельзя переложить папку в саму себя — пропущено"
-        case .missing: "файла уже нет на месте"
-        case .occupied: "на старом месте уже лежит файл с таким именем"
-        case .outsideHome: "путь вне домашней папки — пропущено"
+        case .notTopLevel: String(localized: "лежит не прямо в своей папке — пропущено")
+        case .destinationOutsideHome: String(localized: "папка назначения вне домашней папки — пропущено")
+        case .destinationInsideSource: String(localized: "нельзя переложить папку в саму себя — пропущено")
+        case .missing: String(localized: "файла уже нет на месте")
+        case .occupied: String(localized: "на старом месте уже лежит файл с таким именем")
+        case .outsideHome: String(localized: "путь вне домашней папки — пропущено")
         }
     }
 }
@@ -23,19 +23,38 @@ struct OpResult: Sendable {
 }
 
 enum Organizer {
-    private static let calendar: Calendar = {
-        var c = Calendar(identifier: .gregorian)
-        c.locale = Fmt.ru
-        return c
-    }()
+    private static let calendar = Calendar(identifier: .gregorian)
 
-    /// «2026-11 ноябрь» — сортируется по порядку и читается по-русски.
-    static func monthFolder(for date: Date) -> String {
+    /// «2026-11» — всегда латинскими цифрами, чтобы папки сортировались по порядку на любом языке.
+    static func monthKey(for date: Date) -> String {
         let f = DateFormatter()
-        f.locale = Fmt.ru
+        f.locale = Locale(identifier: "en_US_POSIX")
         f.calendar = calendar
-        f.dateFormat = "yyyy-MM LLLL"
+        f.dateFormat = "yyyy-MM"
         return f.string(from: date)
+    }
+
+    /// «2026-11 ноябрь» / «2026-11 November» — номер для порядка и название месяца на языке приложения.
+    static func monthFolder(for date: Date, locale: Locale = L10n.locale) -> String {
+        let f = DateFormatter()
+        f.locale = locale
+        f.calendar = calendar
+        f.setLocalizedDateFormatFromTemplate("LLLL")
+        return monthKey(for: date) + " " + f.string(from: date)
+    }
+
+    /// Папка месяца внутри `base`: если там уже есть папка этого месяца под другим языком
+    /// («2026-11 ноябрь» при английском DesktopMom) — кладём в неё, а не создаём вторую.
+    static func monthDir(in base: URL, for date: Date) -> URL {
+        let prefix = monthKey(for: date) + " "
+        let existing = (try? FileManager.default.contentsOfDirectory(atPath: base.path))?
+            .filter { $0.hasPrefix(prefix) }
+            .filter { n in
+                var isDir: ObjCBool = false
+                return FileManager.default.fileExists(atPath: base.appendingPathComponent(n).path, isDirectory: &isDir) && isDir.boolValue
+            }
+            .sorted()
+        return base.appendingPathComponent(existing?.first ?? monthFolder(for: date), isDirectory: true)
     }
 
     /// «имя.png» → «имя 2.png», «имя 3.png»… — ничего не перезаписываем.
@@ -105,9 +124,11 @@ enum Organizer {
         if let s = e as? SafetyError { return s.errorDescription ?? "\(s)" }
         let ns = e as NSError
         if ns.domain == NSCocoaErrorDomain && (ns.code == NSFileWriteNoPermissionError || ns.code == NSFileReadNoPermissionError) {
-            return "нет доступа"
+            return String(localized: "нет доступа")
         }
-        if ns.domain == NSCocoaErrorDomain && ns.code == NSFileWriteFileExistsError { return "файл с таким именем уже есть" }
+        if ns.domain == NSCocoaErrorDomain && ns.code == NSFileWriteFileExistsError {
+            return String(localized: "файл с таким именем уже есть")
+        }
         return ns.localizedDescription
     }
 }

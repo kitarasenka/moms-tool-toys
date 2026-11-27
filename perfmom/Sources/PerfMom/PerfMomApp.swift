@@ -19,12 +19,14 @@ enum Main {
 
 struct PerfMomApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
-    @State private var state = AppState()
+    @State private var state = AppState(demo: CommandLine.arguments.contains("--demo"))
 
     var body: some Scene {
         Window("PerfMom", id: "main") {
             ContentView()
                 .environment(state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
                 .frame(minWidth: 1000, minHeight: 620)
                 .task {
                     LaunchOptions.apply(to: state)
@@ -37,9 +39,15 @@ struct PerfMomApp: App {
         // Значок в строке меню: при закрытом окне PerfMom продолжает работать и записывать историю.
         MenuBarExtra {
             MenuBarContent(state: state)
+                .environment(\.locale, L10n.locale)
+                .environment(\.layoutDirection, L10n.layoutDirection)
         } label: {
-            Image(systemName: "gauge.with.dots.needle.33percent")
-            Text("\(Int(state.monitor.system.cpuTotal.rounded())) %")
+            Group {
+                Image(systemName: "gauge.with.dots.needle.33percent")
+                Text("\(Int(state.monitor.system.cpuTotal.rounded())) %")
+            }
+            .environment(\.locale, L10n.locale)
+            .environment(\.layoutDirection, L10n.layoutDirection)
         }
     }
 }
@@ -55,6 +63,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { false }
 
     func applicationWillTerminate(_ notification: Notification) {
+        guard !CommandLine.arguments.contains("--demo") else { return }
         HistoryRecorder.shared.flushNow()
         NetworkMonitor.shared.stop()
     }
@@ -82,7 +91,7 @@ struct AppCommands: Commands {
                 .keyboardShortcut("i", modifiers: .command)
             Button("Обновить сейчас") { Task { await state.monitor.refresh() } }
                 .keyboardShortcut("r", modifiers: .command)
-            Button(state.monitor.paused ? "Возобновить обновление" : "Приостановить обновление") {
+            Button(state.monitor.paused ? String(localized: "Возобновить обновление") : String(localized: "Приостановить обновление")) {
                 state.monitor.paused.toggle()
             }
             .keyboardShortcut("p", modifiers: [.command, .shift])
@@ -179,22 +188,22 @@ enum SelfTest {
         defer {
             _ = try? LaunchControl.run(["bootout", "gui/\(getuid())/\(label)"])
             try? FileManager.default.removeItem(atPath: path)
-            print("Временный агент удалён")
+            print("Временный агент удалён")  // l10n:skip
         }
         func state() -> String {
-            guard let j = StartupScanner.scanJobs().first(where: { $0.label == label }) else { return "не найден" }
+            guard let j = StartupScanner.scanJobs().first(where: { $0.label == label }) else { return "не найден" }  // l10n:skip
             return "enabled=\(j.enabled) pid=\(j.pid.map(String.init) ?? "-") trigger=«\(j.trigger)» vendor=«\(j.vendor)»"
         }
         let sem = DispatchSemaphore(value: 0)
         Task.detached {
             guard let job = StartupScanner.scanJobs().first(where: { $0.label == label }) else { sem.signal(); return }
-            print("Найден:            ", state())
+            print("Найден:            ", state())  // l10n:skip
             try? await LaunchControl.setEnabled(job, enabled: true)
-            print("После включения:   ", state())
+            print("После включения:   ", state())  // l10n:skip
             try? await LaunchControl.setEnabled(job, enabled: false)
-            print("После выключения:  ", state())
+            print("После выключения:  ", state())  // l10n:skip
             try? await LaunchControl.setEnabled(job, enabled: true)
-            print("Снова включён:     ", state())
+            print("Снова включён:     ", state())  // l10n:skip
             sem.signal()
         }
         sem.wait()
@@ -207,18 +216,18 @@ enum SelfTest {
         Thread.sleep(forTimeInterval: 3.0)
         let procs = ps.sample(), sys = ss.sample()
         let restricted = procs.filter(\.restricted).count
-        print("Процессов: \(procs.count), закрытых (через ps): \(restricted)")
-        print("ЦП: \(Fmt.percent(sys.cpuTotal))% (user \(Fmt.percent(sys.cpuUser)), sys \(Fmt.percent(sys.cpuSystem))), ядер: \(sys.perCore.count)")
-        print("Память: \(Fmt.bytes(sys.memUsed)) / \(Fmt.bytes(sys.memTotal)), app \(Fmt.bytes(sys.memApp)), wired \(Fmt.bytes(sys.memWired)), compressed \(Fmt.bytes(sys.memCompressed))")
-        print("Сеть всего: ↓\(Fmt.bytes(sys.netInTotal)) ↑\(Fmt.bytes(sys.netOutTotal)); диск: r \(Fmt.bytes(sys.diskReadTotal)) w \(Fmt.bytes(sys.diskWriteTotal))")
-        print("Топ по ЦП:")
+        print("Процессов: \(procs.count), закрытых (через ps): \(restricted)")  // l10n:skip
+        print("ЦП: \(Fmt.percent(sys.cpuTotal))% (user \(Fmt.percent(sys.cpuUser)), sys \(Fmt.percent(sys.cpuSystem))), ядер: \(sys.perCore.count)")  // l10n:skip
+        print("Память: \(Fmt.bytes(sys.memUsed)) / \(Fmt.bytes(sys.memTotal)), app \(Fmt.bytes(sys.memApp)), wired \(Fmt.bytes(sys.memWired)), compressed \(Fmt.bytes(sys.memCompressed))")  // l10n:skip
+        print("Сеть всего: ↓\(Fmt.bytes(sys.netInTotal)) ↑\(Fmt.bytes(sys.netOutTotal)); диск: r \(Fmt.bytes(sys.diskReadTotal)) w \(Fmt.bytes(sys.diskWriteTotal))")  // l10n:skip
+        print("Топ по ЦП:")  // l10n:skip
         for p in procs.sorted(by: { $0.cpu > $1.cpu }).prefix(6) {
             print("  \(p.pid)\t\(Fmt.percent(p.cpu))%\t\(Fmt.bytes(p.memory))\tthr \(p.threads.map(String.init) ?? "-")\t\(p.restricted ? "[ps]" : "")\t\(p.name)")
         }
         let net = procs.filter { $0.netInTotal != nil }
-        print("Сеть по процессам: \(net.isEmpty ? "недоступна" : "\(procs.filter { ($0.netInTotal ?? 0) + ($0.netOutTotal ?? 0) > 0 }.count) процессов с трафиком")")
+        print("Сеть по процессам: \(net.isEmpty ? "недоступна" : "\(procs.filter { ($0.netInTotal ?? 0) + ($0.netOutTotal ?? 0) > 0 }.count) процессов с трафиком")")  // l10n:skip
         for p in procs.sorted(by: { $0.netTotalRate > $1.netTotalRate }).prefix(5) {
-            print("  \(p.pid)\t↓\(Fmt.rate(p.netIn)) ↑\(Fmt.rate(p.netOut))\tвсего ↓\(Fmt.bytes(p.netInTotal ?? 0)) ↑\(Fmt.bytes(p.netOutTotal ?? 0))\t\(p.restricted ? "[root]" : "")\t\(p.name)")
+            print("  \(p.pid)\t↓\(Fmt.rate(p.netIn)) ↑\(Fmt.rate(p.netOut))\tвсего ↓\(Fmt.bytes(p.netInTotal ?? 0)) ↑\(Fmt.bytes(p.netOutTotal ?? 0))\t\(p.restricted ? "[root]" : "")\t\(p.name)")  // l10n:skip
         }
         NetworkMonitor.shared.stop()
         let me = getpid()
@@ -229,10 +238,10 @@ enum SelfTest {
             chain.append("\(r.name)(\(r.pid))")
             cur = r.ppid == r.pid ? nil : r.ppid
         }
-        print("Цепочка selftest: " + chain.reversed().joined(separator: " → "))
+        print("Цепочка selftest: " + chain.reversed().joined(separator: " → "))  // l10n:skip
         let d = DetailsLoader.load(pid: me, path: map[me]?.path ?? "")
-        print("Свои детали: args \(d.arguments.count), env \(d.environment.count), files \(d.files.count), modules \(d.modules.count), cwd \(d.cwd ?? "-"), responsible \(d.responsiblePID.map(String.init) ?? "-")")
-        print("  модули по типам: " + ModuleKind.allCases.map { k in "\(k.title): \(d.modules.filter { $0.kind == k }.count)" }.joined(separator: ", "))
+        print("Свои детали: args \(d.arguments.count), env \(d.environment.count), files \(d.files.count), modules \(d.modules.count), cwd \(d.cwd ?? "-"), responsible \(d.responsiblePID.map(String.init) ?? "-")")  // l10n:skip
+        print("  модули по типам: " + ModuleKind.allCases.map { k in "\(k.title): \(d.modules.filter { $0.kind == k }.count)" }.joined(separator: ", "))  // l10n:skip
         if let arg = CommandLine.arguments.last, let p = Int32(arg), let r = map[p] {
             let dd = DetailsLoader.load(pid: p, path: r.path)
             for m in dd.modules.prefix(25) { print("   [\(m.kind.title)] \(m.path)") }
@@ -240,9 +249,9 @@ enum SelfTest {
         }
         var annotated = procs
         let analyzer = SecurityAnalyzer()
-        for _ in 0..<30 { analyzer.annotate(&annotated) } // бюджет проверки подписей — 40 путей за проход
+        for _ in 0..<30 { analyzer.annotate(&annotated) } // бюджет проверки подписей — 40 путей за проход  // l10n:skip
         let byLevel = Dictionary(grouping: annotated, by: { $0.security.level })
-        print("Безопасность: " + RiskLevel.allCases.reversed().map { "\($0.title): \(byLevel[$0]?.count ?? 0)" }.joined(separator: ", "))
+        print("Безопасность: " + RiskLevel.allCases.reversed().map { "\($0.title): \(byLevel[$0]?.count ?? 0)" }.joined(separator: ", "))  // l10n:skip
         for p in annotated.filter({ $0.security.level >= .info }).sorted(by: { $0.security.score > $1.security.score }).prefix(14) {
             print("  [\(p.security.score)] \(p.name) (\(p.pid)) — \(p.security.signer) — " + p.security.findings.map(\.title).joined(separator: "; "))
         }
@@ -250,12 +259,12 @@ enum SelfTest {
             where FileManager.default.fileExists(atPath: path) {
             let t0 = Date()
             let v = SecurityAnalyzer.deepVerify(path: path)
-            print("  глубокая проверка \((path as NSString).lastPathComponent): \(v.message) (\(String(format: "%.1f", Date().timeIntervalSince(t0))) с)")
+            print("  глубокая проверка \((path as NSString).lastPathComponent): \(v.message) (\(String(format: "%.1f", Date().timeIntervalSince(t0))) с)")  // l10n:skip
         }
         let jobs = StartupScanner.scanJobs()
-        print("Автозагрузка: служб \(jobs.count), с автозапуском \(jobs.filter(\.startsAutomatically).count), выключено \(jobs.filter { !$0.enabled }.count), без файла программы \(jobs.filter { $0.program != nil && !$0.programExists }.count)")
+        print("Автозагрузка: служб \(jobs.count), с автозапуском \(jobs.filter(\.startsAutomatically).count), выключено \(jobs.filter { !$0.enabled }.count), без файла программы \(jobs.filter { $0.program != nil && !$0.programExists }.count)")  // l10n:skip
         for j in jobs.prefix(6) {
-            print("  [\(j.scope.short)] \(j.enabled ? "вкл " : "выкл") \(j.label) — \(j.trigger) — \(j.vendor)\(j.pid.map { " — PID \($0)" } ?? "")")
+            print("  [\(j.scope.short)] \(j.enabled ? "вкл " : "выкл") \(j.label) — \(j.trigger) — \(j.vendor)\(j.pid.map { " — PID \($0)" } ?? "")")  // l10n:skip
         }
         if let launchd = map[1] {
             let ld = DetailsLoader.load(pid: 1, path: launchd.path)

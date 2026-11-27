@@ -18,7 +18,7 @@ struct SunSegment: Identifiable {
     let size: Int64
     let otherCount: Int
 
-    var label: String { node?.displayName ?? "Остальное (\(otherCount.formatted()))" }
+    var label: String { node?.displayName ?? String(localized: "Остальное (\(otherCount.formatted(.number.locale(L10n.locale))))") }
     var mid: Double { (start + end) / 2 }
 }
 
@@ -131,7 +131,7 @@ struct SunburstView: View {
             if let h = hovered {
                 Text(h.label).font(.headline).lineLimit(2).multilineTextAlignment(.center)
                 Text(Fmt.bytes(h.size)).font(.title3.weight(.semibold)).monospacedDigit()
-                Text(Fmt.percent(Double(h.size) / Double(max(focus.size, 1))) + " от «\(focus.name)»")
+                Text("\(Fmt.percent(Double(h.size) / Double(max(focus.size, 1)))) от «\(focus.name)»")
                     .font(.caption).foregroundStyle(.secondary).lineLimit(1)
             } else if hoveringCenter, focus.parent != nil {
                 Image(systemName: "arrow.up.circle.fill").font(.system(size: 28)).foregroundStyle(Brand.gradient)

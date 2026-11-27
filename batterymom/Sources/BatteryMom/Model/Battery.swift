@@ -17,19 +17,19 @@ struct BatteryInfo: Sendable, Equatable {
 
         var title: String {
             switch self {
-            case .charging: "Заряжается"
-            case .charged: "Заряжен"
-            case .pluggedNotCharging: "Подключён к питанию, зарядка на паузе"
-            case .onBattery: "От батареи"
+            case .charging: String(localized: "Заряжается")
+            case .charged: String(localized: "Заряжен")
+            case .pluggedNotCharging: String(localized: "Подключён к питанию, зарядка на паузе")
+            case .onBattery: String(localized: "От батареи")
             }
         }
 
         var short: String {
             switch self {
-            case .charging: "заряжается"
-            case .charged: "заряжен"
-            case .pluggedNotCharging: "от сети"
-            case .onBattery: "от батареи"
+            case .charging: String(localized: "заряжается")
+            case .charged: String(localized: "заряжен")
+            case .pluggedNotCharging: String(localized: "от сети")
+            case .onBattery: String(localized: "от батареи")
             }
         }
     }
@@ -88,22 +88,22 @@ struct BatteryInfo: Sendable, Equatable {
         return min(100, Double(m) / Double(d) * 100)
     }
 
-    var conditionTitle: String { serviceRecommended ? "Рекомендуется обслуживание" : "Нормальное" }
+    var conditionTitle: String { serviceRecommended ? String(localized: "Рекомендуется обслуживание") : String(localized: "Нормальное") }
 
     static func healthVerdict(_ h: Double) -> String {
         switch h {
-        case 90...: "Отличное — батарея почти как новая"
-        case 80..<90: "Хорошее — обычный износ"
-        case 70..<80: "Заметный износ — держит заряд меньше, чем раньше"
-        default: "Сильный износ — стоит подумать о замене"
+        case 90...: String(localized: "Отличное — батарея почти как новая")
+        case 80..<90: String(localized: "Хорошее — обычный износ")
+        case 70..<80: String(localized: "Заметный износ — держит заряд меньше, чем раньше")
+        default: String(localized: "Сильный износ — стоит подумать о замене")
         }
     }
 
     /// Строка «осталось / до полного».
     var timeText: String? {
         switch state {
-        case .charging: return minutesToFull.map { "До полного: \(Fmt.minutes($0))" } ?? "До полного: подсчёт…"
-        case .onBattery: return minutesToEmpty.map { "Осталось: \(Fmt.minutes($0))" } ?? "Осталось: подсчёт…"
+        case .charging: return minutesToFull.map { String(localized: "До полного: \(Fmt.minutes($0))") } ?? String(localized: "До полного: подсчёт…")
+        case .onBattery: return minutesToEmpty.map { String(localized: "Осталось: \(Fmt.minutes($0))") } ?? String(localized: "Осталось: подсчёт…")
         case .charged, .pluggedNotCharging: return nil
         }
     }
@@ -168,7 +168,7 @@ extension BatteryInfo {
 
         if b.externalConnected {
             let a = adapterDetails ?? (r["AdapterDetails"] as? [String: Any]) ?? [:]
-            let name = (a["Name"] as? String) ?? (a["Description"] as? String).map(prettyAdapter) ?? "Адаптер питания"
+            let name = (a["Name"] as? String) ?? (a["Description"] as? String).map(prettyAdapter) ?? String(localized: "Адаптер питания")
             b.adapter = AdapterInfo(watts: int(a["Watts"]).flatMap { $0 > 0 ? $0 : nil }, name: name,
                                     manufacturer: a["Manufacturer"] as? String)
         }
@@ -191,7 +191,7 @@ extension BatteryInfo {
 
     private static func prettyAdapter(_ d: String) -> String {
         switch d.lowercased() {
-        case "pd charger": "Зарядка USB-C"
+        case "pd charger": String(localized: "Зарядка USB-C")
         case "magsafe": "MagSafe"
         default: d
         }

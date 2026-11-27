@@ -104,7 +104,7 @@ struct VerdictCard: View {
         }
     }
 
-    private var subtitle: String {
+    private var subtitle: LocalizedStringKey {
         switch report.overall {
         case .ok: "Mac в хорошей форме. Если что-то всё равно не так — позовите помощника."
         case .warn: "Ничего страшного, но кое-что стоит сделать:"
@@ -138,30 +138,31 @@ struct InfoGrid: View {
         let r = report
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 220), spacing: 12, alignment: .top)], spacing: 12) {
             Tile(icon: "laptopcomputer", title: "Mac", value: r.modelName,
-                 detail: [r.chip, r.memory.map { "память \(Fmt.bytes($0, binary: true))" }].compactMap { $0 }.joined(separator: " · "))
-            Tile(icon: "apple.logo", title: "Система", value: r.osName, detail: r.osBuild.map { "сборка \($0)" } ?? "")
+                 detail: [r.chip, r.memory.map { String(localized: "память \(Fmt.bytes($0, binary: true))") }].compactMap { $0 }.joined(separator: " · "))
+            Tile(icon: "apple.logo", title: "Система", value: r.osName, detail: r.osBuild.map { String(localized: "сборка \($0)") } ?? "")
             if let up = r.uptime {
                 Tile(icon: "clock.arrow.circlepath", title: "Без перезагрузки", value: Fmt.uptime(up),
-                     detail: up > 7 * 86_400 ? "пора перезагрузить" : "всё хорошо",
+                     detail: up > 7 * 86_400 ? String(localized: "пора перезагрузить") : String(localized: "всё хорошо"),
                      level: up > 30 * 86_400 ? .bad : (up > 7 * 86_400 ? .warn : .ok))
             }
             if let free = r.diskFree, let total = r.diskTotal, let frac = r.diskFreeFraction {
-                Tile(icon: "internaldrive", title: "Диск", value: "Свободно \(Fmt.bytes(free))",
-                     detail: "из \(Fmt.bytes(total))", level: level("disk"), progress: 1 - frac)
+                Tile(icon: "internaldrive", title: "Диск", value: String(localized: "Свободно \(Fmt.bytes(free))"),
+                     detail: String(localized: "из \(Fmt.bytes(total))"), level: level("disk"), progress: 1 - frac)
             }
             Tile(icon: "memorychip", title: "Память", value: r.memoryPressure.title.capitalizedFirst,
-                 detail: r.swapUsed.flatMap { $0 > 0 ? "своп \(Fmt.bytes($0))" : nil } ?? "",
+                 detail: r.swapUsed.flatMap { $0 > 0 ? String(localized: "своп \(Fmt.bytes($0))") : nil } ?? "",
                  level: r.memoryPressure == .critical ? .bad : (r.memoryPressure == .warning ? .warn : .ok))
             if let b = r.battery {
                 Tile(icon: b.charging ? "battery.100.bolt" : "battery.75", title: "Батарея",
-                     value: "\(b.percent) %, " + (b.charging ? "заряжается" : (b.pluggedIn ? "от сети" : "от батареи")),
-                     detail: [b.health.map { "здоровье \(Fmt.percent($0))" }, b.cycles.map { Fmt.count($0, "цикл", "цикла", "циклов") }]
+                     value: "\(Fmt.percent(Double(b.percent))), \(b.powerState)",
+                     detail: [b.health.map { String(localized: "здоровье \(Fmt.percent($0))") }, b.cycles.map { Fmt.cycles($0) }]
                         .compactMap { $0 }.joined(separator: " · "),
                      level: level("battery"))
             }
             if let n = r.network {
                 Tile(icon: n.interface == "Wi-Fi" ? "wifi" : "network", title: "Интернет",
-                     value: !n.connected ? "Нет подключения" : (n.internet == false ? "Не отвечает" : "Есть"),
+                     value: !n.connected ? String(localized: "Нет подключения")
+                        : (n.internet == false ? String(localized: "Не отвечает") : String(localized: "Есть")),
                      detail: [n.interface, n.localIP].compactMap { $0 }.joined(separator: " · "),
                      level: level("network"))
             }
@@ -175,7 +176,7 @@ struct InfoGrid: View {
 
 struct Tile: View {
     let icon: String
-    let title: String
+    let title: LocalizedStringKey
     let value: String
     var detail: String = ""
     var level: Level? = nil
@@ -243,9 +244,9 @@ struct CrashesCard: View {
                 }
                 ForEach(Array(groups.prefix(6).enumerated()), id: \.offset) { _, g in
                     HStack {
-                        Text(title(g)).lineLimit(1)
+                        Text(g.title).lineLimit(1)
                         Spacer()
-                        Text(Fmt.count(g.count, "раз", "раза", "раз")).monospacedDigit()
+                        Text(Fmt.times(g.count)).monospacedDigit()
                             .foregroundStyle(g.count >= 3 && (g.kind == .crash || g.kind == .hang) ? .orange : .secondary)
                         Text(Fmt.dayMonth(g.last)).foregroundStyle(.secondary).frame(width: 90, alignment: .trailing)
                     }
@@ -257,14 +258,6 @@ struct CrashesCard: View {
         }
     }
 
-    private func title(_ g: SystemReport.CrashGroup) -> String {
-        switch g.kind {
-        case .crash: "\(g.app) — вылетало"
-        case .hang: "\(g.app) — зависало"
-        case .panic: "Mac перезагружался из-за сбоя"
-        case .memory: "Не хватало памяти"
-        }
-    }
 }
 
 extension String {

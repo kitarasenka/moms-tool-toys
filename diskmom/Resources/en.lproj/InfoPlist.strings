@@ -1,0 +1,5 @@
+"NSDesktopFolderUsageDescription" = "DiskMom measures how much space the files on your Desktop take up and looks for duplicates among them.";
+"NSDocumentsFolderUsageDescription" = "DiskMom measures how much space your Documents take up and looks for duplicates among them.";
+"NSDownloadsFolderUsageDescription" = "DiskMom measures how much space your Downloads take up and looks for duplicates among them.";
+"NSRemovableVolumesUsageDescription" = "DiskMom shows what fills an external disk if you chose it for the map or the duplicate search.";
+"NSNetworkVolumesUsageDescription" = "DiskMom shows what fills a network disk if you chose it for the map or the duplicate search.";

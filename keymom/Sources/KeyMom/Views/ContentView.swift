@@ -48,15 +48,15 @@ struct StatusCard: View {
                 Text(state.current?.flag ?? "⌨️").font(.system(size: 22))
                 VStack(alignment: .leading, spacing: 0) {
                     Text(state.current?.code ?? "—").font(.system(size: 17, weight: .bold, design: .rounded))
-                    Text(state.current?.name ?? "Раскладка неизвестна").font(.caption2).foregroundStyle(.secondary).lineLimit(1)
+                    Text(state.current?.name ?? String(localized: "Раскладка неизвестна")).font(.caption2).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer(minLength: 0)
             }
-            row(state.capsOn ? "capslock.fill" : "capslock", state.capsOn ? "Caps Lock включён" : "Caps Lock выключен",
+            row(state.capsOn ? "capslock.fill" : "capslock", state.capsOn ? String(localized: "Caps Lock включён") : String(localized: "Caps Lock выключен"),
                 state.capsOn ? .orange : .secondary)
             if !state.demo {
                 row(state.axTrusted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill",
-                    state.axTrusted ? "Исправление по \(state.prefs.hotkey.symbols.joined())␣ готово" : "Нет «Универсального доступа»",
+                    state.axTrusted ? String(localized: "Исправление по \(state.prefs.hotkey.symbols.joined())␣ готово") : String(localized: "Нет «Универсального доступа»"),
                     state.axTrusted ? .green : .orange)
             }
         }

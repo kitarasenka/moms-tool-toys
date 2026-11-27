@@ -11,9 +11,9 @@ enum IndicatorStyle: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .code: "Буквы (RU / EN)"
-        case .flag: "Флажок"
-        case .icon: "Только значок"
+        case .code: String(localized: "Буквы (RU / EN)")
+        case .flag: String(localized: "Флажок")
+        case .icon: String(localized: "Только значок")
         }
     }
 }
@@ -26,7 +26,7 @@ enum VariantChoice: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .auto: "Определять самому"
+        case .auto: String(localized: "Определять самому")
         case .pc: RussianVariant.pc.title
         case .mac: RussianVariant.mac.title
         }

@@ -59,7 +59,7 @@ struct Card<Content: View>: View {
 /// Плашка «дайте полный доступ к диску».
 struct FullDiskAccessBanner: View {
     @Environment(AppState.self) private var state
-    var reason = "Базы разрешений и данные Safari закрыты системой."
+    var reason = String(localized: "Базы разрешений и данные Safari закрыты системой.")
 
     var body: some View {
         if !state.fullDiskAccess {

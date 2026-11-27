@@ -6,6 +6,7 @@ struct ContentView: View {
 
     var body: some View {
         let section = Binding<SidebarSection?>(get: { state.section }, set: { if let v = $0 { state.section = v } })
+        let isRightToLeft = L10n.layoutDirection == .rightToLeft
 
         NavigationSplitView {
             List(selection: section) {
@@ -24,7 +25,11 @@ struct ContentView: View {
                         .tag(SidebarSection.disks)
                 }
             }
-            .navigationSplitViewColumnWidth(min: 190, ideal: 210, max: 260)
+            .navigationSplitViewColumnWidth(
+                min: isRightToLeft ? 220 : 190,
+                ideal: isRightToLeft ? 245 : 210,
+                max: isRightToLeft ? 275 : 260
+            )
             .safeAreaInset(edge: .bottom) { DiskGauge(disk: state.disk).padding(12) }
         } detail: {
             switch state.section {

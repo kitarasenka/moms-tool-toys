@@ -10,7 +10,7 @@ import Foundation
 enum SensorKind: String, Codable, Sendable {
     case camera, microphone
 
-    var title: String { self == .camera ? "Камера" : "Микрофон" }
+    var title: String { self == .camera ? String(localized: "Камера") : String(localized: "Микрофон") }
     var icon: String { self == .camera ? "camera.fill" : "mic.fill" }
 }
 
@@ -42,7 +42,7 @@ enum Sensors {
         return ids.map { id in
             SensorDevice(kind: .camera,
                          uid: cmioString(id, kCMIODevicePropertyDeviceUID) ?? "\(id)",
-                         name: cmioString(id, kCMIOObjectPropertyName) ?? "Камера \(id)",
+                         name: cmioString(id, kCMIOObjectPropertyName) ?? String(localized: "Камера \(id)"),
                          running: cmioUInt32(id, kCMIODevicePropertyDeviceIsRunningSomewhere) != 0)
         }
     }
@@ -86,7 +86,7 @@ enum Sensors {
         return ids.filter(hasInput).map { id in
             SensorDevice(kind: .microphone,
                          uid: audioString(id, kAudioDevicePropertyDeviceUID) ?? "\(id)",
-                         name: audioString(id, kAudioObjectPropertyName) ?? "Микрофон \(id)",
+                         name: audioString(id, kAudioObjectPropertyName) ?? String(localized: "Микрофон \(id)"),
                          running: audioUInt32(id, kAudioDevicePropertyDeviceIsRunningSomewhere) != 0)
         }
     }

@@ -16,10 +16,10 @@ enum ProcState: Sendable {
 
     var title: String {
         switch self {
-        case .running: "Активен"
-        case .stopped: "Приостановлен"
-        case .zombie: "Зомби (ожидает родителя)"
-        case .starting: "Запускается"
+        case .running: String(localized: "Активен")
+        case .stopped: String(localized: "Приостановлен")
+        case .zombie: String(localized: "Зомби (ожидает родителя)")
+        case .starting: String(localized: "Запускается")
         case .unknown: "—"
         }
     }

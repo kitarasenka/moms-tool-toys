@@ -30,29 +30,27 @@ enum DiskSize {
 
 enum Fmt {
     /// Байты как в Finder (десятичные единицы, локаль системы).
-    static func bytes(_ v: Int64) -> String { v.formatted(.byteCount(style: .file)) }
+    static func bytes(_ v: Int64) -> String { v.formatted(.byteCount(style: .file).locale(L10n.locale)) }
 
     static func date(_ d: Date?) -> String {
         guard let d else { return "—" }
-        return d.formatted(date: .abbreviated, time: .omitted)
+        return d.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.locale))
     }
 
-    static func dateTime(_ d: Date) -> String { d.formatted(date: .abbreviated, time: .shortened) }
+    static func dateTime(_ d: Date) -> String { d.formatted(Date.FormatStyle(date: .abbreviated, time: .shortened).locale(L10n.locale)) }
 
-    static func time(_ d: Date) -> String { d.formatted(date: .omitted, time: .standard) }
+    static func time(_ d: Date) -> String { d.formatted(Date.FormatStyle(date: .omitted, time: .standard).locale(L10n.locale)) }
 
     static func duration(_ s: TimeInterval) -> String {
         let s = Int(s.rounded())
-        if s < 60 { return "\(s) с" }
-        if s < 3600 { return "\(s / 60) мин \(s % 60) с" }
-        return "\(s / 3600) ч \(s % 3600 / 60) мин"
+        if s < 60 { return String(localized: "\(s) с") }
+        if s < 3600 { return String(localized: "\(s / 60) мин \(s % 60) с") }
+        return String(localized: "\(s / 3600) ч \(s % 3600 / 60) мин")
     }
 
-    static func count(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let m10 = n % 10, m100 = n % 100
-        let w = (m10 == 1 && m100 != 11) ? one : ((2...4).contains(m10) && !(12...14).contains(m100) ? few : many)
-        return "\(n.formatted()) \(w)"
-    }
+    static func profiles(_ n: Int) -> String { String(localized: "\(n) профилей") }
+    static func networks(_ n: Int) -> String { String(localized: "\(n) сетей") }
+    static func files(_ n: Int) -> String { String(localized: "\(n) файлов") }
 }
 
 // MARK: - Пути
@@ -185,7 +183,7 @@ enum Shell {
     /// Запуск через `osascript`: при `admin` macOS сама спросит пароль администратора.
     static func runViaAppleScript(_ tool: String, _ args: [String], admin: Bool) -> Result {
         let r = run("/usr/bin/osascript", doShellScriptSource(argCount: args.count, admin: admin) + [tool] + args)
-        if !r.ok, r.output.contains("-128") { return Result(ok: false, output: "Отменено") }
+        if !r.ok, r.output.contains("-128") { return Result(ok: false, output: String(localized: "Отменено")) }
         return r
     }
 }

@@ -42,7 +42,7 @@ struct Checkbox: View {
                 .foregroundStyle(on ? AnyShapeStyle(Brand.blue) : AnyShapeStyle(.secondary))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(on ? "Отмечено" : "Не отмечено")
+        .accessibilityLabel(on ? String(localized: "Отмечено") : String(localized: "Не отмечено"))
     }
 }
 
@@ -61,7 +61,7 @@ struct Card<Content: View>: View {
 /// Плашка «дайте полный доступ к диску».
 struct FullDiskAccessBanner: View {
     @Environment(AppState.self) private var state
-    var reason = "Часть папок закрыта системой."
+    var reason = String(localized: "Часть папок закрыта системой.")
 
     var body: some View {
         if !state.fullDiskAccess {

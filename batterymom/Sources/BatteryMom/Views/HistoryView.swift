@@ -3,7 +3,8 @@ import SwiftUI
 
 struct HistoryView: View {
     enum Range: String, CaseIterable, Identifiable {
-        case day = "24 часа", week = "7 дней"
+        case day, week
+        var title: LocalizedStringKey { self == .day ? "24 часа" : "7 дней" }
         var id: String { rawValue }
         var seconds: TimeInterval { self == .day ? 86400 : 7 * 86400 }
         /// Усреднение: по минуте за сутки, по 15 минут за неделю.
@@ -18,8 +19,8 @@ struct HistoryView: View {
     var body: some View {
         Group {
             if !state.hasBattery {
-                EmptyStateView(icon: "chart.xyaxis.line", title: "Истории нет",
-                               text: "У этого Mac нет встроенной батареи — записывать нечего.") { EmptyView() }
+                EmptyStateView(icon: "chart.xyaxis.line", title: String(localized: "Истории нет"),
+                               text: String(localized: "У этого Mac нет встроенной батареи — записывать нечего.")) { EmptyView() }
             } else if let records {
                 content(records)
             } else {
@@ -31,7 +32,7 @@ struct HistoryView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Период", selection: $range) {
-                    ForEach(Range.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(Range.allCases) { Text($0.title).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .frame(width: 200)
@@ -39,7 +40,7 @@ struct HistoryView: View {
         }
         .task(id: "\(range.rawValue)-\(state.historyTick)") {
             let since = Date().addingTimeInterval(-7 * 86400)
-            let all = await Task.detached(priority: .userInitiated) { HistoryStore.shared.load(since: since) }.value
+            let all = await state.loadHistory(since: since)
             let from = Date().addingTimeInterval(-range.seconds)
             weekRecords = all
             records = all.filter { $0.t >= from }
@@ -53,7 +54,7 @@ struct HistoryView: View {
         let points = HistoryAnalysis.points(records, bucket: range.bucket)
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                ScreenHeader(title: "История", subtitle: "BatteryMom записывает батарею раз в минуту, пока запущен — в том числе с закрытым окном (значок в строке меню). Пропуски на графике — Mac спал или BatteryMom был выключен.") {
+                ScreenHeader(title: String(localized: "История"), subtitle: String(localized: "BatteryMom записывает батарею раз в минуту, пока запущен — в том числе с закрытым окном (значок в строке меню). Пропуски на графике — Mac спал или BatteryMom был выключен.")) {
                     EmptyView()
                 }
                 if records.isEmpty {
@@ -64,14 +65,14 @@ struct HistoryView: View {
                 } else {
                     Card {
                         VStack(alignment: .leading, spacing: 8) {
-                            chartTitle("Заряд", icon: "battery.75percent", legend: [("Заряд", Brand.blue), ("Заряжался", .green)])
+                            chartTitle(String(localized: "Заряд"), icon: "battery.75percent", legend: [(String(localized: "Заряд"), Brand.blue), (String(localized: "Заряжался"), .green)])
                             ChargeChart(points: points, start: start, end: end, range: range)
                                 .frame(height: 170)
                         }
                     }
                     Card {
                         VStack(alignment: .leading, spacing: 8) {
-                            chartTitle("Мощность", icon: "bolt", legend: [("Потребление Mac", .orange), ("Заряд батареи", .green)])
+                            chartTitle(String(localized: "Мощность"), icon: "bolt", legend: [(String(localized: "Потребление Mac"), .orange), (String(localized: "Заряд батареи"), .green)])
                             PowerChart(points: points, start: start, end: end, range: range)
                                 .frame(height: 150)
                         }
@@ -110,8 +111,8 @@ private func timeAxis(_ range: HistoryView.Range) -> some AxisContent {
         AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5, dash: [2, 3]))
         AxisValueLabel {
             if let d = v.as(Date.self) {
-                Text(range == .day ? d.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-                                   : d.formatted(.dateTime.weekday(.abbreviated).day()))
+                Text(range == .day ? d.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).locale(L10n.locale))
+                                   : d.formatted(.dateTime.weekday(.abbreviated).day().locale(L10n.locale)))
                     .font(.caption2)
                     .fixedSize()
             }
@@ -129,23 +130,23 @@ struct ChargeChart: View {
         let sizes = Dictionary(grouping: points, by: \.segment).mapValues(\.count)
         Chart {
             ForEach(points) { p in
-                AreaMark(x: .value("Время", p.t), y: .value("Заряд", p.percent),
-                         series: .value("Отрезок", p.segment), stacking: .unstacked)
+                AreaMark(x: .value(String(localized: "Время"), p.t), y: .value(String(localized: "Заряд"), p.percent),
+                         series: .value(String(localized: "Отрезок"), p.segment), stacking: .unstacked)
                     .foregroundStyle(LinearGradient(colors: [Brand.cyan.opacity(0.35), Brand.blue.opacity(0.05)],
                                                     startPoint: .top, endPoint: .bottom))
                     .interpolationMethod(.monotone)
-                LineMark(x: .value("Время", p.t), y: .value("Заряд", p.percent), series: .value("Отрезок", p.segment))
+                LineMark(x: .value(String(localized: "Время"), p.t), y: .value(String(localized: "Заряд"), p.percent), series: .value(String(localized: "Отрезок"), p.segment))
                     .foregroundStyle(Brand.blue)
                     .lineStyle(StrokeStyle(lineWidth: 1.8))
                     .interpolationMethod(.monotone)
                 if sizes[p.segment] == 1 {
-                    PointMark(x: .value("Время", p.t), y: .value("Заряд", p.percent))
+                    PointMark(x: .value(String(localized: "Время"), p.t), y: .value(String(localized: "Заряд"), p.percent))
                         .foregroundStyle(Brand.blue).symbolSize(18)
                 }
                 if p.charging {
                     // Полоска внизу — периоды зарядки.
-                    RectangleMark(xStart: .value("С", p.t.addingTimeInterval(-range.bucket / 2)),
-                                  xEnd: .value("По", p.t.addingTimeInterval(range.bucket / 2)),
+                    RectangleMark(xStart: .value(String(localized: "С"), p.t.addingTimeInterval(-range.bucket / 2)),
+                                  xEnd: .value(String(localized: "По"), p.t.addingTimeInterval(range.bucket / 2)),
                                   yStart: .value("", 0), yEnd: .value("", 3))
                         .foregroundStyle(.green.opacity(0.8))
                 }
@@ -174,13 +175,13 @@ struct PowerChart: View {
         Chart {
             ForEach(points) { p in
                 if let w = p.power {
-                    LineMark(x: .value("Время", p.t), y: .value("Вт", w), series: .value("Ряд", "w-\(p.segment)"))
+                    LineMark(x: .value(String(localized: "Время"), p.t), y: .value(String(localized: "Вт"), w), series: .value(String(localized: "Ряд"), "w-\(p.segment)"))
                         .foregroundStyle(.orange)
                         .lineStyle(StrokeStyle(lineWidth: 1.5))
                         .interpolationMethod(.monotone)
                 }
                 if let c = p.batteryPower, c > 0 {
-                    LineMark(x: .value("Время", p.t), y: .value("Вт", c), series: .value("Ряд", "c-\(p.segment)"))
+                    LineMark(x: .value(String(localized: "Время"), p.t), y: .value(String(localized: "Вт"), c), series: .value(String(localized: "Ряд"), "c-\(p.segment)"))
                         .foregroundStyle(.green)
                         .lineStyle(StrokeStyle(lineWidth: 1.2, dash: [3, 2]))
                         .interpolationMethod(.monotone)
@@ -237,8 +238,8 @@ struct DaysCard: View {
 
     private func dayTitle(_ d: Date) -> String {
         let cal = Calendar.current
-        if cal.isDateInToday(d) { return "Сегодня" }
-        if cal.isDateInYesterday(d) { return "Вчера" }
-        return d.formatted(.dateTime.weekday(.wide).day().month(.wide))
+        if cal.isDateInToday(d) { return String(localized: "Сегодня") }
+        if cal.isDateInYesterday(d) { return String(localized: "Вчера") }
+        return d.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(L10n.locale))
     }
 }

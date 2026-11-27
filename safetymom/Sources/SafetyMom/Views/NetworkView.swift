@@ -18,7 +18,7 @@ struct NetworkView: View {
                 }
                 .fillAvailable()
             } else {
-                LoadingView(text: "Проверяю прокси, DNS и профили…")
+                LoadingView(text: String(localized: "Проверяю прокси, DNS и профили…"))
             }
         }
         .navigationTitle("Сеть и профили")
@@ -45,16 +45,16 @@ private struct ProxyCard: View {
     var body: some View {
         Card {
             VStack(alignment: .leading, spacing: 8) {
-                SectionHeader(icon: "arrow.triangle.branch", title: "Прокси", level: n.proxyLevel,
-                              status: n.proxies.isEmpty ? "Не используется" : "Включён")
+                SectionHeader(icon: "arrow.triangle.branch", title: String(localized: "Прокси"), level: n.proxyLevel,
+                              status: n.proxies.isEmpty ? String(localized: "Не используется") : String(localized: "Включён"))
                 if n.proxies.isEmpty {
-                    Explain(text: "Сайты открываются напрямую, без посредника.")
+                    Explain(text: String(localized: "Сайты открываются напрямую, без посредника."))
                 } else {
                     ForEach(n.proxies, id: \.self) { p in
                         HStack { Text(p.kind); Spacer(); Text(p.address).font(.body.monospaced()).textSelection(.enabled) }
                             .font(.callout)
                     }
-                    Explain(text: "Весь интернет идёт через этот адрес. Так работают некоторые VPN и рабочие сети. Если вы ничего такого не ставили — это частый признак рекламной или вредоносной программы: она подсовывает рекламу и может подменять сайты.")
+                    Explain(text: String(localized: "Весь интернет идёт через этот адрес. Так работают некоторые VPN и рабочие сети. Если вы ничего такого не ставили — это частый признак рекламной или вредоносной программы: она подсовывает рекламу и может подменять сайты."))
                     Button(SettingsLink.network.title) { Settings.open(.network) }.controlSize(.small)
                 }
             }
@@ -69,8 +69,8 @@ private struct DNSCard: View {
         Card {
             VStack(alignment: .leading, spacing: 8) {
                 SectionHeader(icon: "signpost.right.and.left", title: "DNS", level: n.dnsLevel,
-                              status: n.dns.isEmpty ? "Нет сети" : (n.dnsLevel == .ok ? "В порядке" : "Проверьте"))
-                Explain(text: "DNS — «справочная» интернета: по имени сайта выдаёт его адрес. Если её подменить, вместо настоящего банка может открыться подделка.")
+                              status: n.dns.isEmpty ? String(localized: "Нет сети") : (n.dnsLevel == .ok ? String(localized: "В порядке") : String(localized: "Проверьте")))
+                Explain(text: String(localized: "DNS — «справочная» интернета: по имени сайта выдаёт его адрес. Если её подменить, вместо настоящего банка может открыться подделка."))
                 ForEach(n.dns) { d in
                     HStack(alignment: .top, spacing: 8) {
                         Image(systemName: d.level.symbol).foregroundStyle(d.level.color).frame(width: 18)
@@ -92,11 +92,11 @@ private struct HostsCard: View {
     var body: some View {
         Card {
             VStack(alignment: .leading, spacing: 8) {
-                SectionHeader(icon: "doc.text.magnifyingglass", title: "Файл hosts", level: n.hostsLevel,
-                              status: !n.hostsReadable ? "Не прочитать" : (n.hosts.isEmpty ? "Стандартный" : Fmt.count(n.hosts.count, "строка", "строки", "строк")))
+                SectionHeader(icon: "doc.text.magnifyingglass", title: String(localized: "Файл hosts"), level: n.hostsLevel,
+                              status: !n.hostsReadable ? String(localized: "Не прочитать") : (n.hosts.isEmpty ? String(localized: "Стандартный") : Fmt.lines(n.hosts.count)))
                 Explain(text: n.hosts.isEmpty
-                        ? "В /etc/hosts только стандартные строки — никакой сайт не перенаправлен."
-                        : "Файл /etc/hosts может направить сайт на любой адрес в обход DNS. Вот что в нём нестандартного:")
+                        ? String(localized: "В /etc/hosts только стандартные строки — никакой сайт не перенаправлен.")
+                        : String(localized: "Файл /etc/hosts может направить сайт на любой адрес в обход DNS. Вот что в нём нестандартного:"))
                 ForEach(n.hosts) { h in
                     HStack(alignment: .top, spacing: 8) {
                         Image(systemName: h.level.symbol).foregroundStyle(h.level.color).frame(width: 18)
@@ -107,7 +107,7 @@ private struct HostsCard: View {
                     }
                 }
                 if n.hostsLevel >= .warn {
-                    Explain(text: "Исправить файл можно только с паролем администратора — попросите знакомого специалиста убрать лишние строки.")
+                    Explain(text: String(localized: "Исправить файл можно только с паролем администратора — попросите знакомого специалиста убрать лишние строки."))
                 }
             }
         }
@@ -120,13 +120,13 @@ private struct ProfilesCard: View {
     var body: some View {
         Card {
             VStack(alignment: .leading, spacing: 8) {
-                SectionHeader(icon: "person.badge.shield.checkmark", title: "Профили конфигурации", level: n.profilesLevel,
-                              status: !n.profilesChecked ? "Не удалось" : (n.profiles.isEmpty ? "Нет" : Fmt.count(n.profiles.count, "профиль", "профиля", "профилей")))
+                SectionHeader(icon: "person.badge.shield.checkmark", title: String(localized: "Профили конфигурации"), level: n.profilesLevel,
+                              status: !n.profilesChecked ? String(localized: "Не удалось") : (n.profiles.isEmpty ? String(localized: "Нет") : Fmt.profiles(n.profiles.count)))
                 if n.mdm == true {
-                    Explain(text: "Mac подключён к системе управления организации (MDM). Для рабочего компьютера это нормально; для домашнего — нет.")
+                    Explain(text: String(localized: "Mac подключён к системе управления организации (MDM). Для рабочего компьютера это нормально; для домашнего — нет."))
                 }
                 if n.profiles.isEmpty {
-                    Explain(text: "Профилей нет — никто не менял настройки Mac в обход вас.")
+                    Explain(text: String(localized: "Профилей нет — никто не менял настройки Mac в обход вас."))
                 } else {
                     ForEach(n.profiles) { p in
                         HStack(alignment: .firstTextBaseline) {
@@ -136,7 +136,7 @@ private struct ProfilesCard: View {
                             if let d = p.installed { Text(d).font(.caption).foregroundStyle(.tertiary) }
                         }
                     }
-                    Explain(text: "Профиль может включать прокси, ставить сертификаты и запрещать менять настройки. На рабочем Mac их ставит организация. Если это домашний Mac и вы не знаете, откуда профиль, — удалите его в Системных настройках.")
+                    Explain(text: String(localized: "Профиль может включать прокси, ставить сертификаты и запрещать менять настройки. На рабочем Mac их ставит организация. Если это домашний Mac и вы не знаете, откуда профиль, — удалите его в Системных настройках."))
                 }
                 if !n.profiles.isEmpty || n.mdm == true {
                     Button(SettingsLink.profiles.title) { Settings.open(.profiles) }.controlSize(.small)
@@ -156,7 +156,7 @@ private struct StartupCard: View {
                 LevelIcon(icon: "power", level: .unknown, size: 32)
                 VStack(alignment: .leading, spacing: 6) {
                     Text("Что запускается само").font(.headline)
-                    Explain(text: "Рекламные программы часто прячутся в автозагрузке. Её подробно показывает PerfMom — там же можно выключить лишнее и проверить подозрительные процессы.")
+                    Explain(text: String(localized: "Рекламные программы часто прячутся в автозагрузке. Её подробно показывает PerfMom — там же можно выключить лишнее и проверить подозрительные процессы."))
                     if state.demo || Apps.url(perfID) != nil {
                         Button("Открыть автозагрузку в PerfMom") { if !state.demo { Apps.open(perfID, arguments: ["--section", "startup"]) } }
                             .controlSize(.small)

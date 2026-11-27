@@ -9,9 +9,9 @@ enum Page: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .guide: "Как пользоваться"
-        case .convert: "Исправить текст"
-        case .settings: "Настройки"
+        case .guide: String(localized: "Как пользоваться")
+        case .convert: String(localized: "Исправить текст")
+        case .settings: String(localized: "Настройки")
         }
     }
 
@@ -42,10 +42,10 @@ enum PasteAccess: Equatable {
 
     var title: String {
         switch self {
-        case .unsupported, .allowed: "Разрешён"
-        case .notAsked: "macOS спросит один раз"
-        case .ask: "macOS спрашивает каждый раз"
-        case .denied: "Запрещён"
+        case .unsupported, .allowed: String(localized: "Разрешён")
+        case .notAsked: String(localized: "macOS спросит один раз")
+        case .ask: String(localized: "macOS спрашивает каждый раз")
+        case .denied: String(localized: "Запрещён")
         }
     }
 
@@ -98,7 +98,7 @@ final class AppState {
         prefs = Preferences(defaults: demo ? nil : .standard)
         if demo {
             let v = InputSources.detectRussianVariant()
-            tryText = LayoutConverter.convert("Привет, как дела?", direction: .toEnglish, variant: v)
+            tryText = LayoutConverter.convert("Привет, как дела?", direction: .toEnglish, variant: v)  // l10n:skip
             convertInput = "Pfdnhf d 10:30 r dhfxe - yt pf,elm gjkbc!"
         }
         DispatchQueue.main.async { self.start() }
@@ -178,10 +178,10 @@ final class AppState {
             capsOn = caps
             if prefs.capsHUD && !pinnedHUD {
                 if caps {
-                    flash.show(HUDMessage(title: "Caps Lock", flag: "⇪", subtitle: "Включён — буквы будут ЗАГЛАВНЫЕ", style: .caps),
+                    flash.show(HUDMessage(title: "Caps Lock", flag: "⇪", subtitle: String(localized: "Включён — буквы будут ЗАГЛАВНЫЕ"), style: .caps),
                                duration: 1.4)
                 } else {
-                    flash.show(HUDMessage(title: "Caps Lock", flag: "⇪", subtitle: "Выключен", style: .layout), duration: 0.7)
+                    flash.show(HUDMessage(title: "Caps Lock", flag: "⇪", subtitle: String(localized: "Выключен"), style: .layout), duration: 0.7)
                 }
             }
         }
@@ -193,8 +193,8 @@ final class AppState {
                 warning.follow()
             } else {
                 flash.hide()
-                warning.show(HUDMessage(title: "Включён Caps Lock", flag: "⚠️",
-                                        subtitle: "Пароль может не подойти — нажмите ⇪, чтобы выключить", style: .warning),
+                warning.show(HUDMessage(title: String(localized: "Включён Caps Lock"), flag: "⚠️",
+                                        subtitle: String(localized: "Пароль может не подойти — нажмите ⇪, чтобы выключить"), style: .warning),
                              duration: nil)
             }
         } else if warning.isVisible {
@@ -232,7 +232,7 @@ final class AppState {
 
     func copy(_ s: String) {
         PasteboardWriter.writePlain(s, to: .general)
-        flash.show(HUDMessage(title: "Скопировано", flag: "✓", subtitle: nil, style: .success), duration: 0.8)
+        flash.show(HUDMessage(title: String(localized: "Скопировано"), flag: "✓", subtitle: nil, style: .success), duration: 0.8)
     }
 
     /// Сочетание нажато: исправить выделение или слово перед курсором в активном приложении.
@@ -244,15 +244,15 @@ final class AppState {
             return
         }
         if demo {
-            flash.show(HUDMessage(title: "Демо", flag: "ℹ️", subtitle: "В демо-режиме чужие окна не меняются", style: .layout),
+            flash.show(HUDMessage(title: String(localized: "Демо"), flag: "ℹ️", subtitle: String(localized: "В демо-режиме чужие окна не меняются"), style: .layout),
                        duration: 1.2)
             return
         }
         axTrusted = Accessibility.trusted
         guard axTrusted else {
             if !askedTrust { askTrust() }
-            flash.show(HUDMessage(title: "Нужно разрешение", flag: "🔒",
-                                  subtitle: "Включите KeyMom в «Универсальном доступе»", style: .warning), duration: 2.5)
+            flash.show(HUDMessage(title: String(localized: "Нужно разрешение"), flag: "🔒",
+                                  subtitle: String(localized: "Включите KeyMom в «Универсальном доступе»"), style: .warning), duration: 2.5)
             section = .guide
             AppDelegate.openMain?()
             NSApp.activate(ignoringOtherApps: true)
@@ -284,8 +284,8 @@ final class AppState {
         }
         // 2. Запасной путь: ⌘C (или ⌥⇧← + ⌘C) и ⌘V через буфер обмена.
         guard pasteAccess != .denied else {
-            flash.show(HUDMessage(title: "Не получилось", flag: "⚠️",
-                                  subtitle: "Это приложение не отдаёт текст, а буфер обмена для KeyMom запрещён", style: .warning),
+            flash.show(HUDMessage(title: String(localized: "Не получилось"), flag: "⚠️",
+                                  subtitle: String(localized: "Это приложение не отдаёт текст, а буфер обмена для KeyMom запрещён"), style: .warning),
                        duration: 2.5)
             return
         }
@@ -336,7 +336,7 @@ final class AppState {
 
     private func nothing() {
         NSSound.beep()
-        flash.show(HUDMessage(title: "Нечего исправлять", flag: "🤷", subtitle: "Выделите текст или поставьте курсор после слова",
+        flash.show(HUDMessage(title: String(localized: "Нечего исправлять"), flag: "🤷", subtitle: String(localized: "Выделите текст или поставьте курсор после слова"),
                               style: .layout), duration: 1.4)
     }
 
@@ -347,7 +347,7 @@ final class AppState {
             refreshLayout(showHUD: false)
         }
         flash.show(HUDMessage(title: d == .toRussian ? "RU" : "EN", flag: d == .toRussian ? "🇷🇺" : "🇺🇸",
-                              subtitle: "Исправлено: \(to.count > 28 ? String(to.prefix(27)) + "…" : to)", style: .success),
+                              subtitle: String(localized: "Исправлено: \(to.count > 28 ? String(to.prefix(27)) + "…" : to)"), style: .success),
                    duration: 1.0)
     }
 

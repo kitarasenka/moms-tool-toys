@@ -7,37 +7,33 @@ enum Fmt {
     /// «2 ч 05 мин», «45 мин».
     static func minutes(_ m: Int) -> String {
         let h = m / 60, mm = m % 60
-        if h == 0 { return "\(mm) мин" }
-        return mm == 0 ? "\(h) ч" : "\(h) ч \(String(format: "%02d", mm)) мин"
+        if h == 0 { return String(localized: "\(mm) мин") }
+        return mm == 0 ? String(localized: "\(h) ч") : String(localized: "\(h) ч \(String(format: "%02d", mm)) мин")
     }
 
     static func duration(_ seconds: Double) -> String { minutes(Int((seconds / 60).rounded())) }
 
     static func watts(_ w: Double, digits: Int = 1) -> String {
-        "\(w.formatted(.number.precision(.fractionLength(digits)))) Вт"
+        String(localized: "\(w.formatted(.number.precision(.fractionLength(digits)).locale(L10n.locale))) Вт")
     }
 
     static func number(_ v: Double, digits: Int = 1) -> String {
-        v.formatted(.number.precision(.fractionLength(digits)))
+        v.formatted(.number.precision(.fractionLength(digits)).locale(L10n.locale))
     }
 
     static func date(_ d: Date?) -> String {
         guard let d else { return "—" }
-        return d.formatted(date: .long, time: .omitted)
+        return d.formatted(Date.FormatStyle(date: .long, time: .omitted).locale(L10n.locale))
     }
 
-    static func time(_ d: Date) -> String { d.formatted(date: .omitted, time: .shortened) }
+    static func time(_ d: Date) -> String { d.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(L10n.locale)) }
 
     static func ago(_ d: Date?) -> String {
-        guard let d else { return "ещё не обновлялось" }
-        return d.formatted(.relative(presentation: .named))
+        guard let d else { return String(localized: "ещё не обновлялось") }
+        return d.formatted(.relative(presentation: .named).locale(L10n.locale))
     }
 
-    static func count(_ n: Int, _ one: String, _ few: String, _ many: String) -> String {
-        let m10 = n % 10, m100 = n % 100
-        let w = (m10 == 1 && m100 != 11) ? one : ((2...4).contains(m10) && !(12...14).contains(m100) ? few : many)
-        return "\(n.formatted()) \(w)"
-    }
+    static func processes(_ n: Int) -> String { String(localized: "\(n) процессов") }
 }
 
 // MARK: - Команды

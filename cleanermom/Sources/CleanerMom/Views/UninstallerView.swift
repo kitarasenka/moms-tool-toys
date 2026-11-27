@@ -13,7 +13,7 @@ struct UninstallerView: View {
         }
         .fillAvailable()
         .navigationTitle("Деинсталлятор")
-        .searchable(text: $apps.search, placement: .toolbar, prompt: "Приложение")
+        .searchable(text: $apps.search, placement: .toolbar, prompt: String(localized: "Приложение"))
         .toolbar {
             ToolbarItem {
                 Picker("Сортировка", selection: $apps.sortBySize) {
@@ -28,7 +28,7 @@ struct UninstallerView: View {
             Button("Удалить", role: .destructive) { Task { await apps.uninstall(); state.refreshSystem() } }
             Button("Отменить", role: .cancel) {}
         } message: {
-            Text("Приложение и отмеченные файлы перенесутся в Корзину.\(apps.isRunning ? " Приложение сейчас открыто — оно будет закрыто." : "")")
+            Text("Приложение и отмеченные файлы перенесутся в Корзину.\(apps.isRunning ? String(localized: " Приложение сейчас открыто — оно будет закрыто.") : "")")
         }
         .alert("Деинсталлятор", isPresented: Binding(get: { apps.message != nil }, set: { if !$0 { apps.message = nil } })) {
             Button("OK", role: .cancel) {}
@@ -39,7 +39,7 @@ struct UninstallerView: View {
 
     private var confirmTitle: String {
         guard let a = state.apps.current else { return "" }
-        return "Удалить \(a.name)?"
+        return String(localized: "Удалить \(a.name)?")
     }
 
     private var appList: some View {
@@ -50,7 +50,7 @@ struct UninstallerView: View {
                 FileIcon(url: app.url, size: 28)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(app.name).lineLimit(1)
-                    Text(app.lastUsed.map { "открывалось \(Fmt.ago($0))" } ?? "нет данных о запуске")
+                    Text(app.lastUsed.map { String(localized: "открывалось \(Fmt.ago($0))") } ?? String(localized: "нет данных о запуске"))
                         .font(.caption).foregroundStyle(.secondary)
                 }
                 Spacer()
@@ -77,7 +77,7 @@ struct UninstallerView: View {
                     FileIcon(url: app.url, size: 72)
                     VStack(alignment: .leading, spacing: 3) {
                         Text(app.name).font(.title.weight(.semibold))
-                        Text([app.version.isEmpty ? nil : "Версия \(app.version)", app.bundleID]
+                        Text([app.version.isEmpty ? nil : String(localized: "Версия \(app.version)"), app.bundleID]
                             .compactMap { $0 }.joined(separator: " · "))
                             .foregroundStyle(.secondary).textSelection(.enabled)
                         Text(Paths.pretty(app.url)).font(.caption).foregroundStyle(.tertiary)
@@ -91,7 +91,7 @@ struct UninstallerView: View {
                         Text("Вместе с приложением").font(.headline)
                         Spacer()
                         if !apps.leftovers.isEmpty {
-                            Button(apps.selectedLeftovers.count == apps.leftovers.count ? "Снять все" : "Отметить все") {
+                            Button(apps.selectedLeftovers.count == apps.leftovers.count ? String(localized: "Снять все") : String(localized: "Отметить все")) {
                                 if apps.selectedLeftovers.count == apps.leftovers.count { apps.selectedLeftovers = [] }
                                 else { apps.selectedLeftovers = Set(apps.leftovers.map(\.id)) }
                             }
@@ -124,7 +124,7 @@ struct UninstallerView: View {
                             }
                             Spacer()
                             Text(l.size < 0 ? "—" : Fmt.bytes(l.size)).monospacedDigit().foregroundStyle(.secondary)
-                                .help(l.size < 0 ? "Размер виден только с полным доступом к диску" : "")
+                                .help(l.size < 0 ? String(localized: "Размер виден только с полным доступом к диску") : "")
                         }
                         .contextMenu { Button("Показать в Finder") { Paths.reveal(l.url) } }
                     }
@@ -150,8 +150,8 @@ struct UninstallerView: View {
                 .background(.bar)
             }
         } else {
-            EmptyStateView(icon: "xmark.app", title: "Удаление приложений",
-                           text: "Выберите приложение слева: оно перенесётся в Корзину вместе с настройками, кэшем и данными, которые оставило в системе. Системные приложения Apple не показываются.") {
+            EmptyStateView(icon: "xmark.app", title: String(localized: "Удаление приложений"),
+                           text: String(localized: "Выберите приложение слева: оно перенесётся в Корзину вместе с настройками, кэшем и данными, которые оставило в системе. Системные приложения Apple не показываются.")) {
                 EmptyView()
             }
         }

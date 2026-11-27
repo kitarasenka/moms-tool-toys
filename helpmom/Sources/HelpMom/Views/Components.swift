@@ -44,7 +44,7 @@ struct Card<Content: View>: View {
 
 /// Крупная кнопка с иконкой — для мамы, а не для мелкого шрифта.
 struct BigButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let icon: String
     var prominent = false
     var disabled = false
@@ -77,12 +77,13 @@ struct ToolButton: View {
             Label("Открыть \(tool.name)", systemImage: "arrow.up.forward.app")
         }
         .disabled(!installed)
-        .help(installed ? "Запустить \(tool.name)" : "\(tool.name) не установлен — его ставит общий установщик Mom's Tool Toys")
+        .help(installed ? String(localized: "Запустить \(tool.name)")
+                         : String(localized: "\(tool.name) не установлен — его ставит общий установщик Mom's Tool Toys"))
     }
 }
 
 struct SectionTitle: View {
-    let text: String
+    let text: LocalizedStringKey
     var icon: String? = nil
 
     var body: some View {
@@ -113,8 +114,8 @@ struct StepRow: View {
 
 struct EmptyStateView<Actions: View>: View {
     let icon: String
-    let title: String
-    let text: String
+    let title: LocalizedStringKey
+    let text: LocalizedStringKey
     @ViewBuilder var actions: Actions
 
     var body: some View {

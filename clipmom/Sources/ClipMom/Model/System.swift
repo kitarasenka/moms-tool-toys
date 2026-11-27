@@ -71,11 +71,11 @@ enum LoginItem {
 
     static var statusText: String {
         switch status {
-        case .enabled: "Включён"
-        case .requiresApproval: "Ждёт разрешения в «Объектах входа»"
-        case .notFound: "Недоступен (запустите ClipMom из .app)"
-        case .notRegistered: "Выключен"
-        @unknown default: "Неизвестно"
+        case .enabled: String(localized: "Включён")
+        case .requiresApproval: String(localized: "Ждёт разрешения в «Объектах входа»")
+        case .notFound: String(localized: "Недоступен (запустите ClipMom из .app)")
+        case .notRegistered: String(localized: "Выключен")
+        @unknown default: String(localized: "Неизвестно")
         }
     }
 
@@ -85,11 +85,11 @@ enum LoginItem {
             if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
             if on && status == .requiresApproval {
                 SMAppService.openSystemSettingsLoginItems()
-                return "Разрешите ClipMom в «Системные настройки → Основные → Объекты входа»."
+                return String(localized: "Разрешите ClipMom в «Системные настройки → Основные → Объекты входа».")
             }
             return nil
         } catch {
-            return "Не получилось: \(error.localizedDescription)"
+            return String(localized: "Не получилось: \(error.localizedDescription)")
         }
     }
 }

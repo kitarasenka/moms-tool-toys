@@ -7,9 +7,9 @@ enum SidebarSection: String, Hashable, CaseIterable {
 
     var title: String {
         switch self {
-        case .checks: "Проверка"
-        case .browsers: "Браузеры"
-        case .network: "Сеть и профили"
+        case .checks: String(localized: "Проверка")
+        case .browsers: String(localized: "Браузеры")
+        case .network: String(localized: "Сеть и профили")
         }
     }
 
@@ -24,7 +24,7 @@ enum SidebarSection: String, Hashable, CaseIterable {
 
 enum BrowserTab: String, Hashable, CaseIterable {
     case notifications, extensions
-    var title: String { self == .notifications ? "Уведомления от сайтов" : "Расширения" }
+    var title: String { self == .notifications ? String(localized: "Уведомления от сайтов") : String(localized: "Расширения") }
 }
 
 @Observable @MainActor
@@ -157,7 +157,7 @@ final class AppState {
                 let ids = Set(sites.map(\.id))
                 browsers[i].notifications.removeAll { ids.contains($0.id) }
             }
-            show("Готово: \(Fmt.count(sites.count, "сайт больше не сможет", "сайта больше не смогут", "сайтов больше не смогут")) присылать уведомления (в демо — понарошку).")
+            show(String(localized: "Готово: \(Fmt.sitesBlocked(sites.count)) присылать уведомления (в демо — понарошку)."))
             return
         }
         let running = Apps.isRunning(r.def.bundleID)
@@ -176,8 +176,8 @@ final class AppState {
         }.value
         switch result {
         case .success(let backup):
-            show("Готово: \(Fmt.count(sites.count, "сайт больше не сможет", "сайта больше не смогут", "сайтов больше не смогут")) присылать уведомления в \(def.name)."
-                 + (backup.map { " Копия прежних настроек — \(Paths.pretty($0.deletingLastPathComponent().path))." } ?? ""))
+            show(String(localized: "Готово: \(Fmt.sitesBlocked(sites.count)) присылать уведомления в \(def.name).")
+                 + (backup.map { String(localized: " Копия прежних настроек — \(Paths.pretty($0.deletingLastPathComponent().path)).") } ?? ""))
         case .failure(let e):
             show(e.localizedDescription, error: true)
         }

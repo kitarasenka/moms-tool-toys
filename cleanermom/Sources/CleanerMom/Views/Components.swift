@@ -40,7 +40,7 @@ struct TriCheckbox: View {
                 .foregroundStyle(state == false ? AnyShapeStyle(.secondary) : AnyShapeStyle(Brand.blue))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(state == true ? "Отмечено" : (state == nil ? "Отмечено частично" : "Не отмечено"))
+        .accessibilityLabel(state == true ? String(localized: "Отмечено") : (state == nil ? String(localized: "Отмечено частично") : String(localized: "Не отмечено")))
     }
 }
 
@@ -59,7 +59,7 @@ struct Card<Content: View>: View {
 /// Плашка «дайте полный доступ к диску».
 struct FullDiskAccessBanner: View {
     @Environment(AppState.self) private var state
-    var reason = "Часть папок (Почта, Корзина, данные других приложений) закрыта системой."
+    var reason = String(localized: "Часть папок (Почта, Корзина, данные других приложений) закрыта системой.")
 
     var body: some View {
         if !state.fullDiskAccess {
@@ -150,7 +150,7 @@ struct FinderTrashCard: View {
                 Image(systemName: "trash").font(.system(size: 22)).foregroundStyle(Brand.gradient).frame(width: 30)
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Корзина").font(.headline)
-                    Text(junk.finderTrashMessage ?? "Размер не виден без полного доступа к диску, но очистить её можно через Finder.")
+                    Text(junk.finderTrashMessage ?? String(localized: "Размер не виден без полного доступа к диску, но очистить её можно через Finder."))
                         .font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()

@@ -13,13 +13,13 @@ enum Brand {
 enum Fmt {
     private static let relative: RelativeDateTimeFormatter = {
         let f = RelativeDateTimeFormatter()
-        f.locale = Locale(identifier: "ru_RU")
+        f.locale = L10n.locale
         f.unitsStyle = .short
         return f
     }()
 
     static func ago(_ d: Date, now: Date = .now) -> String {
-        if now.timeIntervalSince(d) < 60 { return "только что" }
+        if now.timeIntervalSince(d) < 60 { return String(localized: "только что") }
         return relative.localizedString(for: d, relativeTo: now)
     }
 
@@ -30,7 +30,7 @@ enum Fmt {
     }
 
     static func dateTime(_ d: Date) -> String {
-        d.formatted(.dateTime.day().month(.wide).hour().minute().locale(Locale(identifier: "ru_RU")))
+        d.formatted(.dateTime.day().month(.wide).hour().minute().locale(L10n.locale))
     }
 }
 
@@ -88,8 +88,8 @@ struct SourceIcon: View {
 /// Пустое состояние с крупной иконкой и действием.
 struct EmptyStateView<Actions: View>: View {
     let icon: String
-    let title: String
-    let text: String
+    let title: LocalizedStringKey
+    let text: LocalizedStringKey
     @ViewBuilder var actions: Actions
 
     var body: some View {
@@ -107,7 +107,7 @@ struct EmptyStateView<Actions: View>: View {
 }
 
 extension EmptyStateView where Actions == EmptyView {
-    init(icon: String, title: String, text: String) {
+    init(icon: String, title: LocalizedStringKey, text: LocalizedStringKey) {
         self.init(icon: icon, title: title, text: text) { EmptyView() }
     }
 }
@@ -152,18 +152,18 @@ struct PasteAccessCard: View {
 
     private func title(_ a: PasteAccess) -> String {
         switch a {
-        case .denied: "ClipMom не может читать буфер обмена"
-        case .ask: "macOS спрашивает разрешение при каждом копировании"
-        default: "Разрешите ClipMom читать буфер обмена"
+        case .denied: String(localized: "ClipMom не может читать буфер обмена")
+        case .ask: String(localized: "macOS спрашивает разрешение при каждом копировании")
+        default: String(localized: "Разрешите ClipMom читать буфер обмена")
         }
     }
 
     private func text(_ a: PasteAccess) -> String {
-        let how = "Откройте «Системные настройки → Конфиденциальность и безопасность → Вставка из других приложений» и выберите для ClipMom «Разрешить»."
+        let how = String(localized: "Откройте «Системные настройки → Конфиденциальность и безопасность → Вставка из других приложений» и выберите для ClipMom «Разрешить».")
         switch a {
-        case .denied: return "Доступ запрещён, поэтому история не пополняется. " + how
-        case .ask: return "Чтобы не отвечать на запрос каждый раз, ClipMom пока не записывает буфер сам. " + how
-        default: return "Новые версии macOS могут один раз спросить, можно ли ClipMom читать скопированное. Нажмите «Разрешить», а лучше сразу: " + how
+        case .denied: return String(localized: "Доступ запрещён, поэтому история не пополняется. \(how)")
+        case .ask: return String(localized: "Чтобы не отвечать на запрос каждый раз, ClipMom пока не записывает буфер сам. \(how)")
+        default: return String(localized: "Новые версии macOS могут один раз спросить, можно ли ClipMom читать скопированное. Нажмите «Разрешить», а лучше сразу: \(how)")
         }
     }
 }

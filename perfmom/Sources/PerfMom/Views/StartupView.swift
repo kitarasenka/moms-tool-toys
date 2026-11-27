@@ -30,7 +30,7 @@ struct StartupView: View {
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Picker("Раздел", selection: $state.startupTab) {
-                    ForEach(StartupTab.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(StartupTab.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
             }
@@ -82,7 +82,7 @@ struct LaunchJobsView: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 Picker("Показывать", selection: $filter) {
-                    ForEach(JobFilter.allCases) { Text($0.rawValue).tag($0) }
+                    ForEach(JobFilter.allCases) { Text(LocalizedStringKey($0.rawValue)).tag($0) }
                 }
                 .pickerStyle(.segmented)
                 .fixedSize()
@@ -104,12 +104,12 @@ struct LaunchJobsView: View {
             Divider()
 
             Table(jobs, selection: $selection) {
-                TableColumn("Вкл.") { job in
+                TableColumn(String(localized: "Вкл.")) { job in
                     JobToggle(job: job, store: state.startup)
                 }
                 .width(46)
 
-                TableColumn("Служба") { job in
+                TableColumn(String(localized: "Служба")) { job in
                     HStack(spacing: 6) {
                         ProcessIcon(path: job.target ?? "", size: 16)
                         VStack(alignment: .leading, spacing: 0) {
@@ -126,22 +126,22 @@ struct LaunchJobsView: View {
                 }
                 .width(min: 220, ideal: 320)
 
-                TableColumn("Запуск") { job in
+                TableColumn(String(localized: "Запуск")) { job in
                     Text(job.trigger).foregroundStyle(job.enabled ? .primary : .secondary)
                 }
                 .width(min: 120, ideal: 170)
 
-                TableColumn("Состояние") { job in
+                TableColumn(String(localized: "Состояние")) { job in
                     JobStatus(job: job, pid: runningPID(job))
                 }
                 .width(min: 110, ideal: 130)
 
-                TableColumn("Разработчик") { job in
+                TableColumn(String(localized: "Разработчик")) { job in
                     VendorLabel(job: job)
                 }
                 .width(min: 120, ideal: 170)
 
-                TableColumn("Тип") { job in
+                TableColumn(String(localized: "Тип")) { job in
                     Text(job.scope.short).foregroundStyle(.secondary)
                         .help(job.scope.title)
                 }
@@ -193,7 +193,7 @@ struct LaunchJobsView: View {
     @ViewBuilder
     private func jobMenu(_ job: LaunchJob, pid: pid_t?) -> some View {
         let store = state.startup
-        Button(job.enabled ? "Выключить автозапуск" : "Включить автозапуск") {
+        Button(job.enabled ? String(localized: "Выключить автозапуск") : String(localized: "Включить автозапуск")) {
             Task { await store.setEnabled(job, !job.enabled) }
         }
         if let pid {
@@ -231,8 +231,8 @@ struct JobToggle: View {
             .toggleStyle(.switch)
             .controlSize(.mini)
             .labelsHidden()
-            .help(job.enabled ? "Выключить автозапуск" : "Включить автозапуск"
-                  + (job.scope.needsAdmin ? " (нужен пароль администратора)" : ""))
+            .help(job.enabled ? String(localized: "Выключить автозапуск") : String(localized: "Включить автозапуск")
+                  + (job.scope.needsAdmin ? String(localized: " (нужен пароль администратора)") : ""))
         }
     }
 }
@@ -249,7 +249,7 @@ struct JobStatus: View {
             if let pid {
                 Text("Работает · \(String(pid))").monospacedDigit()
             } else {
-                Text(job.enabled ? "Не запущена" : "Выключена").foregroundStyle(.secondary)
+                Text(job.enabled ? String(localized: "Не запущена") : String(localized: "Выключена")).foregroundStyle(.secondary)
             }
         }
     }
@@ -276,7 +276,7 @@ struct VendorLabel: View {
             Text(job.vendor).lineLimit(1)
         }
         .help(job.target != nil && !job.programExists
-              ? "Программа удалена, а служба осталась — её можно выключить или удалить"
+              ? String(localized: "Программа удалена, а служба осталась — её можно выключить или удалить")
               : (job.signing?.teamID.map { "Team ID: \($0)" } ?? ""))
     }
 }
@@ -332,7 +332,7 @@ struct LoginItemsView: View {
 
         return VStack(spacing: 0) {
             Table(items, selection: $selection) {
-                TableColumn("Приложение") { item in
+                TableColumn(String(localized: "Приложение")) { item in
                     HStack(spacing: 6) {
                         ProcessIcon(path: item.path, size: 18)
                         Text(item.name).lineLimit(1)
@@ -340,16 +340,16 @@ struct LoginItemsView: View {
                 }
                 .width(min: 180, ideal: 240)
 
-                TableColumn("Состояние") { item in
+                TableColumn(String(localized: "Состояние")) { item in
                     let running = runningPaths.contains(item.path)
                     HStack(spacing: 5) {
                         Circle().fill(running ? Color.green : Color.secondary.opacity(0.4)).frame(width: 7, height: 7)
-                        Text(running ? "Запущено" : "Не запущено").foregroundStyle(running ? .primary : .secondary)
+                        Text(running ? String(localized: "Запущено") : String(localized: "Не запущено")).foregroundStyle(running ? .primary : .secondary)
                     }
                 }
                 .width(min: 100, ideal: 120)
 
-                TableColumn("Скрывать окна") { item in
+                TableColumn(String(localized: "Скрывать окна")) { item in
                     Toggle("", isOn: Binding(get: { item.hidden }, set: { store.setHidden(item, $0) }))
                         .toggleStyle(.checkbox)
                         .labelsHidden()
@@ -357,7 +357,7 @@ struct LoginItemsView: View {
                 }
                 .width(90)
 
-                TableColumn("Расположение") { item in
+                TableColumn(String(localized: "Расположение")) { item in
                     Text(item.path.isEmpty ? "—" : item.path)
                         .foregroundStyle(.secondary)
                         .truncationMode(.middle)
@@ -368,7 +368,7 @@ struct LoginItemsView: View {
             .contextMenu(forSelectionType: String.self) { ids in
                 if let item = store.loginItems.first(where: { $0.id == ids.first }) {
                     Button("Показать в Finder") { AppState.revealInFinder(item.path) }.disabled(item.path.isEmpty)
-                    Button(item.hidden ? "Не скрывать окна" : "Скрывать окна") { store.setHidden(item, !item.hidden) }
+                    Button(item.hidden ? String(localized: "Не скрывать окна") : String(localized: "Скрывать окна")) { store.setHidden(item, !item.hidden) }
                     Divider()
                     Button("Убрать из автозагрузки…") { pendingRemoval = item }
                 }
@@ -422,8 +422,8 @@ struct LoginItemsView: View {
 
     private func addItem() {
         let panel = NSOpenPanel()
-        panel.title = "Добавить в автозагрузку"
-        panel.prompt = "Добавить"
+        panel.title = String(localized: "Добавить в автозагрузку")
+        panel.prompt = String(localized: "Добавить")
         panel.allowedContentTypes = [.application]
         panel.allowsMultipleSelection = true
         panel.directoryURL = URL(fileURLWithPath: "/Applications")

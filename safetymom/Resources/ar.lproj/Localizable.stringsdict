@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>%lld профилей</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld ملفات تعريف</string>
+			<key>many</key>
+			<string>%lld ملف تعريف</string>
+			<key>one</key>
+			<string>%lld ملف تعريف</string>
+			<key>other</key>
+			<string>%lld ملف تعريف</string>
+			<key>two</key>
+			<string>ملفا تعريف</string>
+			<key>zero</key>
+			<string>%lld ملف تعريف</string>
+		</dict>
+	</dict>
+	<key>%lld пунктов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld بنود</string>
+			<key>many</key>
+			<string>%lld بندًا</string>
+			<key>one</key>
+			<string>%lld بند</string>
+			<key>other</key>
+			<string>%lld بند</string>
+			<key>two</key>
+			<string>بندان</string>
+			<key>zero</key>
+			<string>%lld بند</string>
+		</dict>
+	</dict>
+	<key>%lld пунктов стоит</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld بنود تحتاج إلى مراجعة</string>
+			<key>many</key>
+			<string>%lld بندًا يحتاج إلى مراجعة</string>
+			<key>one</key>
+			<string>%lld بند يحتاج إلى مراجعة</string>
+			<key>other</key>
+			<string>%lld بند يحتاج إلى مراجعة</string>
+			<key>two</key>
+			<string>بندان يحتاجان إلى مراجعة</string>
+			<key>zero</key>
+			<string>%lld بند يحتاج إلى مراجعة</string>
+		</dict>
+	</dict>
+	<key>%lld расширений</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld إضافات</string>
+			<key>many</key>
+			<string>%lld إضافة</string>
+			<key>one</key>
+			<string>%lld إضافة</string>
+			<key>other</key>
+			<string>%lld إضافة</string>
+			<key>two</key>
+			<string>إضافتان</string>
+			<key>zero</key>
+			<string>%lld إضافة</string>
+		</dict>
+	</dict>
+	<key>%lld сайтов</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld مواقع</string>
+			<key>many</key>
+			<string>%lld موقعًا</string>
+			<key>one</key>
+			<string>%lld موقع</string>
+			<key>other</key>
+			<string>%lld موقع</string>
+			<key>two</key>
+			<string>موقعان</string>
+			<key>zero</key>
+			<string>%lld موقع</string>
+		</dict>
+	</dict>
+	<key>%lld сайтов больше не смогут</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld مواقع لن تتمكن بعد الآن من</string>
+			<key>many</key>
+			<string>%lld موقعًا لن تتمكن بعد الآن من</string>
+			<key>one</key>
+			<string>%lld موقع لن يتمكن بعد الآن من</string>
+			<key>other</key>
+			<string>%lld موقع لن يتمكن بعد الآن من</string>
+			<key>two</key>
+			<string>موقعان لن يتمكنا بعد الآن من</string>
+			<key>zero</key>
+			<string>%lld موقع لن يتمكن بعد الآن من</string>
+		</dict>
+	</dict>
+	<key>%lld строк</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@n@</string>
+		<key>n</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>few</key>
+			<string>%lld أسطر</string>
+			<key>many</key>
+			<string>%lld سطرًا</string>
+			<key>one</key>
+			<string>%lld سطر</string>
+			<key>other</key>
+			<string>%lld سطر</string>
+			<key>two</key>
+			<string>سطران</string>
+			<key>zero</key>
+			<string>%lld سطر</string>
+		</dict>
+	</dict>
+</dict>
+</plist>

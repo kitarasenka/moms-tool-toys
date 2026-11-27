@@ -90,7 +90,7 @@ final class QuickPanelController {
         p.onClose = { [weak self] in self?.close() }
         let view = QuickPanelView(model: model, controller: self)
             .environment(state)
-            .environment(\.locale, Locale(identifier: "ru_RU"))
+            .appLocale()
         let host = NSHostingView(rootView: view)
         host.sizingOptions = []  // размер задаёт панель, а не SwiftUI
         p.contentView = host
@@ -199,7 +199,7 @@ struct QuickPanelView: View {
         .onChange(of: model.focusToken) { focused = true }
     }
 
-    private func hint(_ key: String, _ text: String) -> some View {
+    private func hint(_ key: String, _ text: LocalizedStringKey) -> some View {
         HStack(spacing: 4) {
             Text(key).font(.caption.monospaced().weight(.semibold))
                 .padding(.horizontal, 5).padding(.vertical, 1)

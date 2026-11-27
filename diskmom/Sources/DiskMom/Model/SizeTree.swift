@@ -66,7 +66,7 @@ final class FSNode: Identifiable, @unchecked Sendable {
 
     var displayName: String {
         switch kind {
-        case .smallFiles: return "Мелкие файлы (\(fileCount.formatted()))"
+        case .smallFiles: return String(localized: "Мелкие файлы (\(fileCount.formatted(.number.locale(L10n.locale))))")
         default: return name
         }
     }
@@ -80,9 +80,9 @@ enum SizeTree {
 
         var errorDescription: String? {
             switch self {
-            case .notAllowed: return "Этот объект нельзя перенести в Корзину"
-            case .outsideRoot: return "Объект вне сканированной папки"
-            case .missing: return "Объекта уже нет на диске"
+            case .notAllowed: return String(localized: "Этот объект нельзя перенести в Корзину")
+            case .outsideRoot: return String(localized: "Объект вне сканированной папки")
+            case .missing: return String(localized: "Объекта уже нет на диске")
             }
         }
     }

@@ -8,8 +8,8 @@ struct ExcludedApp: Codable, Hashable, Identifiable {
 
     /// Менеджеры паролей: что из них скопировано — не записываем.
     static let defaults: [ExcludedApp] = [
-        ExcludedApp(bundleID: "com.apple.keychainaccess", name: "Связка ключей"),
-        ExcludedApp(bundleID: "com.apple.Passwords", name: "Пароли"),
+        ExcludedApp(bundleID: "com.apple.keychainaccess", name: String(localized: "Связка ключей")),
+        ExcludedApp(bundleID: "com.apple.Passwords", name: String(localized: "Пароли")),
         ExcludedApp(bundleID: "com.1password.1password", name: "1Password"),
         ExcludedApp(bundleID: "com.agilebits.onepassword7", name: "1Password 7"),
         ExcludedApp(bundleID: "com.bitwarden.desktop", name: "Bitwarden"),
