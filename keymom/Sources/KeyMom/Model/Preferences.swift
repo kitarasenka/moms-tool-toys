@@ -65,6 +65,7 @@ final class Preferences {
         layoutHUD = bool("layoutHUD", true)
         capsHUD = bool("capsHUD", true)
         capsPasswordWarning = bool("capsPasswordWarning", true)
-        showInDock = bool("showInDock", true)
+        // KeyMom работает в фоне — по умолчанию только в строке меню, как ClipMom без значка в Dock.
+        showInDock = bool("showInDock", false)
     }
 }

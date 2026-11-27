@@ -1342,7 +1342,7 @@ function keySettings(p) {
       <div class="meta" style="margin-top:6px">Все свободны: ⌃ Пробел и ⌃⌥ Пробел — переключение раскладки, ⌘ Пробел — Spotlight, ⇧⌘V — Clip.</div></div>
     <div class="item"><span class="grow">Русская раскладка<div class="meta">от неё зависит, где точка и запятая</div></span><b>Определять самому</b></div>
     ${t.map(([k, a]) => `<label class="item" style="cursor:pointer"><span class="grow">${a}</span><input type="checkbox" class="switch" data-k="${k}" ${km[k] ? 'checked' : ''}></label>`).join('')}
-    <label class="item" style="cursor:pointer"><span class="grow">Показывать значок в Dock<div class="meta">выключите — Key останется только в строке меню</div></span><input type="checkbox" class="switch" checked></label>
+    <label class="item" style="cursor:pointer"><span class="grow">Показывать значок в Dock<div class="meta">по умолчанию выключено — Key живёт в строке меню вверху экрана</div></span><input type="checkbox" class="switch"></label>
     <label class="item" style="cursor:pointer"><span class="grow">Запускать при входе</span><input type="checkbox" class="switch" checked></label>
     <div class="item"><span class="grow">Универсальный доступ<div class="meta">нужен, чтобы заменять текст в других приложениях</div></span><span class="pill ok">Разрешён</span></div></div>`;
   $$('#kmHk button').forEach(b => b.onclick = () => { km.hk = KM_KEYS.find(k => k.id === b.dataset.k); $$('#kmHk button').forEach(x => x.classList.toggle('on', x === b)); toast(`Теперь исправление — ${km.hk.label}`); });
