@@ -46,6 +46,16 @@ struct PasteboardSnapshot {
     }
 }
 
+enum ClipText {
+    /// ⌘C без выделения в VS Code, JetBrains, Sublime копирует всю текущую строку с переводом строки на конце.
+    /// Признак: ровно одна строка и она заканчивается переводом строки. Обычное выделение слова или фразы так
+    /// не выглядит; редкий случай «выделили строку целиком» KeyMom обработает как «нет выделения» — без дублей.
+    static func looksLikeWholeLineCopy(_ s: String) -> Bool {
+        guard let last = s.last, last.isNewline else { return false }
+        return !s.dropLast().contains(where: \.isNewline)
+    }
+}
+
 enum PasteboardWriter {
     /// Кладёт исправленный текст для ⌘V. Помечен скрытым и временным — в историю ClipMom не попадёт.
     @discardableResult

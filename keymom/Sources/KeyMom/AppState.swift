@@ -269,12 +269,17 @@ final class AppState {
         if let target {
             guard let r = LayoutConverter.autoConvert(target.text, variant: variant) else { nothing(); return }
             let (fixed, d) = r
-            if AXText.replace(target, with: fixed) {
+            switch await AXText.replace(target, with: fixed) {
+            case .replaced:
                 done(target.text, fixed, d)
-                return
+            case .unchanged:
+                // Приложение не дало заменить напрямую, исходный текст на месте — выделим его и вставим через буфер.
+                AXText.setSelectedRange(target.element, target.range)
+                if await pasteFallback(fixed, original: nil) { done(target.text, fixed, d) }
+            case .unknown:
+                // Текст уже изменился, но прочитать результат не удалось: повторная вставка задвоила бы слово.
+                done(target.text, fixed, d)
             }
-            // Приложение не дало заменить напрямую, но диапазон уже выделен — вставим через буфер.
-            if await pasteFallback(fixed, original: nil) { done(target.text, fixed, d) }
             return
         }
         // 2. Запасной путь: ⌘C (или ⌥⇧← + ⌘C) и ⌘V через буфер обмена.
@@ -287,10 +292,15 @@ final class AppState {
         let pb = NSPasteboard.general
         let snapshot = PasteboardSnapshot.take(pb)
         var text = await copySelection(pb)
+        // VS Code, JetBrains, Sublime: ⌘C без выделения копирует всю строку с переводом строки в конце —
+        // это не выделение, иначе исправленная строка вставится у курсора второй раз.
+        if let t = text, ClipText.looksLikeWholeLineCopy(t) { text = nil }
         if text?.isEmpty ?? true {
             KeyPress.selectWordLeft()
             try? await Task.sleep(for: .milliseconds(60))
             text = await copySelection(pb)
+            // Курсор в начале строки — ⌥⇧← ничего не выделил, и редактор снова скопировал всю строку.
+            if let t = text, ClipText.looksLikeWholeLineCopy(t) { text = nil }
         }
         guard let text, let r = LayoutConverter.autoConvert(text, variant: variant) else {
             snapshot.restore(to: pb)

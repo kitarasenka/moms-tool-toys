@@ -77,17 +77,41 @@ enum AXText {
                       text: ns.substring(with: w), fromSelection: false)
     }
 
-    /// Заменяет диапазон на новый текст и проверяет, что приложение действительно его поменяло
-    /// (некоторые отвечают «успех», но ничего не делают).
-    static func replace(_ t: Target, with new: String) -> Bool {
-        guard setSelectedRange(t.element, t.range) else { return false }
-        guard AXUIElementSetAttributeValue(t.element, kAXSelectedTextAttribute as CFString, new as CFString) == .success else {
-            return false
-        }
-        guard let value = string(t.element, kAXValueAttribute) else { return false }
+    enum ReplaceResult: Equatable {
+        case replaced   // на месте уже новый текст
+        case unchanged  // на месте всё ещё исходный текст — можно безопасно вставить через буфер
+        case unknown    // ни то ни другое (приложение отдаёт текст с задержкой или иначе) — второй раз не вставлять
+    }
+
+    /// Что сейчас лежит в тексте элемента с позиции location длиной length (UTF-16); nil — не прочитать.
+    static func text(_ el: AXUIElement, at location: Int, length: Int) -> String? {
+        guard let value = string(el, kAXValueAttribute) else { return nil }
         let ns = value as NSString
-        let len = (new as NSString).length
-        guard t.range.location + len <= ns.length else { return false }
-        return ns.substring(with: NSRange(location: t.range.location, length: len)) == new
+        guard location >= 0, length >= 0, location + length <= ns.length else { return nil }
+        return ns.substring(with: NSRange(location: location, length: length))
+    }
+
+    /// Классифицирует состояние после попытки замены: по месту диапазона лежит новый текст, старый или непонятно что.
+    static func check(_ t: Target, new: String) -> ReplaceResult {
+        if text(t.element, at: t.range.location, length: (new as NSString).length) == new { return .replaced }
+        if text(t.element, at: t.range.location, length: t.range.length) == t.text { return .unchanged }
+        return .unknown
+    }
+
+    /// Заменяет диапазон на новый текст и проверяет, что приложение действительно его поменяло
+    /// (некоторые отвечают «успех», но ничего не делают, а некоторые — Chrome, Electron — обновляют
+    /// AXValue с задержкой). Проверка ждёт до ~0,3 с; вставлять через буфер можно только при `.unchanged`,
+    /// иначе слово задвоится.
+    static func replace(_ t: Target, with new: String) async -> ReplaceResult {
+        guard setSelectedRange(t.element, t.range) else { return .unchanged }
+        let err = AXUIElementSetAttributeValue(t.element, kAXSelectedTextAttribute as CFString, new as CFString)
+        var state = check(t, new: new)
+        // Ошибка установки и текст не тронут — приложение замену не поддерживает, ждать нечего.
+        if err != .success && state == .unchanged { return .unchanged }
+        for _ in 0..<6 where state != .replaced {
+            try? await Task.sleep(for: .milliseconds(50))
+            state = check(t, new: new)
+        }
+        return state
     }
 }

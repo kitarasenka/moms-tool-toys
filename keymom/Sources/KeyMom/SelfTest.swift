@@ -110,6 +110,13 @@ enum SelfTest {
         check(w("строка\n", 7) == nil, "курсор в начале строки")
         check(w("", 0) == nil, "пусто")
         check(w("🙂 ghbdtn", ("🙂 ghbdtn" as NSString).length) == "ghbdtn", "UTF-16 с эмодзи")
+        // ⌘C без выделения в редакторах кода — вся строка; такое нельзя вставлять как «исправленное выделение»
+        let L = ClipText.self
+        check(L.looksLikeWholeLineCopy("    let x = ghbdtn\n"), "копия всей строки (VS Code)")
+        check(L.looksLikeWholeLineCopy("ghbdtn\r\n"), "копия всей строки с CRLF")
+        check(!L.looksLikeWholeLineCopy("ghbdtn"), "обычное выделение — не строка")
+        check(!L.looksLikeWholeLineCopy("ghbdtn\nrfr ltkf\n"), "несколько строк — настоящее выделение")
+        check(!L.looksLikeWholeLineCopy(""), "пусто — не строка")
     }
 
     private static func pasteboard() {

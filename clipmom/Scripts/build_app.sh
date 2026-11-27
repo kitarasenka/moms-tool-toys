@@ -25,6 +25,9 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 rm -rf "$TMP"
 
-codesign --force --sign - "$APP" >/dev/null
+# У ad-hoc подписи требование по умолчанию — хеш именно этой сборки (cdhash): после пересборки macOS считает
+# ClipMom новым приложением и «Универсальный доступ» / «Вставка из других приложений» перестают действовать.
+# Явное требование «bundle id = local.clipmom» не меняется между сборками — разрешения сохраняются.
+codesign --force --sign - -r='designated => identifier "local.clipmom"' "$APP" >/dev/null
 echo "✓ Готово: $APP"
 echo "  Запуск: open $APP"

@@ -25,6 +25,9 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 rm -rf "$TMP"
 
-codesign --force --sign - "$APP" >/dev/null
+# У ad-hoc подписи требование по умолчанию — хеш именно этой сборки (cdhash), и macOS после каждой
+# пересборки считает KeyMom новым приложением: переключатель «Универсального доступа» горит, а доступа нет.
+# Явное требование «bundle id = local.keymom» не меняется между сборками — разрешение сохраняется.
+codesign --force --sign - -r='designated => identifier "local.keymom"' "$APP" >/dev/null
 echo "✓ Готово: $APP"
 echo "  Запуск: open $APP"
