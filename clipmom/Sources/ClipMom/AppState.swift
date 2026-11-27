@@ -21,6 +21,7 @@ final class AppState {
     var access: PasteAccess = .unsupported
     var lastEvent: String?
     var showSettings = false
+    var showGuide = false
     var hotkeyFailed = false
 
     @ObservationIgnored private var tracker: ChangeTracker?
@@ -204,6 +205,17 @@ final class AppState {
     func setHotkey(_ on: Bool) {
         prefs.hotkeyEnabled = on
         if on { hotkeyFailed = !hotKey.register() } else { hotKey.unregister(); hotkeyFailed = false }
+    }
+
+    /// Значок в Dock или только строка меню. Окно остаётся открытым и на переднем плане.
+    func setShowInDock(_ on: Bool) {
+        prefs.showInDock = on
+        Self.applyDockPolicy(on)
+        DispatchQueue.main.async { NSApp.activate(ignoringOtherApps: true) }
+    }
+
+    static func applyDockPolicy(_ showInDock: Bool) {
+        NSApp.setActivationPolicy(showInDock ? .regular : .accessory)
     }
 
     func setAutoPaste(_ on: Bool) {

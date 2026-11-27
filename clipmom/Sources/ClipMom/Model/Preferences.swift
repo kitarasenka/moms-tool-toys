@@ -26,6 +26,8 @@ final class Preferences {
     var maxDays: Int { didSet { defaults?.set(maxDays, forKey: "maxDays") } }
     var hotkeyEnabled: Bool { didSet { defaults?.set(hotkeyEnabled, forKey: "hotkeyEnabled") } }
     var autoPaste: Bool { didSet { defaults?.set(autoPaste, forKey: "autoPaste") } }
+    /// false — ClipMom живёт только в строке меню (без значка в Dock).
+    var showInDock: Bool { didSet { defaults?.set(showInDock, forKey: "showInDock") } }
     var onboardingDismissed: Bool { didSet { defaults?.set(onboardingDismissed, forKey: "onboardingDismissed") } }
     var excluded: [ExcludedApp] {
         didSet { defaults?.set(try? JSONEncoder().encode(excluded), forKey: "excludedApps") }
@@ -38,6 +40,7 @@ final class Preferences {
         maxDays = (d?.object(forKey: "maxDays") as? Int) ?? 30
         hotkeyEnabled = (d?.object(forKey: "hotkeyEnabled") as? Bool) ?? true
         autoPaste = d?.bool(forKey: "autoPaste") ?? false
+        showInDock = (d?.object(forKey: "showInDock") as? Bool) ?? true
         onboardingDismissed = d?.bool(forKey: "onboardingDismissed") ?? false
         if let data = d?.data(forKey: "excludedApps"), let list = try? JSONDecoder().decode([ExcludedApp].self, from: data) {
             excluded = list

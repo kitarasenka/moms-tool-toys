@@ -34,6 +34,7 @@ struct ContentView: View {
             }
         }
         .sheet(isPresented: $state.showSettings) { SettingsView().environment(state) }
+        .sheet(isPresented: $state.showGuide) { GuideSheet().environment(state) }
         .onAppear {
             let open = openWindow
             AppDelegate.openMain = { open(id: "main") }

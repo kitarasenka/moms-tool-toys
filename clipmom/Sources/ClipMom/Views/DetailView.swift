@@ -11,8 +11,18 @@ struct DetailView: View {
             if let item = state.selectedItem {
                 ItemDetail(item: item)
             } else {
-                EmptyStateView(icon: "hand.point.left", title: "Выберите запись",
-                               text: "Двойной щелчок или кнопка «Скопировать» вернёт её в буфер обмена. Из любого приложения — ⇧⌘V.")
+                // Пока ничего не выбрано — подсказка, как вызвать историю из любого приложения.
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        Label("Выберите запись слева: двойной щелчок или ⌘↩ вернёт её в буфер обмена.",
+                              systemImage: "hand.point.left")
+                            .foregroundStyle(.secondary)
+                        HotkeyGuide()
+                    }
+                    .padding(20)
+                    .frame(maxWidth: 520, alignment: .leading)
+                    .frame(maxWidth: .infinity)
+                }
             }
         }
         .fillAvailable()

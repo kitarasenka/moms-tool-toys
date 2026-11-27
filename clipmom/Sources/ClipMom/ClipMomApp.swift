@@ -42,6 +42,9 @@ struct ClipMomApp: App {
                 Button("Быстрая панель") { state.panel?.toggle() }
                 Divider()
             }
+            CommandGroup(replacing: .help) {
+                Button("Как вызвать ClipMom из любого приложения") { state.showGuide = true }
+            }
         }
 
         // Значок в строке меню: окно можно закрыть — ClipMom продолжит записывать историю.
@@ -59,7 +62,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     static var openMain: (() -> Void)?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.regular)  // нужно при запуске без .app (swift run)
+        // .regular нужен и при запуске без .app (swift run); .accessory — «только строка меню».
+        AppState.applyDockPolicy(Self.state?.prefs.showInDock ?? true)
         NSApp.activate(ignoringOtherApps: true)
     }
 
@@ -104,12 +108,22 @@ struct MenuBarContent: View {
             Button("Не записывать 5 минут") { state.pauseFiveMinutes() }
         }
         Divider()
-        Button("Открыть ClipMom") {
-            openWindow(id: "main")
-            NSApp.activate(ignoringOtherApps: true)
+        Button("Быстрая панель (⇧⌘V)") {
+            DispatchQueue.main.async { state.panel?.show() }  // после закрытия меню
         }
+        Button("Как вызвать из любого приложения…") { openMain { state.showGuide = true } }
+        Divider()
+        Button("Открыть ClipMom") { openMain() }
+        Button("Настройки…") { openMain { state.showSettings = true } }
         Button("Завершить ClipMom") { NSApp.terminate(nil) }
             .keyboardShortcut("q")
+    }
+
+    /// Без значка в Dock окно открывается только отсюда — поэтому сразу активируем ClipMom.
+    private func openMain(then action: (() -> Void)? = nil) {
+        openWindow(id: "main")
+        NSApp.activate(ignoringOtherApps: true)
+        if let action { DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: action) }
     }
 
     private func menuTitle(_ item: ClipItem) -> String {
@@ -119,6 +133,7 @@ struct MenuBarContent: View {
 }
 
 /// `open ClipMom.app --args --demo --panel` — сразу показать быструю панель; `--settings` — настройки;
+/// `--guide` — справка «Как вызвать ClipMom»; `--no-dock` — без значка в Dock (только строка меню);
 /// `--filter link` — фильтр (all|text|link|image|files|pinned); `--select 2` — выделить запись;
 /// `--close-window` — закрыть окно (проверка, что ClipMom живёт в строке меню и открывается снова).
 enum LaunchOptions {
@@ -130,6 +145,8 @@ enum LaunchOptions {
         }
         if let f = value("--filter").flatMap(ClipFilter.init(rawValue:)) { state.filter = f }
         if args.contains("--settings") { state.showSettings = true }
+        if args.contains("--guide") { state.showGuide = true }
+        if args.contains("--no-dock") { state.setShowInDock(false) }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             if let n = value("--select").flatMap(Int.init), n < state.visibleItems.count {
                 state.selection = state.visibleItems[n].id

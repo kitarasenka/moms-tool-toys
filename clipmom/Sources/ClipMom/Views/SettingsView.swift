@@ -44,6 +44,9 @@ struct SettingsView: View {
                     }
                 }
                 Section("Быстрая панель") {
+                    QuickPanelIllustration()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 4)
                     Toggle("Открывать по ⇧⌘V из любого приложения",
                            isOn: Binding(get: { p.hotkeyEnabled }, set: { state.setHotkey($0) }))
                     if state.hotkeyFailed {
@@ -61,6 +64,17 @@ struct SettingsView: View {
                             if !axTrusted { Button("Открыть") { AutoPaste.openSettings() } }
                         }
                     }
+                }
+                Section("Строка меню и Dock") {
+                    Toggle("Показывать значок в Dock", isOn: Binding(get: { p.showInDock }, set: { state.setShowInDock($0) }))
+                    Group {
+                        if p.showInDock {
+                            Text("Выключите, чтобы ClipMom жил только в строке меню вверху экрана (значок \(Image(systemName: "list.clipboard"))) и не занимал место в Dock.")
+                        } else {
+                            Text("ClipMom живёт в строке меню вверху экрана: значок \(Image(systemName: "list.clipboard")) → «Открыть ClipMom», «Настройки…». Быстрая панель — ⇧⌘V.")
+                        }
+                    }
+                    .font(.caption).foregroundStyle(.secondary)
                 }
                 Section("Автозапуск") {
                     Toggle("Запускать ClipMom при входе в систему", isOn: Binding(get: { loginOn }, set: { on in
