@@ -167,7 +167,7 @@ details.tree .kids{padding-left:18px}
 .step span{color:var(--ink2);font-size:15px}
 footer{padding:40px 0 60px;color:var(--muted);font-size:14px;text-align:center}
 
-/* KeyMom */
+/* Key */
 .kbar{display:flex;justify-content:flex-end;align-items:center;gap:12px;background:var(--bar);border-radius:8px;padding:5px 12px;font-size:12.5px;margin-bottom:12px;color:var(--ink2)}
 .kind{font-weight:800;color:var(--ink);padding:1px 7px;border-radius:5px;background:color-mix(in srgb,var(--blue) 22%,transparent);transition:background .2s}
 .kind.caps{background:color-mix(in srgb,var(--warn) 32%,transparent)}
@@ -179,7 +179,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:14px;text-align:center}
 .kfield:focus{outline:2px solid color-mix(in srgb,var(--sel) 55%,transparent);outline-offset:0}
 .kkey{display:inline-grid;place-items:center;min-width:34px;height:30px;padding:0 9px;border-radius:7px;background:var(--win);box-shadow:0 2px 0 var(--line),0 0 0 1px var(--line);font-weight:600;font-size:13px}
 .kout{border:1px solid color-mix(in srgb,var(--blue) 35%,var(--line));background:color-mix(in srgb,var(--blue) 7%,var(--win));border-radius:10px;padding:12px;min-height:70px;font-size:15px;white-space:pre-wrap;word-break:break-word}
-/* DesktopMom */
+/* Desktop */
 .dm-desk{position:relative;min-height:190px;border-radius:12px;overflow:hidden;padding:10px 128px 10px 10px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px 2px;background:linear-gradient(135deg,#7aa7ff 0%,#a68cf5 45%,#f29ab8 100%)}
 .dm-f{width:60px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 2px;border-radius:6px;color:#fff;font-size:10px;line-height:1.2;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.45);transition:transform .7s cubic-bezier(.5,0,.3,1),opacity .7s;will-change:transform}
 .dm-f .th{width:38px;height:30px;display:grid;place-items:center;font-size:27px;text-shadow:none}
@@ -257,7 +257,7 @@ footer{padding:40px 0 60px;color:var(--muted);font-size:14px;text-align:center}
     <h2>Как установить</h2>
     <p class="sub">Приложения собираются из исходников на вашем Mac — это пара минут.</p>
     <div class="steps">
-      <div class="step"><b>1. Инструменты Apple</b><span>Нужны Command Line Tools: <code>xcode-select --install</code>. Для WifiMom ещё Node.js.</span></div>
+      <div class="step"><b>1. Инструменты Apple</b><span>Нужны Command Line Tools: <code>xcode-select --install</code>. Для Wifi ещё Node.js.</span></div>
       <div class="step"><b>2. Скачать и собрать</b><span>Двойной щелчок по <code>Установить.command</code> в папке проекта — он соберёт всё и положит в «Программы». Или <code>./install.sh</code> в Терминале.</span></div>
       <div class="step"><b>3. Запустить</b><span>Откройте «Mom's Tool Toys» через Spotlight или Launchpad — дальше всё оттуда.</span></div>
     </div>
@@ -301,7 +301,7 @@ function toast(msg) {
 function tools(html) { $('#secTools').innerHTML = html; return $('#secTools'); }
 function median(a) { const b = a.filter(v => v != null).sort((x, y) => x - y); return b.length ? b[b.length >> 1] : null; }
 
-/* ================= WifiMom ================= */
+/* ================= Wifi ================= */
 const wifi = {r: [], n: [], fault: null, left: 0, peak: 0, lost: 0,
   events: [
     {t: '21:47', kind: 'wifi', title: 'Переключение на другую точку доступа', details: 'пик 140 мс, потеряно 2 пакета, канал 36 → 6', hint: 'Mac перескочил на 2,4 ГГц — в спальне сигнал 5 ГГц слабый.'},
@@ -453,7 +453,7 @@ function wifiSpeed(p) {
   };
 }
 
-/* ================= PerfMom ================= */
+/* ================= Perf ================= */
 const procs = [
   {n: 'Google Chrome', k: 'app', cpu: 9, mem: 1840, thr: 41, net: 310, pid: 812, u: 'mama', sign: 'Developer ID · Google LLC'},
   {n: 'Google Chrome Helper (Renderer)', k: 'app', cpu: 14, mem: 920, thr: 18, net: 0, pid: 815, u: 'mama', par: 'Google Chrome', sign: 'Developer ID · Google LLC'},
@@ -467,7 +467,7 @@ const procs = [
   {n: 'kernel_task', k: 'sys', cpu: 6, mem: 30, thr: 520, net: 0, pid: 0, u: 'root', sign: 'Apple'},
   {n: 'mds_stores', k: 'sys', cpu: 4, mem: 120, thr: 7, net: 0, pid: 388, u: 'root', sign: 'Apple'},
   {n: 'photoanalysisd', k: 'sys', cpu: 3, mem: 210, thr: 6, net: 0, pid: 712, u: 'mama', sign: 'Apple'},
-  {n: 'PerfMom', k: 'app', cpu: 1.2, mem: 85, thr: 8, net: 0, pid: 1520, u: 'mama', sign: 'ad-hoc'},
+  {n: 'Perf', k: 'app', cpu: 1.2, mem: 85, thr: 8, net: 0, pid: 1520, u: 'mama', sign: 'ad-hoc'},
 ];
 procs.forEach(q => q.base = q.cpu);
 const jitter = () => procs.forEach(q => { q.cpu = Math.max(0, q.base * rnd(.55, 1.5)); q.netNow = q.net * rnd(.3, 1.6); });
@@ -561,7 +561,7 @@ function perfSecurity(p) {
       <span class="badge" style="background:${c}">${r.score}</span><div class="grow"><div class="ttl">${esc(r.n)} <span style="color:${c};font-weight:600;font-size:12px">· ${t}</span></div><div class="meta">${esc(r.path)}</div>
       <ul style="margin:6px 0 0;padding-left:18px">${r.why.map(([w, n]) => `<li>${esc(w)} <span class="muted">+${n}</span></li>`).join('')}</ul></div>
       <button class="ui-btn" data-i="${i}">Доверять</button></div>`; }).join('')}</div>
-      <p class="muted" style="font-size:12px">Это не антивирус: PerfMom складывает типичные признаки и объясняет, почему процесс в списке.</p>` : '<p>Подозрительных процессов нет 🎉</p>';
+      <p class="muted" style="font-size:12px">Это не антивирус: Perf складывает типичные признаки и объясняет, почему процесс в списке.</p>` : '<p>Подозрительных процессов нет 🎉</p>';
     $$('[data-i]', p).forEach(b => b.onclick = () => { const r = risks.splice(b.dataset.i, 1)[0]; toast(`«${r.n}» в списке доверенных — больше не помечается`); draw(); });
   };
   draw();
@@ -586,7 +586,7 @@ function perfHistory(p) {
   svg.addEventListener('mouseleave', () => { tip.style.display = 'none'; hl.style.display = 'none'; });
 }
 
-/* ================= CleanerMom ================= */
+/* ================= Cleaner ================= */
 const junk = [
   {c: 'Система', items: [{n: 'Кэши приложений', s: 3.2, on: true}, {n: 'Журналы и отчёты о сбоях', s: .41, on: true}, {n: 'Временные файлы старше недели', s: .69, on: true}, {n: 'Корзина', s: 1.8, on: true}]},
   {c: 'Браузеры', items: [{n: 'Кэш Safari', s: .38, on: true}, {n: 'Кэш Google Chrome', s: .74, on: true}, {n: 'Кэш Яндекс Браузера', s: .21, on: true}]},
@@ -677,7 +677,7 @@ function cleanMaint(p) {
   $$('[data-i]', p).forEach(b => b.onclick = () => { b.disabled = true; b.textContent = 'Выполняется…'; later(() => { b.textContent = 'Готово ✓'; }, 1100); });
 }
 
-/* ================= DiskMom ================= */
+/* ================= Disk ================= */
 const disk = {n: 'Домашняя папка', kids: [
   {n: 'Library', kids: [{n: 'Containers', kids: [{n: 'Docker', s: 38}, {n: 'Telegram', s: 5}, {n: 'Остальное', s: 3}]}, {n: 'Application Support', kids: [{n: 'Steam', s: 22}, {n: 'Google', s: 9}, {n: 'Slack', s: 4}, {n: 'Остальное', s: 6}]}, {n: 'Caches', kids: [{n: 'Chrome', s: 6}, {n: 'Xcode', s: 5}, {n: 'Spotify', s: 4}, {n: 'Остальное', s: 3}]}, {n: 'Developer', kids: [{n: 'DerivedData', s: 14}, {n: 'iOS DeviceSupport', s: 9}]}]},
   {n: 'Изображения', kids: [{n: 'Медиатека Фото', s: 88}, {n: 'Экспорт', s: 8}]},
@@ -763,16 +763,16 @@ function diskVols(p) {
   draw();
 }
 
-/* ================= PrivacyMom ================= */
+/* ================= Privacy ================= */
 const perms = {
   'Камера': [['zoom.us', true, '3 марта'], ['Telegram', true, '12 янв.'], ['Google Chrome', true, '5 мая'], ['Skype', false, '2022']],
   'Микрофон': [['zoom.us', true, '3 марта'], ['Telegram', true, '12 янв.'], ['Google Chrome', true, '5 мая'], ['Голосовые заметки', true, '1 июня']],
   'Запись экрана': [['zoom.us', true, '3 марта'], ['Google Chrome', false, '5 мая'], ['TeamViewer', true, '2021']],
-  'Полный доступ к диску': [['CleanerMom', true, 'вчера'], ['PrivacyMom', true, 'сегодня'], ['Терминал', true, '2023']],
-  'Универсальный доступ': [['ClipMom', true, 'вчера'], ['Grammarly', true, '2023']],
+  'Полный доступ к диску': [['Cleaner', true, 'вчера'], ['Privacy', true, 'сегодня'], ['Терминал', true, '2023']],
+  'Универсальный доступ': [['Clip', true, 'вчера'], ['Grammarly', true, '2023']],
   'Фото': [['Telegram', true, '12 янв.'], ['Pixelmator Pro', true, '9 апр.']],
   'Контакты': [['Telegram', false, '12 янв.']],
-  'Автоматизация': [['PerfMom → System Events', true, 'вчера']]};
+  'Автоматизация': [['Perf → System Events', true, 'вчера']]};
 function privPerms(p) {
   let cur = 'Камера';
   tools('');
@@ -798,7 +798,7 @@ function privNow(p) {
       <div class="row" style="margin-bottom:14px"><button class="ui-btn pri" id="sCall">${sensors.cam ? 'Завершить звонок' : 'Начать видеозвонок'}</button><button class="ui-btn" id="sMic">${sensors.mic && !sensors.cam ? 'Выключить диктовку' : 'Включить только микрофон'}</button></div>
       <div style="font-weight:600;margin-bottom:6px">Журнал за 7 дней</div>
       <div class="list">${[...sensors.log].reverse().map(l => `<div class="item" style="padding:7px 10px"><span class="grow">${esc(l.e)}</span><span class="muted">${l.t}</span></div>`).join('')}</div>`;
-    $('#sCall').onclick = () => { const on = !sensors.cam; later(() => { sensors.cam = sensors.mic = on; sensors.log.push({t: 'сегодня ' + hhmm(), e: on ? 'Камера и микрофон включены' : 'Камера и микрофон выключены'}); draw(); }, 600); toast(on ? 'Звонок начался — PrivacyMom заметит в течение 2 с' : 'Звонок завершён'); };
+    $('#sCall').onclick = () => { const on = !sensors.cam; later(() => { sensors.cam = sensors.mic = on; sensors.log.push({t: 'сегодня ' + hhmm(), e: on ? 'Камера и микрофон включены' : 'Камера и микрофон выключены'}); draw(); }, 600); toast(on ? 'Звонок начался — Privacy заметит в течение 2 с' : 'Звонок завершён'); };
     $('#sMic').onclick = () => { if (sensors.cam) return toast('Сначала завершите звонок'); sensors.mic = !sensors.mic; sensors.log.push({t: 'сегодня ' + hhmm(), e: sensors.mic ? 'Микрофон включён' : 'Микрофон выключен'}); draw(); };
   };
   draw();
@@ -828,7 +828,7 @@ function privWifi(p) {
   draw();
 }
 
-/* ================= BatteryMom ================= */
+/* ================= Battery ================= */
 const bat = {pct: 76, plug: false};
 function batMain(p) {
   tools('<button class="ui-btn" id="bPlug"></button>');
@@ -881,7 +881,7 @@ function batDevices(p) {
     <div class="row" style="margin-top:6px">${parts.map(([l, v]) => `<div style="min-width:90px"><div class="meta">${l || 'заряд'} · <b style="color:var(--ink)">${v}%</b></div><div class="bar" style="height:6px"><i style="width:${v}%;background:${v < 20 ? 'var(--bad)' : 'var(--ok)'}"></i></div></div>`).join('')}</div></div></div>`).join('')}</div>`;
 }
 
-/* ================= ClipMom ================= */
+/* ================= Clip ================= */
 let clips = [
   {k: 'link', t: 'https://www.gosuslugi.ru/help/faq', app: 'Safari', ago: '2 мин'},
   {k: 'text', t: 'Встреча с учительницей в четверг в 17:30, кабинет 214', app: 'Telegram', ago: '15 мин', pin: true},
@@ -906,9 +906,9 @@ function clipHistory(p) {
     $$('.l button', p).forEach(b => b.onclick = () => { sel = +b.dataset.i; draw(); });
     $$('.l button', p).forEach(b => b.ondblclick = () => toast('Скопировано — вставляйте ⌘V'));
     if (s) { $('#cA').onclick = () => toast('Скопировано — вставляйте ⌘V'); $('#cP').onclick = () => { s.pin = !s.pin; draw(); }; $('#cD').onclick = () => { clips.splice(clips.indexOf(s), 1); draw(); }; }
-    const add = () => { const v = $('#cIn').value.trim(); if (!v) return toast('Сначала напишите что-нибудь'); clips = clips.filter(c => c.t !== v); clips.unshift({k: /^https?:\/\//.test(v) ? 'link' : 'text', t: v, app: 'Эта страница', ago: 'только что'}); f = 'all'; q = ''; $('#cq').value = ''; sel = 0; draw(); toast('ClipMom запомнил — запись наверху'); };
+    const add = () => { const v = $('#cIn').value.trim(); if (!v) return toast('Сначала напишите что-нибудь'); clips = clips.filter(c => c.t !== v); clips.unshift({k: /^https?:\/\//.test(v) ? 'link' : 'text', t: v, app: 'Эта страница', ago: 'только что'}); f = 'all'; q = ''; $('#cq').value = ''; sel = 0; draw(); toast('Clip запомнил — запись наверху'); };
     $('#cCp').onclick = add; $('#cIn').onkeydown = e => { if (e.key === 'Enter') add(); };
-    $('#cPw').onclick = () => toast('ClipMom это не записал: пароли из менеджеров паролей не сохраняются');
+    $('#cPw').onclick = () => toast('Clip это не записал: пароли из менеджеров паролей не сохраняются');
   };
   $('#cq').oninput = e => { q = e.target.value.toLowerCase(); sel = 0; draw(); };
   draw();
@@ -946,13 +946,13 @@ function clipPanel(p) {
 function clipSettings(p) {
   tools('');
   const s = [['Хранить записей', '300'], ['Хранить дней', '30 (закреплённые — всегда)']];
-  const t = [['Быстрая панель ⇧⌘V', true], ['Вставлять сразу после выбора', false, 'нужен «Универсальный доступ»'], ['Показывать значок в Dock', true, 'выключите — ClipMom останется только в строке меню'], ['Запускать при входе', true], ['Пауза записи', false]];
+  const t = [['Быстрая панель ⇧⌘V', true], ['Вставлять сразу после выбора', false, 'нужен «Универсальный доступ»'], ['Показывать значок в Dock', true, 'выключите — Clip останется только в строке меню'], ['Запускать при входе', true], ['Пауза записи', false]];
   p.innerHTML = `<div class="list">${s.map(([a, b]) => `<div class="item"><span class="grow">${a}</span><b>${b}</b></div>`).join('')}${t.map(([a, on, m]) => `<label class="item" style="cursor:pointer"><span class="grow">${a}${m ? `<div class="meta">${m}</div>` : ''}</span><input type="checkbox" class="switch" ${on ? 'checked' : ''}></label>`).join('')}
     <div class="item" style="display:block"><div class="ttl" style="margin-bottom:6px">Не записывать из приложений</div><div class="row">${['Связка ключей', 'Пароли', '1Password', 'Bitwarden', 'KeePassXC'].map(x => `<span class="pill" style="background:var(--chip);color:var(--ink2);font-weight:500">${x}</span>`).join('')}</div></div>
     <div class="item"><span class="grow">История хранится только на этом Mac, в сеть ничего не уходит.</span><button class="ui-btn red" onclick="toast('История очищена (в демо — понарошку)')">Очистить историю…</button></div></div>`;
 }
 
-/* ================= HelpMom ================= */
+/* ================= Help ================= */
 const helpRep = {serial: false, findings: [
   {id: 'disk', lvl: 'warn', t: 'Мало места на диске (18,4 ГБ)', a: 'Стоит освободить место: Корзина, Загрузки, старые видео.', fix: 'Освободили 12 ГБ'},
   {id: 'up', lvl: 'warn', t: 'Mac не перезагружали 12 дней', a: 'Перезагрузка раз в неделю помогает, если Mac стал медленнее.', fix: 'Mac перезагружен'},
@@ -967,7 +967,7 @@ function helpText() {
   const [, h] = helpVerdict(), mark = {ok: '✅', warn: '⚠️', bad: '❗'};
   const up = helpRep.findings.some(x => x.id === 'up') ? '12 дней 3 ч' : '4 мин';
   const free = helpRep.findings.some(x => x.id === 'disk') ? '18,4 ГБ из 245 ГБ (8 %)' : '30,4 ГБ из 245 ГБ (12 %)';
-  return [`Отчёт HelpMom — ${new Date().toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'})}, ${hhmm()}`, 'Компьютер: MacBook Air — Мама', '',
+  return [`Отчёт Help — ${new Date().toLocaleDateString('ru-RU', {day: 'numeric', month: 'long'})}, ${hhmm()}`, 'Компьютер: MacBook Air — Мама', '',
     `${helpRep.findings.length ? '⚠️' : '✅'} ${h}`, ...helpRep.findings.map(x => `${mark[x.lvl]} ${x.t}. ${x.a}`), '',
     'Mac: MacBook Air (13-inch, M2, 2022) (Mac14,2)', 'Процессор: Apple M2 · Память: 8 ГБ', ...(helpRep.serial ? ['Серийный номер: C02XK1ABJG5J'] : []),
     'Система: macOS 15.6 Sequoia (24G84)', `Работает без перезагрузки: ${up}`, `Диск: свободно ${free}`, 'Память: нагрузка нормальная',
@@ -1026,12 +1026,12 @@ function helpCall(p) {
   draw();
 }
 const helpProbs = [
-  ['📶', 'Не работает интернет', ['Значок Wi-Fi вверху справа: пустой — выберите свою сеть.', 'Выключите и включите Wi-Fi.', 'Перезагрузите роутер: из розетки на 30 секунд.', 'WifiMom покажет, виноват Wi-Fi или провайдер.'], ['Открыть WifiMom', 'Настройки Wi-Fi']],
-  ['🐢', 'Mac тормозит', ['Закройте лишние приложения (⌘Q).', 'Закройте лишние вкладки браузера.', 'Перезагрузите Mac, если давно не перезагружали.'], ['Открыть PerfMom', 'Мониторинг системы']],
-  ['💾', 'Мало места на диске', ['Очистите Корзину.', 'Удалите старые установщики и видео из «Загрузок».', 'CleanerMom уберёт мусор одной кнопкой.'], ['Открыть CleanerMom', 'Открыть DiskMom']],
+  ['📶', 'Не работает интернет', ['Значок Wi-Fi вверху справа: пустой — выберите свою сеть.', 'Выключите и включите Wi-Fi.', 'Перезагрузите роутер: из розетки на 30 секунд.', 'Wifi покажет, виноват Wi-Fi или провайдер.'], ['Открыть Wifi', 'Настройки Wi-Fi']],
+  ['🐢', 'Mac тормозит', ['Закройте лишние приложения (⌘Q).', 'Закройте лишние вкладки браузера.', 'Перезагрузите Mac, если давно не перезагружали.'], ['Открыть Perf', 'Мониторинг системы']],
+  ['💾', 'Мало места на диске', ['Очистите Корзину.', 'Удалите старые установщики и видео из «Загрузок».', 'Cleaner уберёт мусор одной кнопкой.'], ['Открыть Cleaner', 'Открыть Disk']],
   ['🛡️', 'Окна «ваш Mac заражён!»', ['<b>Не звоните</b> по номерам из таких окон — это мошенники.', 'Закройте вкладку ⌘W или завершите браузер.', 'Отключите уведомления этого сайта.', 'Если что-то установили или сказали пароль — сразу зовите помощника.'], ['Завершить зависшее…', 'Позвать на помощь']],
-  ['⌨️', 'Пишет не теми буквами', ['Язык: <b>Control + Пробел</b> или 🌐 внизу слева.', 'Пропал русский — «Источники ввода» → «+» → Русская.', 'БОЛЬШИЕ БУКВЫ — выключите Caps Lock.'], ['Открыть KeyMom', 'Настройки клавиатуры']],
-  ['⏳', 'Приложение зависло', ['Подождите минуту.', '<b>⌥ + ⌘ + Esc</b> → выберите приложение → «Завершить».', 'Или кнопка ниже — HelpMom покажет список.'], ['Завершить зависшее…']],
+  ['⌨️', 'Пишет не теми буквами', ['Язык: <b>Control + Пробел</b> или 🌐 внизу слева.', 'Пропал русский — «Источники ввода» → «+» → Русская.', 'БОЛЬШИЕ БУКВЫ — выключите Caps Lock.'], ['Открыть Key', 'Настройки клавиатуры']],
+  ['⏳', 'Приложение зависло', ['Подождите минуту.', '<b>⌥ + ⌘ + Esc</b> → выберите приложение → «Завершить».', 'Или кнопка ниже — Help покажет список.'], ['Завершить зависшее…']],
   ['📸', 'Снимок экрана', ['<b>⇧⌘3</b> — весь экран.', '<b>⇧⌘4</b> — выделить кусок.', '<b>⇧⌘5</b> — все варианты и видео.'], ['Снимок экрана']],
   ['🔄', 'Перезагрузить Mac', ['Сохраните документы.', 'Меню  → «Перезагрузить…».', 'Mac не отвечает — держите кнопку питания 10 секунд.'], ['Перезагрузить…']]];
 let helpFq = ['Safari', 'Почта', 'Zoom', 'Фото', 'Google Chrome'];
@@ -1058,7 +1058,7 @@ function helpProblems(p) {
   draw();
 }
 
-/* ================= SafetyMom =================
+/* ================= Safety =================
    Вставить в docs/index.html рядом с демо остальных инструментов (например, перед «Launcher»).
    Использует только существующие хелперы и классы: $, $$, esc, hhmm, later, toast, tools,
    .list/.item/.pill/.ui-btn/.badge/.cards/.card/.seg/.row/.grow/.muted, переменные --ok/--warn/--bad/--muted/--side. */
@@ -1096,7 +1096,7 @@ function safeChecks(p) {
         <div class="meta" style="font-size:12.5px;margin-top:3px">${esc(c.why)}</div>
         ${c.lv !== 'ok' && c.fix ? `<div style="margin-top:6px;font-size:12.5px;background:color-mix(in srgb,${SF_LV[c.lv][2]} 10%,transparent);border-radius:8px;padding:7px 9px"><b>Что сделать:</b> ${esc(c.fix)}</div>
           <button class="ui-btn" style="margin-top:6px" data-fix="${i}">Открыть настройки</button>` : ''}</div></div>`).join('')}</div>
-      <p class="muted" style="font-size:12px">SafetyMom ничего не меняет сам: только показывает и открывает нужное место в Системных настройках.</p>`;
+      <p class="muted" style="font-size:12px">Safety ничего не меняет сам: только показывает и открывает нужное место в Системных настройках.</p>`;
     $('#sfAgain').onclick = () => { if (busy) return; busy = true; draw(); later(() => { busy = false; draw(); toast('Проверено: 11 пунктов'); }, 900); };
     $$('[data-fix]', p).forEach(b => b.onclick = () => {
       const c = safety[b.dataset.fix];
@@ -1134,15 +1134,15 @@ function safeBrowsers(p) {
             ${s.map(x => `<div class="row" style="padding:6px 0;border-top:1px solid var(--line)"><span style="color:${SF_LV[x.lv][2]};font-weight:700;width:14px">${SF_LV[x.lv][3]}</span><div class="grow"><div class="ttl" style="font-weight:600">${esc(x.h)}</div><div class="meta">${SF_WHY[x.lv]} · разрешено ${x.d}</div></div>
               ${chrome ? `<button class="ui-btn" data-h="${esc(x.h)}" ${locked ? 'disabled title="Сначала закройте Chrome"' : ''}>Запретить</button>` : ''}</div>`).join('') || '<p class="muted" style="margin:4px 0">Ни одному сайту не разрешено присылать уведомления.</p>'}
             ${chrome && bad.length > 1 ? `<div class="row" style="justify-content:flex-end;margin-top:6px"><button class="ui-btn pri" id="sfAll" ${locked ? 'disabled' : ''}>Запретить все незнакомые (${bad.length})</button></div>` : ''}
-            ${!chrome ? '<p class="muted" style="font-size:12px;margin:6px 0 0">В Safari разрешение снимают в Safari → Настройки → Веб-сайты → Уведомления — SafetyMom подскажет и откроет.</p>' : ''}</div>`; }).join('')}</div>`;
-      const block = hs => { sfB.sites = sfB.sites.filter(x => !hs.includes(x.h)); toast(hs.length === 1 ? `${hs[0]} больше не пришлёт уведомлений` : `${hs.length} сайта больше не пришлют уведомлений. Копия настроек — в папке SafetyMom`); draw(); };
+            ${!chrome ? '<p class="muted" style="font-size:12px;margin:6px 0 0">В Safari разрешение снимают в Safari → Настройки → Веб-сайты → Уведомления — Safety подскажет и откроет.</p>' : ''}</div>`; }).join('')}</div>`;
+      const block = hs => { sfB.sites = sfB.sites.filter(x => !hs.includes(x.h)); toast(hs.length === 1 ? `${hs[0]} больше не пришлёт уведомлений` : `${hs.length} сайта больше не пришлют уведомлений. Копия настроек — в папке Safety`); draw(); };
       $$('[data-h]', p).forEach(b => b.onclick = () => {
         if (b.dataset.sure) block([b.dataset.h]); else { b.dataset.sure = 1; b.textContent = 'Точно запретить?'; b.classList.add('red'); }
       });
       if ($('#sfAll')) $('#sfAll').onclick = () => block(sfB.sites.filter(x => x.b === 'Google Chrome' && x.lv !== 'ok').map(x => x.h));
       if ($('#sfQuit')) $('#sfQuit').onclick = () => { toast('Chrome закрывается…'); later(() => { sfB.chromeOpen = false; draw(); }, 600); };
     } else {
-      p.innerHTML = `<p class="muted" style="font-size:12.5px;margin:0 0 10px">SafetyMom ничего не удаляет сам: лишнее расширение удалите на странице расширений браузера. Не помните, что это и зачем, — удаляйте смело.</p>
+      p.innerHTML = `<p class="muted" style="font-size:12.5px;margin:0 0 10px">Safety ничего не удаляет сам: лишнее расширение удалите на странице расширений браузера. Не помните, что это и зачем, — удаляйте смело.</p>
         <div class="list">${['Google Chrome', 'Safari'].map(b => { const e = sfB.exts.filter(x => x.b === b), bad = e.filter(x => x.lv === 'bad').length;
           return `<div class="item" style="display:block">${head(b, `<button class="ui-btn" data-pg="${b}">${b === 'Safari' ? 'Открыть Safari' : 'Страница расширений'}</button>${bad ? sfPill('bad', 'Подозрительных: ' + bad) : sfPill('ok', e.length + ' шт.')}`)}
             ${e.map(x => `<div class="row" style="padding:7px 0;border-top:1px solid var(--line);align-items:flex-start"><span style="color:${SF_LV[x.lv][2]};font-weight:700;width:14px">${SF_LV[x.lv][3]}</span><div class="grow"><div class="ttl" style="font-weight:600">${esc(x.n)}</div>
@@ -1175,13 +1175,13 @@ function safeNet(p) {
       ${card('🪪', 'Профили конфигурации', i ? 'warn' : 'ok', i ? '1 профиль' : 'Нет', i
         ? `${line('warn', 'Browser Settings', 'Установлен 3 дня назад · без организации')}<p class="meta" style="margin:4px 0 0">Если это домашний Mac и вы не знаете, откуда профиль, — удалите его в Системных настройках.</p>`
         : '<div class="meta">Профилей нет — никто не менял настройки Mac в обход вас.</div>')}
-      ${card('⏻', 'Что запускается само', 'ok', 'в PerfMom', '<div class="row"><span class="grow meta">Рекламные программы часто прячутся в автозагрузке — её подробно показывает PerfMom.</span><a class="ui-btn" href="#perfmom" style="text-decoration:none;color:inherit">Открыть PerfMom</a></div>')}
+      ${card('⏻', 'Что запускается само', 'ok', 'в Perf', '<div class="row"><span class="grow meta">Рекламные программы часто прячутся в автозагрузке — её подробно показывает Perf.</span><a class="ui-btn" href="#perfmom" style="text-decoration:none;color:inherit">Открыть Perf</a></div>')}
     </div>`;
   };
   draw();
 }
 
-/* ================= KeyMom ================= */
+/* ================= Key ================= */
 // Одна и та же клавиша в US/ABC и в «Русская – ПК» (вариант Apple в демо не показываем).
 const KM_EN = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./" + '~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:"ZXCVBNM<>?';
 const KM_RU = 'ё1234567890-=йцукенгшщзхъ\\фывапролджэячсмитьбю.' + 'Ё!"№;%:?*()_+ЙЦУКЕНГШЩЗХЪ/ФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,';
@@ -1339,17 +1339,17 @@ function keySettings(p) {
   const t = [['switchLang', 'После исправления переключать раскладку'], ['hud', 'Показывать «RU» / «EN» у курсора при смене раскладки'], ['capsHud', 'Подсказка у курсора, когда включаете Caps Lock'], ['pwWarn', 'Предупреждать в поле пароля, если включён Caps Lock']];
   p.innerHTML = `<div class="list">
     <div class="item" style="display:block"><div class="ttl" style="margin-bottom:8px">Сочетание для исправления</div><div class="seg" id="kmHk">${KM_KEYS.map(k => `<button data-k="${k.id}" class="${k === km.hk ? 'on' : ''}">${k.label}</button>`).join('')}</div>
-      <div class="meta" style="margin-top:6px">Все свободны: ⌃ Пробел и ⌃⌥ Пробел — переключение раскладки, ⌘ Пробел — Spotlight, ⇧⌘V — ClipMom.</div></div>
+      <div class="meta" style="margin-top:6px">Все свободны: ⌃ Пробел и ⌃⌥ Пробел — переключение раскладки, ⌘ Пробел — Spotlight, ⇧⌘V — Clip.</div></div>
     <div class="item"><span class="grow">Русская раскладка<div class="meta">от неё зависит, где точка и запятая</div></span><b>Определять самому</b></div>
     ${t.map(([k, a]) => `<label class="item" style="cursor:pointer"><span class="grow">${a}</span><input type="checkbox" class="switch" data-k="${k}" ${km[k] ? 'checked' : ''}></label>`).join('')}
-    <label class="item" style="cursor:pointer"><span class="grow">Показывать значок в Dock<div class="meta">выключите — KeyMom останется только в строке меню</div></span><input type="checkbox" class="switch" checked></label>
+    <label class="item" style="cursor:pointer"><span class="grow">Показывать значок в Dock<div class="meta">выключите — Key останется только в строке меню</div></span><input type="checkbox" class="switch" checked></label>
     <label class="item" style="cursor:pointer"><span class="grow">Запускать при входе</span><input type="checkbox" class="switch" checked></label>
     <div class="item"><span class="grow">Универсальный доступ<div class="meta">нужен, чтобы заменять текст в других приложениях</div></span><span class="pill ok">Разрешён</span></div></div>`;
   $$('#kmHk button').forEach(b => b.onclick = () => { km.hk = KM_KEYS.find(k => k.id === b.dataset.k); $$('#kmHk button').forEach(x => x.classList.toggle('on', x === b)); toast(`Теперь исправление — ${km.hk.label}`); });
   $$('input[data-k]', p).forEach(c => c.onchange = () => { km[c.dataset.k] = c.checked; });
 }
 
-/* ================= DesktopMom ================= */
+/* ================= Desktop ================= */
 const MONTHS = ['январь', 'февраль', 'март', 'апрель', 'май', 'июнь', 'июль', 'август', 'сентябрь', 'октябрь', 'ноябрь', 'декабрь'];
 const DESK_G = {doc: 'Документы', img: 'Картинки и фото', media: 'Видео и музыка', pkg: 'Установщики', zip: 'Архивы', dir: 'Папки'};
 const DESK_EMO = {doc: '📄', img: '🖼️', media: '🎬', pkg: '📦', zip: '🗜️', dir: '📁'};
@@ -1519,71 +1519,71 @@ function launcherMain(p) {
 
 /* ================= registry ================= */
 const TOOLS = [
-  {id: 'wifimom', bid: 'local.wifimom', name: 'WifiMom', tag: 'Домашний Wi-Fi', blurb: 'Отвечает на вечный вопрос «почему тормозит интернет»: виноват Wi-Fi дома или провайдер.',
+  {id: 'wifimom', bid: 'local.wifimom', name: 'Wifi', tag: 'Домашний Wi-Fi', blurb: 'Отвечает на вечный вопрос «почему тормозит интернет»: виноват Wi-Fi дома или провайдер.',
     pts: ['Пингует роутер и интернет одновременно — и сразу видно, где сбой', 'У каждого сбоя — причина и совет: слабый сигнал, роуминг, потери', 'Карта покрытия: отметьте точки на плане квартиры', 'Кто сейчас в сети: устройства с производителем и вашими подписями', 'Замер скорости и задержки под нагрузкой'],
-    secs: [['Обзор', wifiOverview, '<b>Нажмите «Сымитировать сбой Wi-Fi»</b> — синяя линия (роутер) взлетит, и WifiMom скажет, что дело в Wi-Fi. При сбое провайдера роутер в порядке, а розовая линия — нет.'],
+    secs: [['Обзор', wifiOverview, '<b>Нажмите «Сымитировать сбой Wi-Fi»</b> — синяя линия (роутер) взлетит, и Wifi скажет, что дело в Wi-Fi. При сбое провайдера роутер в порядке, а розовая линия — нет.'],
       ['События', wifiEvents, 'Каждый сбой записывается с подробностями и подсказкой, что делать. Сымитируйте сбой в «Обзоре» — он появится здесь.'],
       ['Устройства', wifiDevices, 'Устройства приходят и уходят из сети сами. <b>Щёлкните по имени</b>, чтобы подписать устройство.'],
       ['Карта покрытия', wifiMap, '<b>Щёлкайте по плану квартиры</b> — туда, где стоите с ноутбуком. Цвет покажет, где сигнал хороший, а где будут сбои.'],
-      ['Скорость', wifiSpeed, '<b>Запустите замер</b> — WifiMom покажет скорость и задержку под нагрузкой (то, от чего «лагают» видеозвонки).']]},
-  {id: 'perfmom', bid: 'local.perfmon.app', name: 'PerfMom', tag: 'Производительность', blurb: 'Что сейчас грузит Mac, кто что запустил, что стартует само и не притаилось ли чего подозрительного.',
+      ['Скорость', wifiSpeed, '<b>Запустите замер</b> — Wifi покажет скорость и задержку под нагрузкой (то, от чего «лагают» видеозвонки).']]},
+  {id: 'perfmom', bid: 'local.perfmon.app', name: 'Perf', tag: 'Производительность', blurb: 'Что сейчас грузит Mac, кто что запустил, что стартует само и не притаилось ли чего подозрительного.',
     pts: ['Процессы со всеми цифрами: ЦП, память, сеть, диск', 'Дерево процессов с суммами — сколько на самом деле ест браузер', 'Автозагрузка: выключить службу так, чтобы не вернулась', 'Проверка безопасности с объяснением каждого признака', 'История нагрузки за 30 дней'],
     secs: [['Обзор', perfOverview, 'Живые графики: ядра процессора, память, сеть. Цифры обновляются каждую секунду.'],
       ['Процессы', perfProcs, '<b>Щёлкните по заголовку столбца</b>, чтобы отсортировать, и по строке — чтобы открыть инспектор процесса. Попробуйте поиск и фильтры.'],
       ['Дерево', perfTree, '<b>Раскройте Google Chrome</b> — у него десяток помощников, и суммы показывают, сколько браузер ест на самом деле.'],
       ['Автозагрузка', perfStartup, '<b>Переключатели</b> выключают автозапуск навсегда — служба не вернётся после перезагрузки. «Осиротевшие» службы можно удалить.'],
-      ['Безопасность', perfSecurity, 'PerfMom складывает признаки (нет подписи, запуск из «Загрузок», маскировка под системный процесс) и объясняет оценку. <b>«Доверять»</b> снимает пометку.'],
+      ['Безопасность', perfSecurity, 'Perf складывает признаки (нет подписи, запуск из «Загрузок», маскировка под системный процесс) и объясняет оценку. <b>«Доверять»</b> снимает пометку.'],
       ['История', perfHistory, '<b>Наведите на график</b> — увидите, кто грузил Mac в эти 5 минут.']]},
-  {id: 'cleanermom', bid: 'local.cleanermom', name: 'CleanerMom', tag: 'Уборка Mac', blurb: 'Освобождает место без риска: удаляет только то, что приложения создадут заново, а ваши файлы отправляет в Корзину.',
+  {id: 'cleanermom', bid: 'local.cleanermom', name: 'Cleaner', tag: 'Уборка Mac', blurb: 'Освобождает место без риска: удаляет только то, что приложения создадут заново, а ваши файлы отправляет в Корзину.',
     pts: ['Умная очистка: кэши, журналы, временные файлы и Корзина одной кнопкой', 'Кэши браузеров — история и пароли не трогаются', 'Крупные и давно забытые файлы', 'Удаление приложений вместе со следами', 'Обслуживание: DNS, память, Spotlight, Quick Look'],
     secs: [['Умная очистка', cleanSmart, '<b>Нажмите «Сканировать»</b>, потом «Очистить» — так это выглядит в настоящем приложении.'],
       ['Мусор', cleanJunk, 'Всё найденное подробно: <b>снимайте и ставьте галочки</b>, сумма пересчитывается сразу.'],
       ['Крупные файлы', cleanLarge, 'Фильтр по размеру и «не менялись год». Отметьте файл и отправьте его в Корзину.'],
-      ['Деинсталлятор', cleanUninst, 'Выберите приложение: CleanerMom находит его настройки, кэши и контейнеры. Обратите внимание на Steam.'],
+      ['Деинсталлятор', cleanUninst, 'Выберите приложение: Cleaner находит его настройки, кэши и контейнеры. Обратите внимание на Steam.'],
       ['Обслуживание', cleanMaint, 'Мелкие починки, которые обычно делают командами в Терминале.']]},
-  {id: 'diskmom', bid: 'local.diskmom', name: 'DiskMom', tag: 'Диски и место', blurb: 'Показывает, что занимает место, находит одинаковые файлы и следит за подключёнными дисками.',
+  {id: 'diskmom', bid: 'local.diskmom', name: 'Disk', tag: 'Диски и место', blurb: 'Показывает, что занимает место, находит одинаковые файлы и следит за подключёнными дисками.',
     pts: ['Карта диска: кольцевая диаграмма с переходом внутрь', 'Дубликаты по содержимому, одна копия остаётся всегда', 'Все диски: место, формат, S.M.A.R.T., извлечение', 'Удаление — только в Корзину и после подтверждения'],
     secs: [['Карта диска', diskMap, '<b>Щёлкните по сектору</b>, чтобы заглянуть внутрь, по середине — чтобы вернуться. Наведите — увидите размер.'],
-      ['Дубликаты', diskDups, 'Нажмите <b>«Оставить самый новый»</b> — DiskMom отметит лишние копии. Попробуйте отметить все копии файла — не получится.'],
+      ['Дубликаты', diskDups, 'Нажмите <b>«Оставить самый новый»</b> — Disk отметит лишние копии. Попробуйте отметить все копии файла — не получится.'],
       ['Диски', diskVols, 'Все подключённые диски с заполненностью и состоянием. Внешние можно извлечь.']]},
-  {id: 'privacymom', bid: 'local.privacymom', name: 'PrivacyMom', tag: 'Приватность', blurb: 'Кто имеет доступ к камере, микрофону и файлам, включены ли они сейчас и что хранят браузеры.',
+  {id: 'privacymom', bid: 'local.privacymom', name: 'Privacy', tag: 'Приватность', blurb: 'Кто имеет доступ к камере, микрофону и файлам, включены ли они сейчас и что хранят браузеры.',
     pts: ['Все разрешения приложений в одном месте — со сбросом', 'Индикатор камеры и микрофона и журнал за неделю', 'История, cookies и кэш браузеров', 'Запомненные сети Wi-Fi — забыть лишние'],
     secs: [['Разрешения', privPerms, 'Выберите службу слева. <b>«Сбросить»</b> отзывает разрешение — приложение спросит снова, когда понадобится.'],
-      ['Сейчас', privNow, '<b>Начните «видеозвонок»</b> — PrivacyMom заметит включённые камеру и микрофон и запишет это в журнал.'],
+      ['Сейчас', privNow, '<b>Начните «видеозвонок»</b> — Privacy заметит включённые камеру и микрофон и запишет это в журнал.'],
       ['Браузеры', privBrowsers, 'Чистить можно только закрытый браузер. <b>Закройте Chrome</b> и очистите что-нибудь.'],
       ['Сети Wi-Fi', privWifi, 'Старые открытые сети лучше забыть — чтобы Mac не подключался к ним сам.']]},
-  {id: 'batterymom', bid: 'local.batterymom', name: 'BatteryMom', tag: 'Батарея', blurb: 'Здоровье батареи, история заряда, кто тратит энергию и сколько осталось у мыши и наушников.',
+  {id: 'batterymom', bid: 'local.batterymom', name: 'Battery', tag: 'Батарея', blurb: 'Здоровье батареи, история заряда, кто тратит энергию и сколько осталось у мыши и наушников.',
     pts: ['Здоровье, циклы, температура, мощность', 'История заряда за сутки и неделю', 'Какие приложения тратят больше энергии', 'Заряд мыши, клавиатуры и AirPods', 'Значок в строке меню; работает и на Mac без батареи'],
     secs: [['Батарея', batMain, '<b>Подключите зарядку</b> кнопкой вверху — увидите, как меняется состояние и прогноз.'],
       ['История', batHistory, 'Заряд за сутки или неделю и итоги по дням.'],
       ['Расход приложений', batApps, 'Топ приложений по энергии; обновляется сам.'],
       ['Устройства', batDevices, 'Bluetooth-устройства: мышь, клавиатура, наушники — и последний известный заряд отключённых.']]},
-  {id: 'clipmom', bid: 'local.clipmom', name: 'ClipMom', tag: 'Буфер обмена', blurb: 'Помнит всё, что вы копировали: текст, ссылки, картинки и файлы. Пароли — не помнит.',
+  {id: 'clipmom', bid: 'local.clipmom', name: 'Clip', tag: 'Буфер обмена', blurb: 'Помнит всё, что вы копировали: текст, ссылки, картинки и файлы. Пароли — не помнит.',
     pts: ['Всё скопированное — с поиском и фильтрами', 'Быстрая панель ⇧⌘V из любого приложения', 'Закрепление важного', 'Может жить только в строке меню — без значка в Dock', 'Пароли и менеджеры паролей не записываются', 'Ничего не уходит в сеть'],
-    secs: [['История', clipHistory, '<b>Напишите что-нибудь и «скопируйте»</b> — запись появится наверху. А пароль из 1Password ClipMom не запишет.'],
+    secs: [['История', clipHistory, '<b>Напишите что-нибудь и «скопируйте»</b> — запись появится наверху. А пароль из 1Password Clip не запишет.'],
       ['Панель ⇧⌘V', clipPanel, 'Нажмите <b>⇧⌘V</b> прямо на этой странице — откроется панель. Выберите запись стрелками и ↩.'],
       ['Настройки', clipSettings, 'Сколько хранить, какие приложения не записывать, автозапуск.']]},
-  {id: 'helpmom', bid: 'local.helpmom', name: 'HelpMom', tag: 'Позвать на помощь', blurb: 'Одной кнопкой: понятный отчёт о Mac для помощника, звонок по FaceTime и шпаргалки на частые случаи.',
+  {id: 'helpmom', bid: 'local.helpmom', name: 'Help', tag: 'Позвать на помощь', blurb: 'Одной кнопкой: понятный отчёт о Mac для помощника, звонок по FaceTime и шпаргалки на частые случаи.',
     pts: ['Отчёт «что у меня за Mac и что с ним» со светофором простыми словами', 'Скопировать, сохранить или отправить отчёт — серийный номер только по галочке', 'Помощники: видеозвонок, сообщение, Telegram одной кнопкой', 'Как показать экран через FaceTime — по шагам', 'Шпаргалки: интернет, тормоза, мошеннические окна, раскладка, зависания', 'Ничего не уходит в сеть само'],
     secs: [['Отчёт о Mac', helpReport, 'Светофор сверху говорит, всё ли в порядке. <b>Нажмите «Сделано»</b> у замечаний — и он станет зелёным. Галочка добавит серийный номер в отчёт.'],
       ['Позвать на помощь', helpCall, '<b>Нажмите «Видеозвонок»</b> или «Отправить отчёт». Добавьте своего помощника кнопкой «+ Помощник».'],
       ['Частые проблемы', helpProblems, 'Выберите проблему слева. В «Приложение зависло» <b>нажмите «Завершить зависшее…»</b>.']]},
-  {id: 'safetymom', bid: 'local.safetymom', name: 'SafetyMom', tag: 'Проверка Mac', blurb: 'Светофор безопасности: всё ли включено, есть ли резервная копия и откуда берутся окна «Ваш Mac заражён!».',
+  {id: 'safetymom', bid: 'local.safetymom', name: 'Safety', tag: 'Проверка Mac', blurb: 'Светофор безопасности: всё ли включено, есть ли резервная копия и откуда берутся окна «Ваш Mac заражён!».',
     pts: ['11 проверок: обновления, FileVault, файрвол, Gatekeeper, Time Machine, пароль после сна…', 'Каждый пункт простыми словами: что это значит и что сделать', 'Сайты, которым разрешены уведомления, — спам видно сразу, запрет одной кнопкой', 'Подозрительные расширения браузеров', 'Прокси, DNS, файл hosts и профили — то, что меняют рекламные вирусы', 'Ничего не меняет сам — только показывает и открывает нужную настройку'],
     secs: [['Проверка', safeChecks, '<b>Нажмите «Открыть настройки»</b> у жёлтого или красного пункта — в настоящем приложении откроется нужное место в Системных настройках, а здесь пункт станет зелёным.'],
       ['Браузеры', safeBrowsers, 'Окна «Ваш Mac заражён!» — это уведомления от сайтов. <b>Закройте Chrome и нажмите «Запретить все незнакомые»</b>. Вкладка «Расширения» покажет подозрительные дополнения.'],
       ['Сеть и профили', safeNet, '<b>Нажмите «Сымитировать рекламный вирус»</b> — так выглядят прокси, DNS и hosts после «бесплатного плеера» из интернета.']]},
-  {id: 'keymom', bid: 'local.keymom', name: 'KeyMom', tag: 'Раскладка', blurb: 'Напечатали «ghbdtn» вместо «привет»? Одно нажатие — и слово исправлено, а раскладка переключена. Плюс язык в строке меню и предупреждение о Caps Lock.',
+  {id: 'keymom', bid: 'local.keymom', name: 'Key', tag: 'Раскладка', blurb: 'Напечатали «ghbdtn» вместо «привет»? Одно нажатие — и слово исправлено, а раскладка переключена. Плюс язык в строке меню и предупреждение о Caps Lock.',
     pts: ['⇧⌘ Пробел исправляет последнее слово или выделенный текст в любом приложении', 'Нажали ещё раз — вернулось как было', 'Раскладка сама переключается на нужный язык', 'RU / EN в строке меню и у курсора при переключении', 'Caps Lock: подсказка, а в поле пароля — заметное предупреждение', 'Длинный текст можно исправить в окне и скопировать'],
     secs: [['Как пользоваться', keyGuide, 'Поле «печатает» в английской раскладке. <b>Нажмите ⇧⌘ Пробел</b> (или «Исправить») — абракадабра станет русским текстом, а индикатор вверху — RU. Нажмите ещё раз — вернётся как было.'],
       ['Исправить текст', keyConvert, 'Для длинных текстов: <b>вставьте абракадабру</b> — исправленный вариант появится сразу. Направление определяется само.'],
-      ['Индикатор и Caps Lock', keyIndicator, '<b>Щёлкните в поле пароля и нажмите Caps Lock</b> (или кнопку ⇪ вверху) — KeyMom предупредит, что пароль может не подойти. ⌃ Пробел меняет раскладку.'],
+      ['Индикатор и Caps Lock', keyIndicator, '<b>Щёлкните в поле пароля и нажмите Caps Lock</b> (или кнопку ⇪ вверху) — Key предупредит, что пароль может не подойти. ⌃ Пробел меняет раскладку.'],
       ['Настройки', keySettings, 'Выберите другое сочетание — раздел «Как пользоваться» будет слушать уже его.']]},
-  {id: 'desktopmom', bid: 'local.desktopmom', name: 'DesktopMom', tag: 'Порядок на столе', blurb: 'Раскладывает снимки экрана по папкам месяцев, убирает со стола остальное и находит в Загрузках то, что уже не нужно. Ничего не удаляет насовсем — и всё можно вернуть.',
+  {id: 'desktopmom', bid: 'local.desktopmom', name: 'Desktop', tag: 'Порядок на столе', blurb: 'Раскладывает снимки экрана по папкам месяцев, убирает со стола остальное и находит в Загрузках то, что уже не нужно. Ничего не удаляет насовсем — и всё можно вернуть.',
     pts: ['Снимки экрана — в «Изображения › Снимки экрана» по месяцам', 'Новые снимки можно сразу сохранять туда, а не на стол', 'Остальное — по папкам «Документы», «Картинки», «Архивы»…', 'Загрузки: установщики уже установленных приложений и давно забытые файлы', 'Журнал: каждое действие можно отменить кнопкой «Вернуть»'],
     secs: [['Рабочий стол', deskMain, '<b>Нажмите «Разложить снимки экрана»</b> — они улетят в папку, каждый в свой месяц. Включите «Новые снимки — сразу в папку» и сделайте снимок: стол останется чистым.'],
       ['Загрузки', deskDownloads, 'Зелёная метка — похожее приложение уже установлено, и установщик не нужен. <b>«Отметить предложенное»</b> выберет лишнее; дальше — «В Корзину».'],
-      ['Журнал', deskJournal, 'Всё, что DesktopMom переложил или отправил в Корзину. <b>«Вернуть»</b> кладёт файл на старое место.']]},
+      ['Журнал', deskJournal, 'Всё, что Desktop переложил или отправил в Корзину. <b>«Вернуть»</b> кладёт файл на старое место.']]},
   {id: 'launcher', bid: '', name: "Mom's Tool Toys", tag: 'Общий запуск', blurb: 'Одно окно со всеми инструментами: видно, что уже запущено, ⌘1…⌘9 и ⌘0 — открыть нужный.',
     pts: ['Все инструменты в одном окне', 'Зелёная точка — приложение уже запущено', '⌘1…⌘9 и ⌘0 — открыть с клавиатуры', 'Ссылки на GitHub и Telegram разработчика — в шапке'],
     secs: [['Инструменты', launcherMain, '<b>Щёлкните по карточке</b> — демо переключится на это приложение.']]},
